@@ -1,0 +1,304 @@
+{% extends "admin-dashboard/admin_base.html" %}
+{% load static %}
+{% block title_block %}School Payment Details{% endblock %}
+{% block body_block %}
+<style>
+    #payment-details_paginate,
+    #payment-details_next,
+    #payment-details_previous,
+    #payment-details_info {
+        display: none !important;
+    }
+</style>
+
+<div class="box-content">
+    <div class="box-heading">
+        <div class="box-title">
+            <h3 class="mb-3">School Payment Details - {{payments_count}}</h3>
+        </div>
+        <div class="box-breadcrumb">
+            <div class="breadcrumbs">
+                <ul>
+                    <li><a class="icon-home" href="/admin-dashboard">Home</a></li>
+                    <li><span>School Payment Details</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="section-box">
+                <div class="container">
+                    <div class="panel-white mb-3">
+                        <div class="box-padding">
+                            <div class="mb-30 float-right w-100 d-flex justify-content-end">
+                                <button class="btn btn-warning mr-10 btn-sm py-2" href="#payment-filter" data-bs-toggle="modal">Filter</button>
+                                <button class="btn btn-default mr-10 btn-sm py-2" id="export_payments">Export CSV</button>
+                            </div>
+                            <div class="table-responsive">
+                                <table id="payment-details" class="table table-hover" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox" id="multiple_payment_selection_all" class="form-check-input"></th>
+                                            <th>Payment Date</th>
+                                            <th>School Name</th>
+                                            <th>Mobile No</th>
+                                            <th>Amount</th>
+                                            <th>Plan</th>
+                                            <th>Razorpay Payment ID</th>
+                                            <th>Razorpay Order ID</th>
+                                            <th>Status</th>
+                                            <th>Details</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for payment in payments %}
+                                        <tr>
+                                            <td>
+                                                <input type="checkbox" class="form-check-input multiple_payment_selection" name="multiple_payment_selection" data-id="{{ payment.id }}" value="{{ payment.id }}">
+                                            </td>
+                                            <td>{{ payment.timestamp | date:"d M Y" }}</td>
+                                            <td>{{ payment.user.name }}</td>
+                                            <td>{{ payment.user.mobile_no }}</td>
+                                            <td>₹ {{ payment.amount }}</td>
+                                            <td>{{ payment.plan }}</td>
+                                            <td>{{ payment.razorpay_payment_id }}</td>
+                                            <td>{{ payment.razorpay_order_id }}</td>
+                                            <td>
+                                                <span class="badge {% if payment.status == 'paid' %}bg-success{% elif payment.status == 'pending' %}bg-warning{% else %}bg-danger{% endif %}">
+                                                    {{ payment.status }}
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                <a href="#payment-detail" class="btn btn-default btn-sm py-1 payment_details" data-bs-toggle="modal" data-id="{{ payment.id }}">
+                                                    View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Pagination Controls -->
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <div>
+                                    Showing {{ payments.start_index }} - {{ payments.end_index }} of {{ payments.paginator.count }} entries
+                                </div>
+                                
+                                <nav>
+                                    <ul class="pagination">
+                                        {% if payments.has_previous %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page=1{% if filters_applied %}&{{ query_params }}{% endif %}">First</a>
+                                            </li>
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ payments.previous_page_number }}{% if filters_applied %}&{{ query_params }}{% endif %}">Previous</a>
+                                            </li>
+                                        {% endif %}
+
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ payments.number }}</span>
+                                        </li>
+
+                                        {% if payments.has_next %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ payments.next_page_number }}{% if filters_applied %}&{{ query_params }}{% endif %}">Next</a>
+                                            </li>
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ payments.paginator.num_pages }}{% if filters_applied %}&{{ query_params }}{% endif %}">Last</a>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                            </div>
+                            <!-- End Pagination Controls -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Payment Details Modal -->
+<div class="modal fade" id="payment-detail" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content apply-job-form">
+            <div class="modal-header">
+                <h5 class="modal-title">Payment Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="row-border hover" style="width:100%">
+                        <tbody id="payment_detail_body">
+                            <tr><td><b>Payment ID:</b> <span id="detail_payment_id"></span></td></tr>
+                            <tr><td><b>Order ID:</b> <span id="detail_order_id"></span></td></tr>
+                            <tr><td><b>School:</b> <span id="detail_school_name"></span></td></tr>
+                            <tr><td><b>Mobile:</b> <span id="detail_mobile_no"></span></td></tr>
+                            <tr><td><b>Amount:</b> ₹ <span id="detail_amount"></span></td></tr>
+                            <tr><td><b>Plan:</b> <span id="detail_plan"></span></td></tr>
+                            <tr><td><b>Subscription Plan:</b> <span id="detail_subscription"></span></td></tr>
+                            <tr><td><b>Status:</b> <span id="detail_status"></span></td></tr>
+                            <tr><td><b>Payment Date:</b> <span id="detail_timestamp"></span></td></tr>
+                            <tr><td><b>Additional Data:</b> <p id="detail_data"></p></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Payment Filter Modal -->
+<div class="modal fade" id="payment-filter" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <form action="" id="filter_form" method="GET">
+            <div class="modal-content apply-job-form">
+                <div class="modal-header">
+                    <h5 class="modal-title">Payment Details Filters</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label>School Name/Mobile</label>
+                                <input class="form-control {% if name_mobile %} text-danger {% endif %}" name="name_mobile" value="{{name_mobile}}" placeholder="Name/Mobile No">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label>Plan</label>
+                                <select class="form-control {% if plan_filter %} text-danger {% endif %}" name="plan">
+                                    <option value="">All Plans</option>
+                                    {% for plan in all_plans %}
+                                        <option value="{{ plan }}" {% if plan_filter == plan %} selected {% endif %}>{{ plan }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label>Status</label>
+                                <select class="form-control {% if status %} text-danger {% endif %}" name="status">
+                                    <option value="">All Status</option>
+                                    {% for status_option in all_statuses %}
+                                        <option value="{{ status_option }}" {% if status == status_option %} selected {% endif %}>{{ status_option }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label>Payment ID</label>
+                                <input class="form-control {% if payment_id %} text-danger {% endif %}" name="payment_id" value="{{payment_id}}" placeholder="Razorpay Payment ID">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label>Date From</label>
+                                <input type="date" class="form-control {% if date_from %} text-danger {% endif %}" name="date_from" value="{{date_from}}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label>Date To</label>
+                                <input type="date" class="form-control {% if date_to %} text-danger {% endif %}" name="date_to" value="{{date_to}}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="/school-payment/" class="btn btn-light">Reset</a>
+                    <button class="btn btn-default" type="submit">Filter</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        // Payment details view
+        $('.payment_details').on('click', function() {
+            var paymentId = $(this).data('id');
+            
+            // Clear old values
+            $('#detail_payment_id, #detail_order_id, #detail_school_name, #detail_mobile_no, #detail_amount, #detail_plan, #detail_subscription, #detail_status, #detail_timestamp, #detail_data').text('Loading...');
+            
+            // Ajax request to get payment details
+            $.ajax({
+                url: '/get-school-payment-details/',
+                type: 'GET',
+                data: {
+                    'payment_id': paymentId
+                },
+                success: function(response) {
+                    $('#detail_payment_id').text(response.razorpay_payment_id || "N/A");
+                    $('#detail_order_id').text(response.razorpay_order_id || "N/A");
+                    $('#detail_school_name').text(response.user_name || "N/A");
+                    $('#detail_mobile_no').text(response.mobile_no || "N/A");
+                    $('#detail_amount').text(response.amount || "N/A");
+                    $('#detail_plan').text(response.plan || "N/A");
+                    $('#detail_subscription').text(response.subscription_plan || "N/A");
+                    
+                    // Set status with appropriate color
+                    var statusSpan = $('<span>').text(response.status || "N/A");
+                    if(response.status === 'paid') {
+                        statusSpan.addClass('badge bg-success');
+                    } else if(response.status === 'pending') {
+                        statusSpan.addClass('badge bg-warning');
+                    } else if(response.status) {
+                        statusSpan.addClass('badge bg-danger');
+                    }
+                    $('#detail_status').html(statusSpan);
+                    
+                    $('#detail_timestamp').text(response.timestamp || "N/A");
+                    $('#detail_data').text(response.data || "N/A");
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error fetching payment details:", error);
+                    alert("Could not load payment details. Please try again.");
+                    
+                    // Clear values on error
+                    $('#detail_payment_id, #detail_order_id, #detail_school_name, #detail_mobile_no, #detail_amount, #detail_plan, #detail_subscription, #detail_status, #detail_timestamp, #detail_data').text('Error loading data');
+                }
+            });
+        });
+
+        // Export payments to CSV
+        $('#export_payments').on('click', function() {
+            var url = '/export-school-payments/';
+            
+            // Add query parameters if filters are applied
+            var queryParams = window.location.search;
+            if (queryParams) {
+                url += queryParams;
+            }
+            
+            window.location.href = url;
+        });
+
+        // Multiple selection checkbox functionality
+        $('#multiple_payment_selection_all').on('change', function() {
+            $('.multiple_payment_selection').prop('checked', $(this).prop('checked'));
+        });
+        
+        $('.multiple_payment_selection').on('change', function() {
+            if (!$(this).prop('checked')) {
+                $('#multiple_payment_selection_all').prop('checked', false);
+            } else {
+                // Check if all individual checkboxes are checked
+                var allChecked = $('.multiple_payment_selection:not(:checked)').length === 0;
+                $('#multiple_payment_selection_all').prop('checked', allChecked);
+            }
+        });
+    });
+</script>
+{% endblock %}

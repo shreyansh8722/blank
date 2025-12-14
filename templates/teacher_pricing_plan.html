@@ -1,0 +1,99 @@
+{%extends "base.html"%}
+{% load static %}
+{% load humanize %}
+{%block title_block%}{{page_title}}{%endblock%}
+{%block body_block%}
+<main class="main">
+    <section class="section-box">
+        <div class="breacrumb-cover">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-6 col-xs-6">
+                  <a onclick="backButton()" class="pointer"><i class=" fa fa-arrow-left mr-10"></i>Back</a>
+                </div>
+                <div class="col-lg-6  col-xs-6 text-end">
+                  <ul class="breadcrumbs">
+                    <li><a class="" href="/teacher-account">My Account</a></li>
+                    <li>Pricing & Plan Info</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+        </div>
+    </section>
+    <section class="section-box mt-30">
+        <div class="container">
+            <h3 class="wow animate__animated animate__fadeInUp text-center mb-30">
+                Pricing & Plan Info</h3>
+            <div class="row cog-account ">
+                <div class="col-md-12 orders">
+                    {% if pack_detail and subscription_detail.date %}
+                    <div class="row profile ">
+                        <div class="col-md-6 pl-30">
+                            <ul>
+                                <li>
+                                    <span class="name">Plan:</span>
+                                    <span class="value">{{pack_detail.plan_name}}</span>
+                                </li>
+                                <li>
+                                    <span class="name">Plan Started On:</span>
+                                    <span class="value">{{subscription_detail.date}}
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6 pl-30">
+                            <ul>
+                                <li>
+                                    <span class="name">Plan Validity:</span>
+                                    <span class="value">1 Year</span>
+                                </li>
+                                <li>
+                                    <span class="name">Plan Expires On:</span>
+                                    <span class="value">{{ expiry_date }} </span>
+                                </li> 
+                                <li>
+                                    <span class="name">Number of Remaining Job Apply: </span>
+                                    <span class="value">{{subscription_detail.remaining_job_apply}}
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-12 max-width-price p-0">
+                            <div class="block-pricing mt-40">
+                                <div class="col-xl-6 col-lg-6 col-md-6 mx-auto"
+                                    data-wow-delay=".1s">
+                                    <div class="box-pricing-item">
+                                        <h3>{{pack_detail.plan_name}}</h3>
+                                        <div class="box-info-price"><del
+                                                class="text-price color-brand-2">₹ {{pack_detail.display_price|intcomma}}</del><span
+                                                class="text-month">/Year (+18% gst)</span></div>
+                                        <div class="border-bottom mb-30">
+                                            <p
+                                                class="text-desc-package font-sm color-text-paragraph mb-30">
+                                                Now <span class="ps-1">{{ pack_detail.discounted_price|intcomma}}</span><span style="color:#7c7d7e !important;font-weight: 200;" >/year</span> only 
+                                            </p>
+                                        </div>
+                                        <ul class="list-package-feature" style=" color: #000; font-weight: 650;">
+                                            {% for inside_info in pack_detail.amenities %}
+                                            <li>{{inside_info.info}}</li>
+                                            {% endfor %}
+                                        </ul>
+                                        <a class="btn btn-default btn-shadow ml-180  hover-up"  href="/teacher-pricing">Upgrade Plan</a>  
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p class="text-center"><b>Currently you did not have any plan</b></p>
+                    <a class="btn btn-default btn-shadow ml-4  hover-up" style="margin-left: 600px;
+                    margin-bottom: 50px;
+                    margin-top: 20px;" href="/teacher-pricing">Select a plan</a>     
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}

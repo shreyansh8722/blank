@@ -1,0 +1,47 @@
+{%extends "base.html"%}
+{% load static %}
+{%block title_block%}{{page_title}}{%endblock%}
+{%block body_block%}
+<style>
+    .header {
+      box-shadow: 0 8px 20px 0 rgba(0, 0, 0, 0.05);
+  }
+  </style>
+<main class="main">
+    <section class="cog-section cog-account ">
+        {% include 'partials/_alerts.html' %}
+        <div class="container">
+            <div class="row ">
+                <div class="col-md-4 mx-auto p-0">
+                    <div class="left-side">
+                        <div class="head">
+                            <h4>Welcome !  {{request.user.name}}</h4>
+                        </div>
+                        <div class="body">
+                            <div class="box-nav-tabs nav-tavs-profile mb-5">
+                                <ul class="nav" role="tablist">
+                                    <li><a class="btn btn-border aboutus-icon mb-10" href="/current-vacancies" style="border:2px solid #ff000047; font-size:17px; font-style:bold; color:#ba2020">Search & apply jobs</a></li>
+                                    <li><a class="btn btn-border aboutus-icon mb-10" href="/my-jobs?status=All" style="border:2px solid #ff000047; font-size:17px; font-style:bold; color:#ba2020">Applied jobs <i class="account-count">{{applied_job_count}}</i></a></li>
+                                    <li><a class="btn btn-border aboutus-icon mb-10" href="/my-jobs?status=New">Jobs in review <i class="account-count">{{review_job_count}}</i></a></li>
+                                    <li><a class="btn btn-border aboutus-icon mb-10" href="/my-jobs?status=Interview Call">Interview call recieved <i class="account-count">{{interview_job_count}}</i></a></li>
+                                    <li><a class="btn btn-border aboutus-icon mb-10" href="/my-jobs?status=Rejected">Applications Rejected <i class="account-count">{{rejected_job_count}}</i></a></li>
+                                    <li><a class="btn btn-border aboutus-icon mb-10" href="/teacher-shortlisted">Shortlisted By<i class="account-count">{{shortlisted_job_count}}</i></a></li>
+                                    <li><a class="btn btn-border aboutus-icon mb-10" href="/teacher-profile">My Profile</a></li>
+                                    <li><a class="btn btn-border aboutus-icon mb-10" href="{% if teacher.plan and teacher.plan|length > 0 and teacher.plan != 'None' %}/teacher-pricing{% else %}/teacher-pricing-plan{% endif %}">
+                                        Pricing & Plan info</a></li>                                   
+                                    <li><a class="btn btn-border aboutus-icon mb-10" href="/help-support">Help & Support   </a></li>
+                                </ul>
+                            </div>
+
+                            <!-- Tab panes -->
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+ 
+</main>
+{% endblock %}

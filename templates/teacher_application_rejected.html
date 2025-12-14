@@ -1,0 +1,97 @@
+{%extends "base.html"%}
+{% load static %}
+{%block title_block%}{{page_title}}{%endblock%}
+{%block body_block%}
+<main class="main">
+    <section class="section-box">
+        <div class="breacrumb-cover">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-6 col-xs-6">
+                  <a onclick="backButton()" class="pointer"><i class=" fa fa-arrow-left mr-10"></i>Back</a>
+                </div>
+                <div class="col-lg-6  col-xs-6 text-end">
+                  <ul class="breadcrumbs">
+                    <li><a class="" href="/">Home</a></li>
+                    <li>Application Rejected</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+        </div>
+    </section>
+    <section class="section-box mt-30">
+        <div class="container">
+            <h3 class="wow animate__animated animate__fadeInUp text-center mb-30">
+                Application Rejected</h3>
+            <div class="row cog-account ">
+                <div class="col-md-12 orders">
+                    <div class="table-responsive">
+                        <table class="table table-hover coganimate-scale-in-center">
+                        <thead>
+                            <tr>
+                                <td>Job Id </td>
+                                <td>School </td>
+                                <td>Category</td>
+                                <td>Subject</td>
+                                <td>Qualification</td>
+                                <td>Experience</td>
+                                <td>Salary</td>
+                                <td>Location </td>
+                                <td>Application Rejected Date</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th>FM101</th>
+                                <td>ARB School  </td>
+                                <td>Primary</td>
+                                <td>Hindi</td>
+                                <td>B.Ed</td>
+                                <td>1-2 Year</td>
+                                <td>10-20K </td>
+                                <td>   Bidar, Karnataka                                </td>
+                                <td>23 Mar 2023</td>
+                            </tr>
+                            <tr>
+                                <th>FM102</th>
+                                <td>ARB School  </td>
+                                <td>Primary</td>
+                                <td>Hindi</td>
+                                <td>B.Ed</td>
+                                <td>1-2 Year</td>
+                                <td>10-20K </td>
+                                <td>   Bidar, Karnataka                                </td>
+                                <td>23 Mar 2023</td>
+                            </tr>
+                            <tr>
+                                <th>FM103</th>
+                                <td>ARB School  </td>
+                                <td>Primary</td>
+                                <td>Hindi</td>
+                                <td>B.Ed</td>
+                                <td>1-2 Year</td>
+                                <td>10-20K </td>
+                                <td>   Bidar, Karnataka                                </td>
+                                <td>23 Mar 2023</td>
+                            </tr>
+                            <tr>
+                                <th>FM104</th>
+                                <td>ARB School  </td>
+                                <td>Primary</td>
+                                <td>Hindi</td>
+                                <td>B.Ed</td>
+                                <td>1-2 Year</td>
+                                <td>10-20K </td>
+                                <td>   Bidar, Karnataka                                </td>
+                                <td>23 Mar 2023</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}

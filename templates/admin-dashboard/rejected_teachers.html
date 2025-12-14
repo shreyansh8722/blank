@@ -1,0 +1,160 @@
+{%extends "admin-dashboard/admin_base.html"%}
+{% load static %}
+{%block title_block%}{{page_title}}{%endblock%}
+{%block body_block%}
+
+<div class="box-content">
+    <div class="box-heading">
+        <div class="box-title">
+            <h3 class="mb-35">Rejected Teachers</h3>
+        </div>
+        <div class="box-breadcrumb">
+            <div class="breadcrumbs">
+                <ul>
+                    <li> <a class="icon-home" href="/admin-dashboard">Home</a></li>
+                    <li><span>Rejected Teachers</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xxl-12 col-xl-12 col-lg-12">
+            <div class="section-box">
+                <div class="container">
+                    <div class="panel-white mb-30">
+                        <div class="box-padding">
+                            <div class="mb-30 float-right w-100 d-flex justify-content-end">
+                                <button class="btn btn-success mr-10 btn-sm py-2" data-type="teacher"  id="approve_all">Approve</button>
+                            </div>
+                            <div class="table-responsive">
+                                <table id="unverified-teachers" class="row-border hover " style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox" id="multiple_teacher_selection_all" class="form-check-input "></th>
+                                            
+                                            <th>Created At</th>
+                                            <th>Name</th>
+                                            <th>Mobile No</th>
+                                            <th>Alternate Mobile No</th>
+                                            <th>Plan</th>
+                                            <th>Mobile Verified</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        {% for teacher in teachers %}
+                                        <tr>
+                                            <td>
+                                                <input type="checkbox" data-id="{{teacher.id}}" value="{{teacher.id}}" name="multiple_teacher_selection" class="form-check-input multiple_teacher_selection">
+                                            </td>
+                                            <td>{{teacher.timestamp | date:"d M Y"}}</td>
+                                            <td>{{teacher.user.name}}</td>
+                                            <td>{{teacher.user.mobile_no}}</td>
+                                            <td>{{teacher.user.alt_mobile_no}}</td>
+                                            <td>{{teacher.plan}}</td>
+                                            <td>
+                                                {% if teacher.user.is_mobile_no_verified %}
+                                                   <p>Verified</p>
+                                                {% else %}
+                                                    <p class="text-danger">Unverified</p>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!--Teacher Filter -->
+<div class="modal fade" id="teacher-filter" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content apply-job-form">
+            <div class="modal-header">
+                <h5 class="modal-title">Teachers List Filters</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="row-border hover " style="width:100%">
+                        <thead>
+                            <tr>
+                                <td><input class="form-control" placeholder="Name/email/mobile no" ></td>
+                                <td><input class="form-control" placeholder="Category" ></td>
+                                <td class="text-center">
+                                    <select class="form-control" >
+                                        <option>Payment</option>
+                                        <option>Paid</option>
+                                        <option>Unpaid</option>
+                                    </select>
+                                </td>
+                                <td class="text-right">
+                                    <select class="form-control" >
+                                        <option>Profile</option>
+                                        <option>Complete</option>
+                                        <option>Incomplete</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input class="form-control" placeholder="Recent Activity" ></td>
+                                <td><input class="form-control" placeholder="Subject of experience" ></td>
+                                <td class="text-center">
+                                    <select class="form-control" >
+                                        <option>Applied Details</option>
+                                        <option>Applied</option>
+                                        <option>Not Applied</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="form-control" >
+                                        <option>Status</option>
+                                        <option>Enable</option>
+                                        <option>Disable</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input class="form-control" placeholder="Education Qualification" ></td>
+                                <td><input class="form-control" placeholder="Year of experience" ></td>
+                                <td class="text-center">
+                                    <select class="form-control" >
+                                        <option>Experience type</option>
+                                        <option>Fresher</option>
+                                        <option>Experienced</option>
+                                    </select>
+                                </td>
+                                <td class="text-right">
+                                   
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input class="form-control" placeholder="Subject of specialization" ></td>
+                                <td><input class="form-control" placeholder="Current salary" ></td>
+                                <td>
+                                    <select class="form-control" >
+                                        <option>Labels</option>
+                                    </select>
+                                </td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td><input class="form-control" placeholder="Expected salary" ></td>
+                                <td><input class="form-control" placeholder="State" ></td>
+                                <td><input class="form-control" placeholder="District" ></td>
+                                <td><input class="form-control" placeholder="Pincode" ></td>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

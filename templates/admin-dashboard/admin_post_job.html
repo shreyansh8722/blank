@@ -1,0 +1,182 @@
+{%extends "admin-dashboard/admin_base.html"%}
+{% load static %}
+{%block title_block%}{{page_title}}{%endblock%}
+{%block body_block%}
+
+<div class="box-content">
+    <div class="box-heading">
+        <div class="box-title">
+            <h3 class="mb-35">{{school.user.name | title}} All Jobs</h3>
+        </div>
+        <div class="box-breadcrumb">
+            <div class="breadcrumbs">
+                <ul>
+                    <li> <a class="icon-home" href="/admin-dashboard">Home</a></li>
+                    <li><span>Post Job for School</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <section class="section-box mt-30 mb-30">
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                {% include 'partials/_alerts.html' %}
+                <form action="/admin-add-job" method="post" class="p-3">
+                    {% csrf_token %}
+                    <h4 class="mb-20 text-center">Post a Job</h4>
+                    <div class="row">
+                        <div class="form-group col-md-6">
+                            <label class="form-label" for="input-1">School Mobile Number
+                            </label>
+                            <input class="form-control"  name="school_name" id="school_name">
+                            
+                            {% comment %} <select class="form-control" required name="school_name" id="grade">
+                                <option value="" hidden>Select</option>
+                                {% for school in school_data %}
+                                <option value="{{school.id}}">{{school.name}} - {{school.mobile_no}}</option>
+                                {% endfor %}
+                            </select> {% endcomment %}
+
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="form-label" for="input-1">Grade teachers
+                                you are looking for</label>
+                            <select class="form-control" required name="teacher_grade" id="grade">
+                                <option value="" hidden>Select</option>
+                                {% for info in grade_data %}
+                                <option value="{{info.name}}">{{info.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="form-label" for="input-1">Subject teacher required</label>
+                            <select class="form-control" required name="subject" id="subject">
+                                <option value="" hidden>Select</option>
+                                {% for info in subject_data %}
+                                <option value="{{info.info}}">{{info.info}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="form-label" for="input-1">Highest Qualification</label>
+                            <select class="form-control" required name="highest_qualification" id="">
+                                <option value="" hidden>Select</option>
+                                {% for info in qualification_data %}
+                                <option value="{{info.info}}">{{info.info}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="form-label" for="input-1">Experience Required</label>
+                            <select class="form-control" required name="experienced_required" id="">
+                                <option value="" hidden>Select</option>
+                                {% for info in experience_data %}
+                                <option value="{{info.info}}">{{info.info}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="form-label" for="input-1">Salary offered</label>
+                            <select class="form-control" required name="salary_offered" id="">
+                                <option value="" hidden>Select</option>
+                                {% for info in salary_data %}
+                                <option value="{{info.info}}">{{info.info}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <!-- <div class="form-group col-md-6 date" id="datepicker">
+                            <label class="form-label" for="">Date of joining</label>
+                            <input type="text" class="form-control" id="date" name="joining_date" placeholder="Date of Joining" required value=""/>
+                            <span class="input-group-append">
+                            </span>
+                            </div> -->
+                            <div class="form-group col-md-6 date">
+                                <label class="form-label" for="">Candidate should join</label>
+                                <select class="form-control" required name="joining" id="">
+                                    <option value="" hidden>Select</option>
+                                    <option>Immediately</option>
+                                    <option>Within a week</option>
+                                    <option>Within a month</option>
+                                    <option>We will inform after interview</option>
+
+                                </select>
+                              </div>
+                            <div class="form-group col-md-6 date" id="datepicker1">
+                            <label class="form-label" for="">Date of Expired</label>
+                            <input type="text" class="form-control" id="date1" name="expiry_date" placeholder="Date of Expired" required/>
+                            <span class="input-group-append">
+                            </span>
+                            </div>
+                        
+                        <h6>Job Location:</h6><br>
+                        <div class="form-group col-md-6">
+                            <label for="">Pincode</label>
+                            <input type="text"  pattern="[0-9]*"  id="pincode_sample" maxlength="6" minlength="6" name="pincode" required {% if school_info.pincode %}value="{{school_info.pincode}}"{% endif %} class="form-control pincode_sample">
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="form-label" for="input-1">State</label>
+                            <input class="form-control" readonly  name="state" {% if school_info.state %}value="{{school_info.state}}"{% else %}value=""{% endif %}  id="state_sample" />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="form-label" for="input-1">District</label>
+                            <input class="form-control" readonly id="city_sample" {% if school_info.district %}value="{{school_info.district}}"{% else %}value=""{% endif %}   name="district" >
+                            
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="form-label" for="">Address</label>
+                            <textarea name="address" required class="form-control"  cols="30"
+                                rows="10" style="height:45px">{% if school_info.address %}{{school_info.address}}{% endif %}</textarea>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label" for="input-1">Benefits & compensation</label>
+                            <input type="text" readonly data-bs-toggle="modal" value="{{teacher_info.benifits_compensation}}" name="benifits_compensation" placeholder="Please select benifits & compensation" id="benifits_compensation_data" data-bs-target="#benifits_compensation" >
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <label class="form-label" for="input-1">Free To Apply Job ON &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                            <input type="checkbox" id="free_to_apply_id" name="free_to_apply" {% if is_free_to_apply %}checked{% endif %}>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label" for="input-1">Description</label>
+                            <textarea type="text" value="" name="description" placeholder="Write some thing about of your job post" id="description_data" cols="30"
+                            rows="10"> </textarea>
+                        </div>
+                    </div>
+                    <div class="col-12 text-center mt-3">
+                        <button type="submit" class="btn btn-default w-100">Post Job</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    </section>
+
+          
+</div>
+
+<!--Subject of Experience (Max 3 Selection)-->
+<div class="modal fade" id="benifits_compensation" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog " role="document">
+        <div class="modal-content apply-job-form">
+            <div class="modal-header">
+                <h5 class="modal-title" id="subject-teach">Benifits & Compensation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="benifits-compensation-modal-body">
+                {% for info in benifits_data %}
+                    <div class="form-check">
+                        <input type="checkbox" value="{{info.info}}"  class="form-check-input" id="ddd{{info.id}}"  name="benifits_compensation_data" >
+                        <label class="form-check-label" for="ddd{{info.id}}">
+                            {{info.info}}
+                        </label>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="modal-footer">
+                <button id="benifits_compensation_data_done" data-bs-dismiss="modal" aria-label="Close" class="btn btn-default m-0">Done </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,146 @@
+{%extends "base.html"%}
+{% load static %}
+{%block title_block%}{{page_title}}{%endblock%}
+{%block body_block%}
+<main class="main">
+    <section class="section-box">
+        <div class="breacrumb-cover">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-6 col-xs-6">
+                  <a onclick="backButton()" class="pointer"><i class=" fa fa-arrow-left mr-10"></i>Back</a>
+                </div>
+                <div class="col-lg-6  col-xs-6 text-end">
+                  <ul class="breadcrumbs">
+                    <li><a class="" href="/">Home</a></li>
+                    <li>Job Alert</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+        </div>
+      </section>
+    <section class="section-box mt-30">
+        <div class="container">
+
+            <div class="row">
+                <div class="col-md-12">
+                    {% include 'partials/_alerts.html' %}
+                    <form action="/add-job-alert" method="post" class="p-3">
+                        {% csrf_token %}
+                        <h4 class="mb-10 text-center">Job Alert</h4>
+                        <p class="text-center mb-20">Dear teacher fill the details for free whatsapp alert !</p>
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label class="form-label" for=""> Full Name</label>
+                                <input type="text" class="form-control" name="name" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="form-label" for=""> Mobile No.(Whatsapp)</label>
+                                <input type="tel" class="form-control" pattern="[0-9]*" maxlength="10" minlength="10" name="mobile_no" required style="background-color: white;" >
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="form-label" for="input-1">Job Category</label>
+                                <select class="form-control" required id="grade_change" name="job_category" >
+                                    <option value="">Select</option>
+                                    {% for info in grade_data %}
+                                        <option>{{info.name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="form-label" for=""> Subject</label>
+                                <select class="form-control" id="grade_subject" required name="subject" >
+                                    <option value="">Select</option>
+                                    {% for info in subject_data %}
+                                        <option>{{info}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-12 mb-10 mt-5">
+                                <h6 class=" d-flex align-items-center justify-content-between">Preferred Job Locations 
+                                    {%if preferred_location_district_list%}
+                                    <a class="btn btn-success py-2" data-bs-toggle="modal" href="#add-location-modal-job-alert"> <i class="fa fa-plus"></i> Add More Location </a>
+                                    {%else%}
+                                    <a class="btn btn-success py-2" id="add_location_modal_a" data-bs-toggle="modal" href="#add-location-modal-job-alert"> <i class="fa fa-plus"></i> Add Location </a>
+                                    {% endif %}
+                                </h6> 
+                                <textarea class="hide" name="pre_job_location" id="pre_job_location" ></textarea>
+                            </div>
+                            <div>
+                                <div class="col-md-12 mb-3">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-12">
+                                <div class=" border p-3  rounded" id="preferred_locations_body_job_alert">
+                                    <div class="mb-3">
+                                        {% for x in preferred_location_district_list %}
+                                        {% for k,v in x.items %}
+                                        <h6 class="mb-3 d-flex align-items-center justify-content-between">{{k}}
+                                            <div class="fz-12 " >
+                                                <a class="text-success edit_location" data-state="{{k}}" data-bs-toggle="modal" href="#add-location-modal-job-alert"  > 
+                                                    <span class="fa fa-edit  text-success "></span> Edit</a></span>
+                                            </div>
+                                        </h6>
+                                                {% for d in v %}
+                                                <span class="btn btn-grey-small mr-5 mb-2">{{d}}</span>
+                                                {% endfor %}
+
+                                                <hr>
+
+                                        {% endfor %}            
+                                        {% endfor %}     
+                                </div>
+                                </div>
+                                </div>
+                            </div>                           
+                        </div>
+                        <div class="col-12 text-center mt-3">
+                            <button type="submit" class="btn btn-default w-100">Get Job Alert</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Add Location -->
+<div class="modal fade" id="add-location-modal-job-alert" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+    <div class="modal-content apply-job-form">
+        <div class="modal-header">
+            <div class="text-center">
+                <h4 class="mt-10 mb-5 text-brand-1 text-capitalize">Add/Edit Preferred Job Location</h4>
+            </div>
+            <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        
+        <div class="modal-body pl-30 pr-30 ">       
+   
+            <div class="form-group col-md-12">
+                <label class="form-label" for="input-1">Select State</label>
+                <select class="form-control" id="state_select_job_alert"  required  >
+                    <option value="">Select</option>
+                    {% for info in state_data %}
+                        <option value="{{info.name}}">{{info.name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group hide" id="district_div_job_alert">
+                <label class="form-label" for="input-1">Select District</label>
+            </div>
+            <div class="">
+                <ul class="distric" id="district_list_job_alert">
+                                        
+                </ul>
+            </div>
+           
+        </div>
+        <div class="modal-footer">
+            <button id="add_location_done_job_alert" data-bs-dismiss="modal" aria-label="Close" class="btn btn-default m-0">Done </button>
+        </div>
+    </div>
+    </div>
+</div>
+    </section>
+</main>
+{% endblock %}

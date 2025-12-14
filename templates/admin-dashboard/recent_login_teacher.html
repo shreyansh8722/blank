@@ -1,0 +1,94 @@
+{%extends "admin-dashboard/admin_base.html"%}
+{% load static %}
+{%block title_block%}{{page_title}}{%endblock%}
+{%block body_block%}
+
+<div class="box-content">
+    <div class="box-heading">
+        <div class="box-title">
+            <h3 class="mb-35">Recent Login Teachers</h3>
+        </div>
+        <div class="box-breadcrumb">
+            <div class="breadcrumbs">
+                <ul>
+                    <li> <a class="icon-home" href="/admin-dashboard">Home</a></li>
+                    <li><span>Recent Login Teachers</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xxl-12 col-xl-12 col-lg-12">
+            <div class="section-box">
+                <div class="container">
+                    <div class="panel-white mb-30">
+                        <div class="box-padding">
+                            <div class="table-responsive">
+                                <table id="recent-login-teacher" class="row-border hover " style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Last Login</th>
+                                            <th>Joined On</th>
+                                           
+                                            <th>Name</th>
+                                            <th>Gender</th>
+                                            <th>Mobile No</th>
+                                            <th>Alt. Mobile No</th>
+                                            <th>Education</th>
+                                            <th>Work Exp.</th>
+                                            <th>Subjects</th>
+                                            <th>Current Salary </th>
+                                            <th>Expected Salary</th>
+                                            <th>Address</th>
+                                            <th>Preferred Location</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for user in users %}
+                                        <tr>
+                                            <td>{{user.last_login}}</td>
+                                            <td>{{user.joining_date | date:"d M Y"}}</td>
+                                            
+                                            <td>{{user.name}}</td>
+                                            <td>{{user.teacher.gender}}</td>
+                                            <td>{{user.mobile_no}}</td>
+                                            <td>{{user.alt_mobile_no}}</td>
+                                            <td>{{user.teacher.qualification}}</td>  
+                                            <td>{{user.teacher.experience_in}}</td>
+                                            <td>{{user.teacher.subject_of_experience}}</td>
+                                            <td>{{user.teacher.current_salary}}</td>
+                                            <td>{{user.teacher.expected_salary}}</td>
+                                            <td>{{user.teacher.address_district}}, {{user.teacher.address_state}}</td>
+                                            <td>{{user.teacher.preferred_location_district}}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Joined On</th>
+                                            <th>Last Login</th>
+                                            <th>Name</th>
+                                            <th>Gender</th>
+                                            <th>Mobile No</th>
+                                            <th>Alt. Mobile No</th>
+                                            <th>Education</th>
+                                            <th>Work Exp.</th>
+                                            <th>subjects</th>
+                                            <th>Current salary </th>
+                                            <th>Expected Salary</th>
+                                            <th>Address</th>
+                                            <th>Preferred Location</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

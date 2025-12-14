@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="icon" type="image/png" href="/static/facultyme_img/facultyme_favicon.png" />
+  <title>{{page_title}}</title>
+  <!-- <link href="/static/css/bootstrap.min.css" rel="stylesheet"> -->
+  <link rel="stylesheet" href="/static/css/bootstrap-datepicker.min.css">
+  <link rel="stylesheet" href="/static/css/toastr.min.css">
+  <link rel="stylesheet" href="/static/css/cog-custom.css">
+  <link rel="stylesheet" href="/static/css/fontawesome6.min.css">
+  <link href="/static/css/stylecd4e.css?version=4.1" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/custom.css">
+  <link rel="stylesheet" href="/static/css/responsive.css">
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+  <script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '874442628353263');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=874442628353263&ev=PageView&noscript=1"
+/></noscript>
+  <style>
+    /* Custom Calendar Styles */
+    .ui-datepicker {
+      padding: .2em .2em 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      font-size: 14px;
+      z-index: 9999 !important;
+    }
+    .ui-datepicker .ui-datepicker-header {
+      border: none;
+      background: #2a4365;
+      color: white;
+      border-radius: 3px 3px 0 0;
+    }
+    .ui-datepicker .ui-datepicker-title {
+      margin: 0;
+      line-height: 2em;
+      text-align: center;
+      font-weight: bold;
+    }
+    .ui-datepicker table {
+      margin: .2em 0;
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .ui-datepicker th {
+      padding: .7em .3em;
+      text-align: center;
+      border: 0;
+      background: #f8f9fa;
+    }
+    .ui-datepicker td {
+      border: 0;
+      padding: 1px;
+    }
+    .ui-datepicker td span,
+    .ui-datepicker td a {
+      display: block;
+      padding: .4em;
+      text-align: center;
+      text-decoration: none;
+      border-radius: 2px;
+    }
+    .ui-datepicker .ui-state-default {
+      border: 1px solid #f5f5f5;
+      background: #fff;
+    }
+    .ui-datepicker .ui-state-highlight {
+      border: 1px solid #2a4365;
+      background: #e8f0fe;
+    }
+    .ui-datepicker .ui-state-active {
+      border: 1px solid #2a4365;
+      background: #2a4365;
+      color: white;
+    }
+    /* Make datepicker appear above other elements */
+    #ui-datepicker-div {
+      z-index: 999999 !important;
+      display: block !important;
+    }
+    .input-group > .form-control {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    .input-group > .input-group-text {
+      background-color: #f8f9fa;
+      border-left: 0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .input-group > .input-group-text:hover {
+      background-color: #2a4365;
+      color: white;
+    }
+    .input-group > .input-group-text {
+      background-color: #f8f9fa;
+      border-left: 0;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .input-group > .input-group-text:hover {
+      background-color: #2a4365;
+      color: white;
+    }
+    .input-group > .input-group-text i {
+      font-size: 16px;
+    }
+    /* Ensure datepicker stays visible when shown */
+    .ui-datepicker {
+      display: block !important;
+    }
+    .input-group {
+      position: relative;
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: stretch;
+      width: 100%;
+    }
+  </style>
+  <!-- <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" /> -->
+</head>
+
+<body>
+  <!-- loader -->
+  <div id="cog-overlay" style="z-index:1001">
+    <div class="cv-spinner">
+      <span class="spinner"></span>
+    </div>
+  </div>
+
+  {% comment %} <div id="preloader-active">
+    <div class="preloader d-flex align-items-center justify-content-center">
+      <div class="preloader-inner position-relative">
+        <div class="text-center"><img src="/static/imgs/template/loading.gif" alt=""></div>
+      </div>
+    </div>
+  </div> {% endcomment %}
+  <header class="header sticky-bar">
+    <div class="container">
+      <div class="main-header">
+        <div class="header-left">
+          <div class="header-logo">
+            <a class="d-flex" href="/">
+              <img alt="" src="/static/facultyme_img/facultyme1.png" style="width: 200px;"></a>
+              <h4 class="">FacultyMe </h4>
+          </div>
+          {% if not request.user.is_authenticated %}
+          <div class="mobile-login">
+            <p>Already Registered ? <br>  <a class="btn btn-default btn-shadow" style="line-height: 16px !important;" href="/login">Login</a></p>
+          </div>
+          {% endif %}
+        </div>
+        <div class="header-nav">
+          <nav class="nav-main-menu">
+            <ul class="main-menu">
+              {% if request.user.user_type == 'Teacher' %}
+              <li class=""><a href="/teacher-account">Home</a> </li>
+
+              {% elif request.user.user_type == 'School' %}
+              <li class=""><a href="/school-account">Home</a> </li>
+
+              {%else%}
+              <li class=""><a href="/">Home</a> </li>
+              {% endif %}
+
+
+              {% if request.user.user_type == 'School' %}
+              {% else %}
+
+              <li class=""><a href="/job-alert">Job Alert</a> </li>
+              {% endif %}
+              {% if request.user.user_type == 'Teacher' %}
+              <li class=""><a href="/current-vacancies">Search Jobs</a> </li>
+              {% endif %}
+              {% if request.user.user_type == 'School' %}
+              <li class=""><a href="/find-teachers">Find Teacher</a> </li>
+              {% endif %}
+
+              <!-- Pricing  -->
+              {% if request.user.user_type == 'Teacher' %}   
+              <li class=""><a href="/teacher-pricing">Pricing</a> </li>
+              {% elif request.user.user_type == 'School' %}
+              <li class=""><a href="/institute-pricing">Pricing</a> </li>
+              {% else %}
+              <li class="has-children"><a href="javascript:void()">Pricing</a>
+                <ul class="sub-menu">
+                  <li><a href="/teacher-pricing">Teacher</a></li>
+                  <li><a href="/institute-pricing">Institute/School</a></li>
+                </ul>
+              </li>
+              {% endif %}
+
+                <!-- Faqs  -->
+                {% if request.user.user_type == 'Teacher' %}   
+                <li class=""><a href="/teacher-faqs">FAQs</a> </li>
+                {% elif request.user.user_type == 'School' %}
+                <li class=""><a href="/institute-faqs">FAQs</a> </li>
+                {% else %}
+                <li class="has-children"><a href="javascript:void()">FAQs</a>
+                  <ul class="sub-menu">
+                    <li><a href="/teacher-faqs">Teacher</a></li>
+                    <li><a href="/institute-faqs">Institute/School</a></li>
+                  </ul>
+                </li>
+                {% endif %}
+  
+
+              <li class=""><a href="/about">About Us</a> </li>
+              <li><a href="/help-support">Contact Us</a></li>
+             
+            </ul>
+          </nav>
+          <div class="burger-icon burger-icon-white"><span class="burger-icon-top"></span><span
+              class="burger-icon-mid"></span><span class="burger-icon-bottom"></span></div>
+        </div>
+        <div class="header-right">
+          <ul class="main-menu d-flex">
+            {% if not request.user.is_authenticated %}
+            <li class="has-children">
+              <a class="text-link-bd-btom hover-up has-children" href="javascript:void()">Register</a>
+              <ul class="sub-menu">
+                <li><a href="/registration?type=Teacher">Register as teacher</a></li>
+                <li><a href="/registration?type=School">Register as institute/school</a></li>
+              </ul>
+            </li>
+            {% endif %}
+            {% if request.user.is_authenticated %}
+              {% if request.user.user_type == 'Teacher' %}
+                <li class="has-children p-0"><a class="btn btn-default btn-shadow  hover-up" href="/teacher-account">My Account</a></li>
+                <li class="has-children p-0"><a class="btn btn-default btn-danger btn-shadow ml-10  hover-up" href="/logout">Logout</a></li>
+              {% else %}
+                <li class="has-children p-0"><a class="btn btn-default btn-shadow ml-4  hover-up" href="/school-account">My Account</a></li>
+                <li class="has-children p-0"><a class="btn btn-default btn-danger btn-shadow ml-10  hover-up" href="/logout">Logout</a></li>
+              {% endif %}
+              &nbsp;&nbsp;
+              <li class="has-children p-0"><a class="btn btn-default btn-shadow  hover-up" href="/change-pin">Change Pin</a></li>
+            {% else %}
+          <li class="has-children p-0"><a class="btn btn-default btn-shadow ml-20  hover-up" href="/login">Sign in</a>
+             
+            </li>
+        
+            {% endif %}
+          </ul>
+
+        </div>
+        <div class="header-right-mobile hide-desktop">
+          <ul class="main-menu d-flex">
+            {% if request.user.is_authenticated %}
+            
+              {% if request.user.user_type == 'Teacher' %}
+                <li class="has-children p-0"><a class="btn btn-default btn-shadow  hover-up" href="/teacher-account"><i class="fa fa-home"></i></a></li>
+              {% else %}
+                <li class="has-children p-0"><a class="btn btn-default btn-shadow ml-4  hover-up" href="/school-account"><i class="fa fa-home"></i></a></li>
+              {% endif %}
+              <li class="has-children p-0"><a class="btn btn-default btn-danger btn-shadow ml-10  hover-up" href="/logout"><i class="fa fa-power-off"></i></a></li>
+          
+            {% endif %}
+          </ul>
+
+        </div>
+      </div>
+  </header>
+  <div class="mobile-header-active mobile-header-wrapper-style perfect-scrollbar">
+    <div class="mobile-header-wrapper-inner">
+      <div class="mobile-header-content-area">
+        <div class="perfect-scroll">
+
+            <div class="mobile-menu-wrap mobile-header-border">
+              <!-- mobile menu start-->
+              <nav>
+                <ul class="mobile-menu font-heading">
+
+                  {% if request.user.user_type == 'Teacher' %}
+                  <li class=""><a href="/teacher-account">Home</a> </li>
+    
+                  {% elif request.user.user_type == 'School' %}
+                  <li class=""><a href="/school-account">Home</a> </li>
+    
+                  {%else%}
+                  <li class=""><a href="/">Home</a> </li>
+                  {% endif %}
+                  {% if request.user.user_type == 'School' %}
+                  {% else %}
+                  <li class=""><a href="/job-alert">Job Alert</a> </li>
+                  {% endif %}
+
+                  {% if request.user.user_type == 'School' %}
+                  {% else %}
+                  <li class=""><a href="/current-vacancies">Search Jobs</a> </li>
+
+                  {% endif %}
+
+              <!-- Pricing  -->
+              {% if request.user.user_type == 'Teacher' %}   
+              <li class=""><a href="/teacher-pricing">Pricing</a> </li>
+              {% elif request.user.user_type == 'School' %}
+              <li class=""><a href="/institute-pricing">Pricing</a> </li>
+              {% else %}
+              <li class="has-children"><a href="javascript:void()">Pricing</a>
+                <ul class="sub-menu">
+                  <li><a href="/teacher-pricing">Teacher</a></li>
+                  <li><a href="/institute-pricing">Institute/School</a></li>
+                </ul>
+              </li>
+              {% endif %}
+
+                                  <!-- Faqs  -->
+                {% if request.user.user_type == 'Teacher' %}   
+                <li class=""><a href="/teacher-faqs">FAQs</a> </li>
+                {% elif request.user.user_type == 'School' %}
+                <li class=""><a href="/institute-faqs">FAQs</a> </li>
+                {% else %}
+                <li class="has-children"><a href="javascript:void()">FAQs</a>
+                  <ul class="sub-menu">
+                    <li><a href="/teacher-faqs">Teacher</a></li>
+                    <li><a href="/institute-faqs">Institute/School</a></li>
+                  </ul>
+                </li>
+                {% endif %}
+                  <li class=""><a href="/about">About Us</a> </li>
+                  <li><a href="/help-support">Contact Us</a></li>
+                  {% if not request.user.is_authenticated %}
+                  <li class="has-children">
+                    <a class="text-link-bd-btom hover-up has-children" href="javascript:void()">Register</a>
+                    <ul class="sub-menu">
+                      <li><a href="/registration?type=Teacher">Register as teacher</a></li>
+                      <li><a href="/registration?type=School">Register as institute/school</a></li>
+                    </ul>
+                  </li>
+                  {% endif %}
+                  {% if request.user.is_authenticated %}
+                  {% if request.user.user_type == 'Teacher' %}
+                    <li class="has-children "><a  href="/teacher-account">My Account</a></li>
+                  {% else %}
+                    <li class="has-children "><a class="" href="/school-account">My Account</a></li>
+                  {% endif %}
+                  <li class="has-children "><a  href="/logout">logout</a></li>
+                  <li class="has-children"><a href="/change-pin">Change Pin</a></li>
+                {% else %}
+                <li><a href="/login">Sign In</a></li>
+                {% endif %}
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="content-wrapper">
+      {% block body_block %} {% endblock %}
+    </div>
+    <footer class="footer">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12 text-center col-sm-12">
+            <!-- <a href="/"><img alt="" width="100px" src="/static/facultyme_img/logo.png"></a> -->
+
+            <div class="footer-social" style="margin-left: 38px">
+              <a class="fab fa-facebook" href="https://www.facebook.com/Facultyme?mibextid=ZbWKwL" target="_blank"></a>
+              <a class="fab fa-linkedin" href="https://www.linkedin.com/company/facultymeindia/" target="_blank"></a>
+              <a class="fab fa-youtube" href="https://youtube.com/channel/UCCVwk6njMwZw-Cvs2OphH2A" target="_blank"></a>
+              <a class="fab fa-instagram" href="https://instagram.com/facultyme?igshid=ZDdkNTZiNTM=" target="_blank"></a>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom mt-30">
+          <div class="row">
+            <div class="col-md-6"><span class="font-xs color-text-paragraph">Copyright &copy; 2023. Facultyme all right
+                reserved</span></div>
+            <div class="col-md-6 text-md-end text-start">
+              <div class="footer-social">
+                <a class="font-xs color-text-paragraph" href="/privacy-policy">Privacy Policy</a>
+                <a class="font-xs color-text-paragraph ml-20" href="/terms-condition">Terms &amp; Conditions</a>
+                <a class="font-xs color-text-paragraph ml-20" href="/refund-cancellation-policy">Refund/ Cancellation policy</a>
+              </div>
+              </div>
+            </div>
+          </div>
+    </footer>
+
+    {% if path == '/' or path == '/teacher-account' or path == '/school-account' %}
+    <!-- Social Media  -->
+    <div id="social-share">
+      <ul class="social-itens hidden" id="social-itens">
+        <li>
+          <a href="/current-vacancies" class="btn-share social-item-4">
+            <i class="fa fa-search"></i>
+          </a>
+        </li>
+
+        <!-- Whatsapp  -->
+        {% if request.user.user_type == 'Teacher' %}
+          <li>
+            <a  href="https://wa.me/919663384666/?text=Hello" target="_blank" class=" btn-share social-item-3">
+              <i class="fab fa-whatsapp"></i>
+            </a>
+          </li>
+        {% elif request.user.user_type == 'School' %}
+        <li>
+          <a  href="https://wa.me/918050002580/?text=Hello" target="_blank" class=" btn-share social-item-3">
+            <i class="fab fa-whatsapp"></i>
+          </a>
+        </li>
+        {% else %}
+        <li class="dropend">
+          
+          <span  data-bs-toggle="dropdown" class=" btn-share social-item-3">
+            <i class="fab fa-whatsapp"></i>
+          </span>
+          <ul class="dropdown-menu">
+            <li> <a onclick="window.open('https://wa.me/919663384666/?text=Hello', '_blank')" href="javascript:void()"> Are you teacher</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li> <a onclick="window.open('https://wa.me/918050002580/?text=Hello', '_blank')" href="javascript:void()"> School / Academy / Institute</a></li>
+
+          </ul>
+        </li>
+        {% endif %}
+
+        <!-- Call  -->
+        {% if request.user.user_type == 'Teacher' %}
+        <li>
+          <a href="tel:919663384666" class="btn-share social-item-2">
+            <i class="fa fa-phone"></i>
+          </a>
+        </li>
+        {% elif request.user.user_type == 'School' %}
+        <li>
+          <a href="tel:918050002580" class="btn-share social-item-2">
+            <i class="fa fa-phone"></i>
+          </a>
+        </li>
+        {% else %}
+        <li class="dropend">
+          
+          <span  data-bs-toggle="dropdown" class=" btn-share social-item-2">
+            <i class="fa fa-phone"></i>
+          </span>
+          <ul class="dropdown-menu">
+            <li> <a onclick="window.location.href='tel:919663384666'" href="javascript:void()"> Are you teacher ?</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li> <a onclick="window.location.href='tel:918050002580'" href="javascript:void()"> School / Academy / Institute ?</a></li>
+
+          </ul>
+        </li>
+        {% endif %}
+
+        <li>
+          <a href="https://www.facebook.com/Facultyme?mibextid=ZbWKwL" target="_blank" class="btn-share social-item-1">
+            <i class="fab fab fa-facebook-f"></i>
+          </a>
+        </li>
+      </ul>
+      <div class="social-open-menu" id="social-open-menu">
+        <button class="btn-share"><i class="fa fab fa-whatsapp"></i></button>
+      </div>
+    </div>  
+    {% endif %}
+    <script src="/static/js/vendor/modernizr-3.6.0.min.js"></script>
+    <script src="/static/js/vendor/jquery-3.6.0.min.js"></script>
+    <script src="/static/js/vendor/jquery-migrate-3.3.0.min.js"></script>
+    <script src="/static/js/vendor/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/plugins/waypoints.js"></script>
+    <script src="/static/js/plugins/wow.js"></script>
+    <script src="/static/js/plugins/magnific-popup.js"></script>
+    <script src="/static/js/plugins/perfect-scrollbar.min.js"></script>
+    <script src="/static/js/plugins/isotope.js"></script>
+    <script src="/static/js/plugins/scrollup.js"></script>
+    <script src="/static/js/plugins/swiper-bundle.min.js"></script>
+    <script src="/static/js/plugins/counterup.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <script src="/static/js/main8c94.js?v=4.1"></script>
+
+    <!-- toaster & message js -->
+    <script src="/static/js/toastr.min.js"></script>
+    <!-- basic js -->
+    <script src="/static/js/users.js"></script>
+    <script src="/static/js/basic.js"></script>
+    <!-- cog_static_app js -->
+    <script src="/static/js/cog_static_app.js"></script>
+    <!-- razorpay -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <script>
+      setTimeout(function() {
+        $('#message').fadeOut('slow');
+      },5000);
+      var teacher_exp_in = "{{teacher_info.experience_in}}"
+      const teacher_exp_in_array = teacher_exp_in.split(',');
+
+      var subject_of_experience = "{{teacher_info.subject_of_experience}}"
+      const subject_of_experience_array = subject_of_experience.split(',');
+
+      var want_to_teach_for = "{{teacher_info.want_to_teach_for}}"
+      const want_to_teach_for_array = want_to_teach_for.split(',');
+
+      var subject_i_teach = "{{teacher_info.subject_i_teach}}"
+      const subject_i_teach_array = subject_i_teach.split(',');
+
+      $( document ).ready(function() {
+
+        $('#teacher_profile_form').submit(function(e){
+          var pre_job_location = $('#pre_job_location').val();
+          var exp_type = $('#experience-type-2').val();
+          var msg = ''
+          if(exp_type == 'Fresher'){
+            var experience_in_fresher = $('#experience_in_fresher').val();
+            var subject_i_teach_data = $('#subject_i_teach_data').val();
+            
+            if(experience_in_fresher == ''){
+              event.preventDefault();
+              msg = msg + "I want to teach for required\n"
+            }
+            if(subject_i_teach_data == ''){
+              event.preventDefault();
+              msg = msg + "Subject i can teach required\n"
+            }
+          }else{
+            var experienced_in = $('#experienced_in').val();
+            var experience_subject_data = $('#experience_subject_data').val();
+            var years_of_experience = $('#years_of_experience').val();
+            var current_salary = $('#current_salary').val();
+            if(experienced_in == ''){
+              event.preventDefault();
+              msg = msg + "Experienced in required\n"
+            }
+            if(experience_subject_data == ''){
+              event.preventDefault();
+              msg = msg + "Subject of Experience required\n"
+            }
+            if(years_of_experience == ''){
+              event.preventDefault();
+              msg = msg + "Years of experience required\n"
+            }
+            if(current_salary == ''){
+              event.preventDefault();
+              msg = msg + "Current Salary required\n"
+            }
+            
+          }
+          if (pre_job_location != '[]' ) {
+          }else{
+            event.preventDefault();
+            msg = msg + "Preferred Job Location is required\n"
+          }
+          if(msg != ''){
+            alert(msg)
+          }
+        });
+
+        $("input[name=experience_in]").each(function () {
+          var v = $(this).val();
+          if (teacher_exp_in_array.includes(v)){
+            $(this).prop("checked","true")
+          }
+        });
+
+        $("input[name=experience_subject_data]").each(function () {
+          var v1 = $(this).val();          
+          if (subject_of_experience_array.includes(v1)){
+            $(this).prop("checked","true")
+          }
+        });
+
+        $("input[name=experience_in_fresher]").each(function () {
+          var v1 = $(this).val();        
+          if (want_to_teach_for_array.includes(v1)){
+            $(this).prop("checked","true")
+          }
+        });
+
+        $("input[name=subject_i_teach]").each(function () {
+          var v1 = $(this).val();
+          if (subject_i_teach_array.includes(v1)){
+            $(this).prop("checked","true")
+          }
+        });
+
+      });
+
+      $(document).on('click','.delete_pl',function(e){
+        if(confirm("Are you sure to delete?")){
+          $(this).parent().parent().parent().next().remove();
+          $(this).parent().parent().parent().remove();
+        }
+      });
+
+      $(document).on('click', '.edit_pl', function(e) {
+        var state = $(this).data('state');
+        $('#state_select').val(state);
+      });
+
+      $(document).on('click','.edit_location_done',function(e){
+        var state = $(this).data('state');
+        var districtList_comma = '';
+        var districtList = '';
+        var i=0;
+        $("input[name=preferred_location_district_edit_"+state+"]:checked").each(function () {
+            districtList +=  '<span class="btn btn-grey-small mr-5 mb-2">'+$(this).val()+'</span>';
+            if(i==0){
+              districtList_comma +=  $(this).val();
+            }else{
+              districtList_comma += "," + $(this).val();
+            }
+            i=i+1;
+        });
+        add_location_db(districtList_comma,state)
+
+      });
+      
+            
+      $(document).on('click','#add_location_done_job_alert',function(e){
+    
+        var districtList = "";
+        var districtList_comma = "";
+
+        var state = $('#state_select_job_alert').val();
+        var state_obj = {}
+        state_obj[state]=[]
+        var obj = state_obj;        
+
+        var i=0;
+        $('input[name=preferred_location_district_job_alert]:checked').each(function () {
+            districtList +=  '<span class="btn btn-grey-small mr-5 mb-2">'+$(this).val()+'</span>';
+            if(i==0){
+              districtList_comma +=  $(this).val();
+            }else{
+              districtList_comma += "," + $(this).val();
+            }
+            i=i+1;
+        });
+   
+        only_add_location_db(districtList_comma,state)
+
+      });
+
+      $(document).on('click','#add_location_done',function(e){
+    
+        var districtList = "";
+        var districtList_comma = "";
+
+        var state = $('#state_select').val();
+        var state_obj = {}
+        state_obj[state]=[]
+        var obj = state_obj;        
+
+        var i=0;
+        $('input[name=preferred_location_district]:checked').each(function () {
+            districtList +=  '<span class="btn btn-grey-small mr-5 mb-2">'+$(this).val()+'</span>';
+            if(i==0){
+              districtList_comma +=  $(this).val();
+            }else{
+              districtList_comma += "," + $(this).val();
+            }
+            i=i+1;
+        });
+   
+        add_location_db(districtList_comma,state)
+
+      });
+
+      $(document).on('change','input[name="subject_i_teach"]',function(e){
+     
+        var checked = $('input[name=subject_i_teach]:checked').length;
+        if(checked <= 3){
+          var s2List = "";
+          var i=0;
+          $('input[name=subject_i_teach]:checked').each(function () {
+              if(i == 0){
+                s2List +=  $(this).val();
+              }else{
+                s2List += "," + $(this).val();
+              }
+              i = i+1;
+          });
+          $('#subject_i_teach_data').val(s2List)
+        }else{
+          $(this).prop('checked', false);
+          alert("Only 3 Selections allowed")
+        }
+    });
+
+      $(document).on('change','input[name="experience_subject_data"]',function(e){
+     
+        var checked = $('input[name=experience_subject_data]:checked').length;
+        if(checked <= 3){
+          var s1List = "";
+          var i=0;
+          $('input[name=experience_subject_data]:checked').each(function () {
+              if(i == 0){
+                s1List +=  $(this).val();
+              }else{
+                s1List += "," + $(this).val();
+              }
+              i = i+1;
+          });
+          $('#experience_subject_data').val(s1List)
+        }else{
+          $(this).prop('checked', false);
+          alert("Only 3 Selections allowed")
+        }
+    });
+
+    $(document).on('click','#grade_subject',function(e){
+      var grade_subject = $('#grade_change').val()
+
+      if(grade_subject){
+
+      }
+      // else{
+      //   alert("Please select grade");
+      // }
+
+    }); 
+
+    $(document).on('click','.view_pl',function(e){
+      var pl = $(this).data('loc');
+      $('#pl_p').html(pl);
+    });
+    $(document).on('click','.view_cl',function(e){
+      var pl = $(this).data('phone');
+      $('#ct_p').html(pl);
+    });
+
+    
+    $(document).on('click','.call_me',function(e){
+      var id = $(this).data('id');
+      var actionUrl = '/call-for-interview?teacher='+id
+      if(id){
+      $.ajax({
+        type: "GET",
+        url: actionUrl,
+        success: function(data){
+          if(data){
+            $('#t-'+id).text('Done');
+            $('#t-'+id).removeClass('btn-default');
+            $('#t-'+id).addClass('btn-success');
+
+          }else{
+            alert("Please retry");    
+          }
+        }
+        
+    });
+  }
+
+    });
+
+    
+    
+    $(document).on('change','#grade_change',function(e){
+      var grade = $(this).val();
+      var actionUrl = '/get_teacher_subjects?grade='+grade
+      $.ajax({
+          type: "GET",
+          url: actionUrl,
+          success: function(data){
+            if(data){
+              $('#grade_subject').html('<option value="">Select</option>');
+              $(data).each(function (k,v) {
+                
+                var str = '<option>'+v+'</option>'
+
+                $('#grade_subject').append(str);
+
+              });
+    
+            }else{
+              alert("No subject available")    
+            }
+          }
+      });
+    });
+
+    $(document).on('click','#experience_in_done',function(e){
+      var sList = "";
+      var i=0;
+      $('input[name=experience_in]:checked').each(function () {
+        if(i == 0){
+          sList +=  $(this).val();
+        }else{
+          sList += "," + $(this).val();
+        }
+        i = i+1;
+      });
+
+      var actionUrl = '/get_teacher_subjects?grade='+sList
+      $.ajax({
+          type: "GET",
+          url: actionUrl,
+          success: function(data){
+            if(data){
+              $('#subject-experienced-modal-body').html('');
+              $(data).each(function (k,v) {
+                
+                var str = '<div class="form-check"><input class="form-check-input" type="checkbox" name="experience_subject_data" value="'+v+'" id="s'+k+'"><label class="form-check-label" for="s'+k+'">'+v+'</label></div>'
+
+                $('#subject-experienced-modal-body').append(str);
+
+              });
+    
+            }else{
+              alert("No subject available")    
+            }
+          }
+      });
+    });
+
+    $(document).on('click','#experience_in_fresher_done',function(e){
+      var sList = "";
+      var i=0;
+      $('input[name=experience_in_fresher]:checked').each(function () {
+        if(i == 0){
+          sList +=  $(this).val();
+        }else{
+          sList += "," + $(this).val();
+        }
+        i = i+1;
+      });
+
+      var actionUrl = '/get_teacher_subjects?grade='+sList
+      $.ajax({
+          type: "GET",
+          url: actionUrl,
+          success: function(data){
+            if(data){
+              $('#subject-teach-modal-body').html('');
+              $(data).each(function (k,v) {
+                
+                var str = '<div class="form-check"><input class="form-check-input" type="checkbox" name="subject_i_teach" value="'+v+'" id="s'+k+'"><label class="form-check-label" for="s'+k+'">'+v+'</label></div>'
+
+                $('#subject-teach-modal-body').append(str);
+
+              });
+    
+            }else{
+              alert("No subject available")    
+            }
+          }
+      });
+    });
+
+      $(document).on('change','input[name="experience_in"]',function(e){
+     
+        var checked = $('input[name=experience_in]:checked').length;
+        if(checked <= 2){
+          var sList = "";
+          var i=0;
+          $('input[name=experience_in]:checked').each(function () {
+              if(i == 0){
+                sList +=  $(this).val();
+              }else{
+                sList += "," + $(this).val();
+              }
+              i = i+1;
+          });
+          $('#experienced_in').val(sList)
+        }else{
+          $(this).prop('checked', false);
+          alert("Only 2 Selections allowed")
+        }
+    });
+
+    $(document).on('change','input[name="experience_in_fresher"]',function(e){
+     
+      var checked = $('input[name=experience_in_fresher]:checked').length;
+      if(checked <= 2){
+        var sList = "";
+        var i=0;
+        $('input[name=experience_in_fresher]:checked').each(function () {
+            if(i == 0){
+              sList +=  $(this).val();
+            }else{
+              sList += "," + $(this).val();
+            }
+            i = i+1;
+        });
+        $('#experience_in_fresher').val(sList)
+      }else{
+        $(this).prop('checked', false);
+        alert("Only 2 Selections allowed")
+      }
+  });
+
+  
+  $(document).on('change','input[name="benifits_compensation_data"]',function(e){
+     
+     var checked = $('input[name=benifits_compensation_data]:checked').length;
+
+       var sList = "";
+       var i=0;
+       $('input[name=benifits_compensation_data]:checked').each(function () {
+           if(i == 0){
+             sList +=  $(this).val();
+           }else{
+             sList += "," + $(this).val();
+           }
+           i = i+1;
+       });
+       $('#benifits_compensation_data').val(sList)
+
+ });
+
+  function isEmpty(obj) {
+    return Object.keys(obj).length === 0;
+  }
+
+  function only_add_location_db(location, state) {
+    
+    var actionUrl = '/add-only-location-db?location='+location+'&state='+state
+    $.ajax({
+        type: "GET",
+        url: actionUrl,
+        processData: false,
+        success: function(data){
+            var district = data['district_list']
+         
+            var districtList = "";
+            var districtList_comma = "";
+
+            $('#preferred_locations_body_job_alert').html('');
+            $(district).each(function (k,v) {
+                $.each(v, function(k1, v1) {
+                  var i=0;
+                  districtList = ''
+                  $(v1).each(function (k2,v2) { 
+                    districtList +=  '<span class="btn btn-grey-small mr-5 mb-2">'+v2+'</span>';
+
+                  if(i==0){
+                    districtList_comma +=  v2;
+                  }else{
+                    districtList_comma += "," + v2;
+                  }
+                  i=i+1;
+                });
+                var p_location = '<div class="mb-3"><h6 class="mb-3 d-flex align-items-center justify-content-between">'+k1+'<div class="fz-12"><a class="text-success edit_location_job_alert" data-state="'+k1+'" data-bs-toggle="modal" href="#add-location-modal-job-alert" > <span class="fa fa-edit  text-success"></span> Edit</a></span></h6>'+districtList+'</div><hr>';
+                $('#pre_job_location').val(districtList_comma);
+                $('#preferred_locations_body_job_alert').append(p_location);
+            });
+          });
+
+            if(data){
+                toastr.success('Information is updated');
+            }else{
+                toastr.error('Something went wrong, we will back shortly');
+            }
+        }
+    });
+
+  }
+
+  $(document).on('click','#add_location_modal_a, #add_location_modal_aa ',function(e){
+
+    $('#state_select').val('');
+    $('#district_list').html('');
+  });
+
+  
+
+  $(document).on('click','.call_me_reject',function(e){   
+    var id = $(this).data('id');
+    var th = $(this);
+    $.ajax({ 
+      type: "GET", // GET or POST
+      url: "/reject-application?apid="+id, // the file to call
+      success: function (data) { 
+          if(data){                
+                th.html('Done');
+          }
+      }
+    });
+  }); 
+
+  $(document).on('click','.call_me_approve',function(e){   
+    var id = $(this).data('id');
+    var th = $(this);
+    $.ajax({ 
+      type: "GET", // GET or POST
+      url: "/call-for-interview-school?apid="+id, // the file to call
+      success: function (data) { 
+          if(data){                
+               // th.html('Done');
+                th.removeClass("btn-default");
+                th.addClass("btn-success");
+          }
+      }
+    });
+  }); 
+
+
+  $(document).on('click','.employer',function(e){   
+    var id = $(this).data('id');
+    var th = $(this);
+    $.ajax({ 
+      type: "GET", // GET or POST
+      url: "/employer-details?user="+id, // the file to call
+      success: function (data) { 
+        $("#employer_body").html('');    
+          if(data){
+                str = ' <li><b>School / Institution Name :</b>  '+data.school_name+'</li>'+
+                '<li><b>Email :</b> 	'+data.email+'	</li>'+
+                '<li><b>Mobile No. : '+data.mobile_no+'</b></li>'+
+                '<li><b>Alternate Mobile No. : '+data.alt_mobile_no+'</b></li>'+
+                '<li><b>Website :</b> '+data.website+'</li>'
+                $('#employer_body').append(str);
+          }
+      }
+    });
+  }); 
+
+  
+  function add_location_db(location, state) {
+    $('#add_location_modal_a').html('<i class="fa fa-plus"></i> Add More Location');
+    var actionUrl = '/add-location-db?location='+location+'&state='+state
+    $.ajax({
+        type: "GET",
+        url: actionUrl,
+        processData: false,
+        success: function(data){
+            var district = data['district_list']
+            if (Object.keys(district).length === 0){
+              $('#add_location_modal_a').html('<i class="fa fa-plus"></i> Add Location');``
+            }
+
+            var districtList = "";
+            var districtList_comma = "";
+
+            $('#preferred_locations_body').html('');
+            $(district).each(function (k,v) {
+                $.each(v, function(k1, v1) {
+                  var i=0;
+                  districtList = ''
+                  $(v1).each(function (k2,v2) { 
+                    districtList +=  '<span class="btn btn-grey-small mr-5 mb-2">'+v2+'</span>';
+
+                  if(i==0){
+                    districtList_comma +=  v2;
+                  }else{
+                    districtList_comma += "," + v2;
+                  }
+                  i=i+1;
+                });
+                var p_location = '<div class="mb-3"><h6 class="mb-3 d-flex align-items-center justify-content-between">'+k1+'<div class="fz-12"><a class="text-success edit_location" data-state="'+k1+'" data-bs-toggle="modal" href="#add-location-modal" > <span class="fa fa-edit  text-success"></span> Edit</a></span></h6>'+districtList+'</div><hr>';
+                $('#pre_job_location').val(districtList_comma);
+                $('#preferred_locations_body').append(p_location);
+            });
+          });
+
+            if(data){
+                toastr.success('Information is updated');
+            }else{
+                toastr.error('Something went wrong, we will back shortly');
+            }
+        }
+    });
+
+  }
+
+$(document).on('click','#login_via_otp',function(e){
+  var mobile_no = $('#input-1').val();
+  if(mobile){
+    $('#enter-otp-modal').modal();
+    $.ajax({ 
+      type: "GET", // GET or POST
+      url: "/get-pin?mobile_no="+mobile, // the file to call
+      success: function (data)  { 
+          
+      
+        }
+      });
+  }else{
+
+  }
+
+});
+
+$(document).on('click','.edit_location',function(e){
+  var state = $(this).data('state');
+  $('#state_select').val(state);
+  $('#district_list').html('');
+  var actionUrl = '/edit-location-db?state='+state
+  $.ajax({
+      type: "GET",
+      url: actionUrl,
+      success: function(data){
+        if(data['district_list'] != ''){
+
+          $('#district_list').html(data['district_list']);
+
+        }else{
+          $('#district_list').html('No District Available');
+
+        }
+      }
+  });
+
+});
+
+$(document).on('click','.edit_location_job_alert',function(e){
+  var state = $(this).data('state');
+  $('#state_select_job_alert').val(state);
+  $('#district_list_job_alert').html('');
+  var actionUrl = '/edit-location-db-job-alert?state='+state
+  $.ajax({
+      type: "GET",
+      url: actionUrl,
+      success: function(data){
+        if(data['district_list'] != ''){
+
+          $('#district_list_job_alert').html(data['district_list']);
+
+        }else{
+          $('#district_list_job_alert').html('No District Available');
+
+        }
+      }
+  });
+
+});
+
+
+$(document).on('change','#state_select_job_alert',function(e){
+  $('#district_div_job_alert').show();
+  var state = $(this).val();
+  if(state){
+    $.ajax({ 
+    type: "GET", // GET or POST
+    url: "/only_district_data?state="+state, // the file to call
+    success: function (data)  { 
+        if(data['district_list'] != ''){
+
+          $('#district_list_job_alert').html(data['district_list']);
+
+        }else{
+          $('#district_list_job_alert').html('No District Available');
+
+        }
+    
+      }
+    });
+  }else{
+    alert("Please enter pincode")
+  }
+  return false;
+});
+
+$(document).on('change','#grade',function(e){
+  var state = $(this).val();
+  if(state){
+    $.ajax({ 
+    type: "GET", // GET or POST
+    url: "/load_subject?grade="+state, // the file to call
+    success: function (data)  { 
+        if(data != ''){
+          $('#subject').html('<option value="">Select</option>');
+          $(data).each(function (k,v) {
+            var opt = '<option>'+v+'</option>'
+            $('#subject').append(opt);
+          });
+        }else{
+          $('#subject').html('<option value="">Select</option>');
+
+        }
+    
+      }
+    });
+  }else{
+    alert("Please enter pincode")
+  }
+  return false;
+});
+
+$(document).on('change','#state_to',function(e){
+  var state = $(this).val();
+  if(state){
+    $.ajax({ 
+    type: "GET", // GET or POST
+    url: "/get-district?state="+state, // the file to call
+    success: function (data)  { 
+        if(data != ''){
+          $('#state_to_district').html('<option  disabled selected hidden>District</option>');
+          $(data).each(function (k,v) {
+            var opt = '<option>'+v+'</option>'
+            $('#state_to_district').append(opt);
+          });
+        }else{
+          $('#district_list').html('<option  disabled selected hidden>District</option>');
+
+        }
+    
+      }
+    });
+  }else{
+    alert("Please select state")
+  }
+  return false;
+});
+
+$(document).on('change','#state_select',function(e){
+  $('#district_div').show();
+  var state = $(this).val();
+  if(state){
+    $.ajax({ 
+    type: "GET", // GET or POST
+    url: "/get-district-list?state="+state, // the file to call
+    success: function (data)  { 
+        if(data['district_list'] != ''){
+
+          $('#district_list').html(data['district_list']);
+
+        }else{
+          $('#district_list').html('No District Available');
+
+        }
+    
+      }
+    });
+  }else{
+    alert("Please enter pincode")
+  }
+  return false;
+});
+
+      // Generic pincode handler: supports multiple pincode inputs via class and data-targets
+      $(document).on('change', '.pincode_sample', function (e) {
+        var $el = $(this);
+        var pincode = $el.val();
+        // Targets can be provided via data attributes; fall back to default ids
+        var cityTarget = $el.data('city-target') || '#city_sample';
+        var stateTarget = $el.data('state-target') || '#state_sample';
+
+        if (pincode) {
+          $.ajax({
+            type: "GET",
+            url: "/get-pincode-details/" + pincode,
+            success: function (data) {
+              if (data['is_exists'] === true) {
+                $(cityTarget).val(data['city']);
+                $(stateTarget).val(data['state']);
+                $(cityTarget).attr('readonly', true);
+                $(stateTarget).attr('readonly', true);
+              } else {
+                $(cityTarget).val('');
+                $(stateTarget).val('');
+                $(cityTarget).removeAttr('readonly');
+                $(stateTarget).removeAttr('readonly');
+                alert("Pincode does not exist")
+              }
+            },
+            error: function () {
+              alert('Unable to fetch pincode details. Please try again later.');
+            }
+          });
+        } else {
+          alert("Please enter pincode")
+        }
+        return false;
+      });
+
+      $(document).ready(function () {
+        $(".social-open-menu").click(function () {
+          $(".social-itens").toggleClass("open");
+          $(".social-itens").toggleClass("hidden");
+        });
+        /*==============================
+   Password  Show hide js
+ =====================================*/
+ $(".cog-toggle-password").click(function() {
+    $(this).toggleClass("fa-eye fa-eye-slash");
+    input = $(this).parent().find("input");
+    if (input.attr("type") == "password") {
+        input.attr("type", "text");
+    } else {
+        input.attr("type", "password");
+    }
+});
+ 
+
+$("#mobile-filter-btn").click(function () {
+          $("#mobile-filter").toggleClass("mobile-filter-open");
+        });
+      $("#mobile-filter-close").click(function () {
+          $("#mobile-filter").toggleClass("mobile-filter-open");
+        });
+      });
+//
+    </script>
+  <script>
+  function backButton() {
+    window.history.back();
+  }
+      
+  var modal = document.getElementById("enter-otp-modal");
+
+  // When the page is loaded, open the modal
+  window.onload = function() {
+    modal.style.display = "block";
+  }
+
+$(function(){
+      if (window.location.pathname == "/" ||window.location.pathname == "/privacy-policy"||window.location.pathname == "/about" ||window.location.pathname == "/help-support" ||window.location.pathname == "/privacy-policy"||window.location.pathname == "/terms-condition" || window.location.pathname == "/refund-cancellation-policy" || window.location.pathname == "/teacher-faqs" || window.location.pathname == "/institute-faqs" || window.location.pathname == "/teacher-pricing" || window.location.pathname == "/institute-pricing" )  {
+            $('footer').show();
+      } else {
+            $('footer').hide();
+      }
+ });
+ $(function(){
+  $('#datepicker').datepicker({ format: 'dd-mm-yyyy', autoclose:true});
+ 
+});
+
+    </script>
+</body>
+
+</html>

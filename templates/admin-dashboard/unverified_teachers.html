@@ -1,0 +1,323 @@
+{%extends "admin-dashboard/admin_base.html"%}
+{% load static %}
+{%block title_block%}{{page_title}}{%endblock%}
+{%block body_block%}
+
+<style>
+     
+    #unverified-teachers_paginate,
+    #unverified-teachers_next,
+    #unverified-teachers_previous,
+    #unverified-teachers_info {
+        display: none !important;
+    }
+
+    
+</style>
+
+<div class="box-content">
+    <div class="box-heading">
+        <div class="box-title">
+            <h3 class="mb-35">New Teachers</h3>
+        </div>
+        <div class="box-breadcrumb">
+            <div class="breadcrumbs">
+                <ul>
+                    <li> <a class="icon-home" href="/admin-dashboard">Home</a></li>
+                    <li><span>New Teachers</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xxl-12 col-xl-12 col-lg-12">
+            <div class="section-box">
+                <div class="container">
+                    <div class="panel-white mb-30">
+                        <div class="box-padding">
+                            <div class="mb-30 float-right w-100 d-flex justify-content-end">
+                                <button class="btn btn-success mr-10 btn-sm py-2" data-type="teacher"  id="approve_all">Approve</button>
+                                <button class="btn btn-default mr-10 btn-sm py-2" data-type="teacher"  id="send_pin">Send 4 digit pin</button>
+                                <button class="btn btn-danger mr-10 btn-sm py-2" data-type="teacher"  id="disable_all">Disable</button>
+                                <button class="btn btn-warning mr-10 btn-sm py-2" href="#teacher-filter" data-bs-toggle="modal" >Filter</button>
+                                <div class="form-check form-switch" style="padding-left: 4.5em;">
+                                    <input class="form-check-input" type="checkbox" role="switch" id="toggleWelcome" {% if welcome_enabled %}checked{% endif %} style="font-size:25px">
+                                    <label class="form-check-label" for="toggleWelcome" style="font-size:20px; font-style:bold">Auto Welcome Message Send</label>
+                                </div>
+                            </div>
+                            <div class="table-responsive">
+                                <table id="unverified-teachers" class="row-border hover " style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox" id="multiple_teacher_selection_all" class="form-check-input "></th>
+                                            <th>PIN</th>
+                                            <th>Welcome</th>
+                                            <th>Created At</th>
+                                            <th>Name</th>
+                                            <th>Mobile No</th>
+                                            <th>Alternate Mobile No</th>
+                                            <th>Plan</th>
+                                            <th>Mobile Verified</th>
+                                            <th>Sex</th>
+                                            <th>Edu</th>
+                                            <th>SOS</th>
+                                            <th>Exp Type</th>
+                                            <th>Grade</th>
+                                            <th>Subject Teach</th>
+                                            <th>Year of Exp</th>
+                                            <th>C. Salary</th>
+                                            <th>E. Salary</th>
+                                            <th>P. Address</th>
+                                            <th>P. Location</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        {% for teacher in teachers %}
+                                        <tr>
+                                            <td>
+                                                <input type="checkbox" data-id="{{teacher.id}}" value="{{teacher.id}}" name="multiple_teacher_selection" class="form-check-input multiple_teacher_selection">
+                                            </td>
+                                            <td>
+                                                <a class="send_whatsapp btn btn-warning py-2" data-type="pin" data-for="teacher" data-mobile="{{teacher.user.mobile_no}}" >Sent</a>
+                                            </td>
+                                            <td>
+                                                <a class="send_whatsapp_welcome_teacher btn btn-warning py-2"  data-mobile="{{teacher.user.mobile_no}}" data-name="{{teacher.user.name}}" >Sent</a>
+                                            </td>
+                                            <td>{{teacher.timestamp | date:"d M Y"}}</td>
+                                            <td>{{teacher.user.name}}</td>
+                                            <td>{{teacher.user.mobile_no}}</td>
+                                            <td>{{teacher.user.alt_mobile_no}}</td>
+                                            <td>{{teacher.plan}}</td>
+                                            <td>
+                                                {% if teacher.user.is_mobile_no_verified %}
+                                                   <p>Verified</p>
+                                                {% else %}
+                                                    <p class="text-danger">Unverified</p>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{teacher.gender}}</td>
+                                            <td>{{teacher.qualification}}</td>
+                                            <td>{{teacher.subject_of_specialization}}</td>
+                                            <td>{{teacher.experience_type}}</td>
+                                            <td>{{teacher.want_to_teach_for}}</td>
+                                            <td>{{teacher.subject_i_teach}}</td>
+                                            <td>{{teacher.years_of_experience}}</td>
+                                            <td>{{teacher.current_salary}}</td>
+                                            <td>{{teacher.expected_salary}}</td>
+                                            <td>{{teacher.address_district}}, {{teacher.address_state}}</td>
+                                            <td>{{teacher.preferred_location_district}}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Pagination Controls -->
+                            {% if not filters_applied %}
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <div>
+                                    Showing {{ teachers.start_index }} - {{ teachers.end_index }} of {{ teachers.paginator.count }} entries
+                                </div>
+                                
+                                <nav>
+                                    <ul class="pagination">
+                                        {% if teachers.has_previous %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page=1">First</a>
+                                            </li>
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ teachers.previous_page_number }}">Previous</a>
+                                            </li>
+                                        {% endif %}
+
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ teachers.number }}</span>
+                                        </li>
+
+                                        {% if teachers.has_next %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ teachers.next_page_number }}">Next</a>
+                                            </li>
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ teachers.paginator.num_pages }}">Last</a>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                            </div>
+                            {% endif %}
+                            <!-- End Pagination Controls -->
+                            
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!--Teacher Filter -->
+<div class="modal fade" id="teacher-filter" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+    <form action="/unverified-teachers" id="filter_form" method="post">
+        {% csrf_token %}
+        <div class="modal-content apply-job-form">
+            <div class="modal-header">
+                <h5 class="modal-title">Teachers List Filters</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="row-border hover " style="width:100%">
+                        <thead>
+                            <tr>
+                                <td><input class="form-control {% if name_email_mobile %} text-danger {% endif %}"  name="name_email_mobile" value="{{name_email_mobile}}" placeholder="Name/email/mobile no" ></td>
+                                <td>
+                                    <select class="form-control {% if experience_in %} text-danger {% endif %}"  name="experience_in" >
+                                        <option value="">Category</option>
+                                        {% for info in experience_in_data %}
+                                        <option {% if experience_in == info.name %} selected {% endif %} >{{info.name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td class="text-center">
+                                    <select class="form-control {% if payment %} text-danger {% endif %}"  name="payment" >
+                                        <option value="">Payment</option>
+                                        <option {% if payment == 'Paid' %} selected {% endif %}>Paid</option>
+                                        <option {% if payment == 'Unpaid' %} selected {% endif %}>Unpaid</option>
+                                    </select>
+                                </td>
+                                <td class="text-right">
+                                    <select class="form-control  {% if profile %} text-danger {% endif %}"  name="profile" >
+                                        <option  value="">Profile</option>
+                                        <option {% if profile == 'Complete' %} selected {% endif %}>Complete</option>
+                                        <option {% if profile == 'Incomplete' %} selected {% endif %}>Incomplete</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    {% comment %} <input type="date" class="form-control" name="recent_activities" value="" placeholder="Recent Activity" > {% endcomment %}
+                                </td>
+                                <td>
+                                    <select class="form-control  {% if subject_of_experience %} text-danger {% endif %}" name="subject_of_experience" >
+                                        <option value="">Subject of experience</option>
+                                        {% for info in subject_teach_fresher_data %}
+                                        <option {% if subject_of_experience == info %} selected {% endif %} >{{info}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td class="text-center">
+                                    <select class="form-control  {% if applied %} text-danger {% endif %}" name="applied" >
+                                        <option value="">Applied Details</option>
+                                        <option {% if applied == 'Applied' %} selected {% endif %}>Applied</option>
+                                        <option {% if applied == 'Not Applied' %} selected {% endif %}>Not Applied</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="form-control  {% if status %} text-danger {% endif %}" name="status" >
+                                        <option  value="">Status</option>
+                                        <option {% if status == 'Enable' %} selected {% endif %} >Enable</option>
+                                        <option {% if status == 'Disable' %} selected {% endif %} >Disable</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <select class="form-control  {% if qualification %} text-danger {% endif %}"  name="education" >
+                                        <option value="">Education Qualification</option>
+                                        {% for info in qualification_data %}
+                                        <option {% if qualification == info.info %} selected {% endif %} value="{{info.info}}">{{info.info}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="form-control {% if years_of_experience %} text-danger {% endif %}"  name="years_of_experience" >
+                                        <option value="">Year of experience</option>
+                                        {% for info in experience_year_data %}
+                                        <option {% if years_of_experience == info.info %} selected {% endif %}  value="{{info.info}}">{{info.info}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td class="text-center">
+                                    <select class="form-control {% if experience_type %} text-danger {% endif %}" name="experience_type" >
+                                        <option value="">Experience type</option>
+                                        <option {% if experience_type == 'Fresher' %} selected {% endif %}>Fresher</option>
+                                        <option {% if experience_type == 'Experienced' %} selected {% endif %}>Experienced</option>
+                                    </select>
+                                </td>
+                                <td class="text-right">
+                                   
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <select class="form-control {% if subject_specialization %} text-danger {% endif %}" name="subject_specialization" >
+                                        <option value="">Subject of specialization</option>
+                                        {% for info in specialization_data %}
+                                        <option {% if subject_of_specialization == info.info %} selected {% endif %} value="{{info.info}}">{{info.info}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="form-control {% if current_salary %} text-danger {% endif %}"  id="current_salary" name="current_salary" >
+                                        <option value="">Current Salary</option>
+                                        {% for info in current_salary_data %}
+                                        <option {% if current_salary == info.info %} selected {% endif %} value="{{info.info}}">{{info.info}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                   
+                                </td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <select class="form-control {% if expected_salary %} text-danger {% endif %}"  name="expected_salary" >
+                                        <option value="">Expected salary</option>
+                                        {% for info in expected_salary_data %}
+                                        <option {% if expected_salary == info.info %} selected {% endif %}  value="{{info.info}}">{{info.info}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="form-control {% if state %} text-danger {% endif %}" name="state" >
+                                        <option value="">State</option>
+                                        {% for info in state_data %}
+                                        <option {% if state == info.name %} selected {% endif %} >{{info.name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="form-control {% if district %} text-danger {% endif %}" name="district" >
+                                        <option value="">District</option>
+                                        {% for info in district_data %}
+                                        <option {% if district == info.name %} selected {% endif %} >{{info.name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td><input class="form-control" placeholder="Pincode" name="pincode" value="{{pincode}}"></td>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a onclick="resetform()" >Reset</a>
+                <button class="btn btn-default" type="submit">Filter</button>
+            </div>
+        </div>
+    </form>
+    </div>
+</div>
+
+<script>
+function resetform() {
+    document.getElementById("filter_form").reset();
+    document.getElementById("filter_form").submit();
+}
+</script>
+
+{% endblock %}

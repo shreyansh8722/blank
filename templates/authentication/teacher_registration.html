@@ -1,0 +1,752 @@
+{%extends "base.html"%}
+{%block body_block%}
+
+<style>
+    .form-control {
+        font-size: 18px;
+        margin-top: 0px; 
+        text-align: left; 
+        padding: 0px 12px; 
+        line-height: 2.5; 
+        vertical-align: middle;
+    }
+</style>
+<main class="main">
+    <section class="pt-20 pb-20 login-register">
+        <div class="container">
+            <div class="login-register-cover">
+                <div class="col-lg-7 col-md-6 col-sm-12 mx-auto">
+                    <div class="form-login-cover">
+                    <div class="text-center">
+                        <a onclick="window.history.back();" class="btn btn-link mb-3 p-0"><i class="fa fa-arrow-left"></i> Back</a>
+                        {% if user_type == 'SCHOOLEXCLUSIVE' %}
+                        <h2 class=" mb-20 text-brand-1"> Hello School , Post your jobs !</h2>
+                        {% else %}
+                        <h2 class=" mb-20 text-brand-1"> Register as {{user_type}}</h2>
+                        {% endif %}
+                    </div>
+                    <form class="login-register text-start mt-20 row" id="teacher-register-form" action="" method="post">
+                        {% csrf_token %}
+                        <!-- Job Location Section (Initially Hidden) -->
+                        {% if user_type != 'Teacher' and not request.GET.mobile_no %}
+                  
+
+                        <!-- Dynamic Job Forms Container -->
+                        <div id="job-forms-container" class="col-12"></div>
+                        {% if user_type == 'SCHOOLEXCLUSIVE' %}
+                        <div class="form-group row">
+                  
+                            <div class="col-md-12">
+                                <button type="button" id="add-free-job-btn" class="btn btn-success hover-up w-100 mt-20">Add more jobs</button>
+                            </div>
+                            <input type="hidden" name="click" id="click-flag" value="0">
+
+                           
+                        </div>
+                        {% endif %}
+                        <div id="job-location-section" style="display: none;" class="col-12">
+                            <h6>Job Location:</h6><br>
+                            <div class="row">
+                                <div class="form-group col-md-6">
+                                    <label for="">Pincode</label>
+                                    <input type="text" pattern="[0-9]*" id="pincode_sample" maxlength="6" minlength="6" name="pincode" value="{% if current_job_data.pincode %}{{current_job_data.pincode}}{% elif school_info.pincode %}{{school_info.pincode}}{% endif %}" class="form-control">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="form-label" for="input-1">State</label>
+                                    <input class="form-control" readonly name="state" value="{% if current_job_data.state %}{{current_job_data.state}}{% elif school_info.state %}{{school_info.state}}{% endif %}" id="state_sample" />
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="form-label" for="input-1">District</label>
+                                    <input class="form-control" readonly id="city_sample" value="{% if current_job_data.district %}{{current_job_data.district}}{% elif school_info.district %}{{school_info.district}}{% endif %}" name="district" >
+                                    
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="form-label" for="">Address</label>
+                                    <textarea name="address" class="form-control" id="address_sample" cols="15"
+                                        rows="10">{% if current_job_data.address %}{{current_job_data.address}}{% elif school_info.address %}{{school_info.address}}{% endif %}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        <div class="form-group col-md-6">
+                            {% if user_type == 'Teacher' %}
+                            <label class="form-label" for="input-1">Full Name</label>
+                            {% else %}
+                            <label class="form-label" for="input-1">School Name</label>
+                            {% endif %}
+                            <input class="form-control" type="text" name="name" {% if customer_info.name %}value="{{customer_info.name}}"{% endif %} required>
+                            <input hidden name="user_type" autocomplete="nope" value="{{user_type}}" required>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="form-label" for="input-1">Whatsapp Number</label>
+                            <input class="form-control" autocomplete="nope" name="mobile_no" {% if customer_info.mobile_no %}value="{{customer_info.mobile_no}}"{% endif %} id="check-mobile" minlength="10" maxlength="10" pattern="[0-9]*" type="tel" required 
+                                >
+                        </div>
+                        <div class="form-group col-md-6" hidden>
+                            <label class="form-label" for="input-1">Job Code</label>
+                            <input class="form-control" autocomplete="nope" name="jobcode" value="{{jobcode}}" 
+                                >
+                        </div>
+                        <div class="form-group col-md-6" hidden>
+                            <label class="form-label" for="input-1">Job</label>
+                            <input class="form-control" autocomplete="nope" name="job" value="{{job}}" 
+                                >
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="form-label" for="input-1">Alternate Mobile Number (Optional)</label>
+                            <input class="form-control" autocomplete="nope" type="tel" name="alt_mobile_no" {% if customer_info.alt_mobile_no %}value="{{customer_info.alt_mobile_no}}"{% endif %} minlength="10" maxlength="10" pattern="[0-9]*"  
+                                >
+                        </div>
+                        <!-- <div class="form-group col-md-6">
+                            <label class="form-label" for="input-1">Email Address</label>
+                            <input class="form-control" type="email" name="email" {% if customer_info.email %}value="{{customer_info.email}}"{% endif %} id="check-email"  required >
+                        </div> -->
+                        {% if not otp_history or not request.GET.mobile_no %}
+
+                        <div class="form-group col-md-6">
+                            <label class="form-label" for="input-4">Create 4 Digit PIN</label>
+                            <input class="form-control password-check" autocomplete="nope" id="input-4" type="password" {% if not request.GET.mobile_no %} minlength="4" maxlength="4" pattern="[0-9]*"{% endif %} required name="password1" {% if customer_info.password %}value="{{customer_info.password}}"{% endif %}>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="form-label" for="input-4">Confirm PIN</label>
+                            <input class="form-control confirm-password" autocomplete="nope" id="input-4" type="text" {% if not request.GET.mobile_no %} minlength="4" maxlength="4" pattern="[0-9]*"{% endif %} required name="password2" {% if customer_info.password %}value="{{customer_info.password}}"{% endif %}>
+                        </div>
+                        {% endif %}
+                        {% if otp_history or request.GET.mobile_no %}
+                        <div class="modal" id="enter-otp-modal" tabindex="-1" aria-hidden="true" style="margin-top: 150px;">
+                            <div class="modal-dialog modal-lg">
+                            <div class="modal-content apply-job-form">
+                                <!-- <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button> -->
+                                <div class="modal-body pl-30 pr-30 " style="background:#4154af5c">
+                                <div class="text-center">
+                                    <h2 class="mt-1 mb-1 text-brand-1 text-capitalize">Enter OTP</h2>
+                                </div>
+                                    <div class="form-group col-md-12">
+                                        {% include 'partials/_alerts.html' %}
+                                    </div>
+                                    <div class="form-group col-md-12">
+                                        <!-- <label class="form-label" for="input-4" style="color: red;">Enter OTP *</label> -->
+                                        <!-- Allow OTP autofill on supporting browsers/devices -->
+                                        <input class="form-control " id="input-4" type="tel" minlength="4" maxlength="4" pattern="[0-9]*" required name="otp" autocomplete="one-time-code" inputmode="numeric">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <button class="btn btn-brand-1 hover-up w-100 mt-10" type="submit" >{% if request.GET.mobile_no %}Verify{% else %}Get OTP{% endif %}</button>
+                                    </div>
+                                    {% if otp_history.otp_session != 2  %}
+                                    <div class="text-center">
+                                        <a href="/resend-otp?otp_mobile_no={{request.GET.mobile_no}}" id="resend-otp-button" class="text-danger" >Resend OTP</a>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Web OTP API for automatic SMS OTP reading -->
+                        {% if request.GET.mobile_no %}
+                        <script>
+                        (function() {
+                            // Check if Web OTP API is supported
+                            if ('OTPCredential' in window) {
+                                const otpInput = document.querySelector('input[name="otp"]');
+                                
+                                if (otpInput) {
+                                    // Request OTP from SMS
+                                    const abortController = new AbortController();
+                                    
+                                    navigator.credentials.get({
+                                        otp: { transport: ['sms'] },
+                                        signal: abortController.signal
+                                    }).then(otp => {
+                                        // Auto-fill the OTP input
+                                        if (otp && otp.code) {
+                                            otpInput.value = otp.code;
+                                            console.log('OTP auto-filled from SMS:', otp.code);
+                                            
+                                            // Optional: Auto-submit the form after filling
+                                            // Uncomment the next line if you want auto-submit
+                                            // otpInput.form.submit();
+                                        }
+                                    }).catch(err => {
+                                        // User cancelled or error occurred
+                                        console.log('OTP autofill error or cancelled:', err);
+                                    });
+                                    
+                                    // Cancel the OTP request if user manually enters OTP
+                                    otpInput.addEventListener('input', () => {
+                                        if (otpInput.value.length >= 4) {
+                                            abortController.abort();
+                                        }
+                                    }, { once: true });
+                                }
+                            } else {
+                                console.log('Web OTP API not supported on this browser');
+                            }
+                        })();
+                        </script>
+                        {% endif %}
+                 
+
+                        <div class="login_footer form-group d-flex justify-content-between">
+                            <label class="">
+                              <span class="text-small">On clicking register button I am agree to your 
+                                <a href="/terms-condition"><u> Terms & Condition </u></a> and 
+                                <a href="/privacy-policy"><u> Privacy Policies</u></a></span>                             
+                          </div>
+                        
+                        <!-- Button Section -->
+                        {% if not request.GET.mobile_no %}
+                        <div class="form-group row">
+                            {% if user_type == 'SCHOOLEXCLUSIVE' %}
+                            <!-- <div class="col-md-6">
+                                <button type="button" id="add-free-job-btn" class="btn btn-success hover-up w-100 mt-20">Add Free Job</button>
+                            </div>
+                            <input type="hidden" name="click" id="click-flag" value="0"> -->
+
+                            <div class="col-md-12">
+                                <button class="btn btn-brand-1 hover-up w-100 mt-20" type="submit" id="register2-btn">Register</button>
+                            </div>
+                            {% else %}
+                            <div class="col-12">
+                                <button class="btn btn-brand-1 hover-up w-100 mt-20" type="submit" id="register-btn">Register</button>
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="text-muted text-center">Already have an Account? <a href="/login" class="text-danger"><b>Login</b> </a></div>
+                    </form>
+                    <!-- <div class="text-center">
+                        <div class="divider-text-center mt-20"><span>Or continue with</span></div>
+                        <button class="btn social-login hover-up mt-20">
+                            <img src="/static/facultyme_img/facebook.png" width="25px" alt="">
+                            <strong>Sign Up with Facebook</strong></button>
+                    </div> -->
+                </div>
+            </div>
+            </div>
+        </div>
+
+    </section>
+</main>
+
+<!-- Benefits & Compensation Modal -->
+{% if user_type != 'Teacher' and not request.GET.mobile_no %}
+<div class="modal fade" id="benifits_compensation" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog " role="document">
+        <div class="modal-content apply-job-form">
+            <div class="modal-header">
+                <h5 class="modal-title" id="subject-teach">Benefits & Compensation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="benifits-compensation-modal-body">
+                {% for info in benifits_data %}
+                    <div class="form-check">
+                        <input type="checkbox" value="{{info.info}}" class="form-check-input benefits-checkbox" id="benefit-{{info.id}}" name="benifits_compensation_data">
+                        <label class="form-check-label" for="benefit-{{info.id}}">
+                            {{info.info}}
+                        </label>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="modal-footer">
+                <button id="benifits_compensation_data_done" data-bs-dismiss="modal" aria-label="Close" class="btn btn-default m-0">Done</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<script>
+let jobFormCount = 0;
+let jobLocation = {};
+let draftJobsCount = 0;
+let draftJobsDict = {}; // Dictionary to store draft jobs
+
+// Form submission handler with debugging
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('teacher-register-form');
+    
+    form.addEventListener('submit', function(e) {
+        console.log('Form submitted');
+        console.log('User type:', '{{user_type}}');
+        console.log('Mobile no in GET:', '{{request.GET.mobile_no}}');
+        
+        // For school registration without OTP, allow form submission even if no jobs added
+        if ('{{user_type}}' !== 'Teacher' && !'{{request.GET.mobile_no}}') {
+            // Check only basic required fields for schools
+            const basicRequiredFields = ['name', 'mobile_no', 'password1', 'password2'];
+            let allBasicFilled = true;
+            let emptyBasicFields = [];
+            
+            basicRequiredFields.forEach(fieldName => {
+                const field = document.querySelector(`[name="${fieldName}"]`);
+                if (field && !field.value.trim()) {
+                    console.log('Empty basic required field:', fieldName);
+                    allBasicFilled = false;
+                    emptyBasicFields.push(fieldName);
+                }
+            });
+            
+            // Check password match
+            const password1 = document.querySelector('[name="password1"]').value;
+            const password2 = document.querySelector('[name="password2"]').value;
+            
+            if (password1 !== password2) {
+                e.preventDefault();
+                alert('Passwords do not match!');
+                return false;
+            }
+            
+            if (!allBasicFilled) {
+                e.preventDefault();
+                alert('Please fill all required fields: ' + emptyBasicFields.join(', '));
+                return false;
+            }
+            
+            // For schools, save draft jobs before submission (if any exist)
+            saveDraftJobs();
+            
+            // Allow form submission for schools even without jobs
+            return true;
+        } else {
+            // For teachers or OTP verification, check all required fields
+            const requiredFields = this.querySelectorAll('[required]');
+            let allFilled = true;
+            let emptyFields = [];
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    console.log('Empty required field:', field.name);
+                    allFilled = false;
+                    emptyFields.push(field.name);
+                }
+            });
+            
+            if (!allFilled) {
+                e.preventDefault();
+                alert('Please fill all required fields: ' + emptyFields.join(', '));
+                return false;
+            }
+        }
+    });
+});
+
+{% if user_type != 'Teacher' and not request.GET.mobile_no %}
+document.addEventListener('DOMContentLoaded', function() {
+    // Add Free Job button click handler
+    const addJobBtn = document.getElementById('add-free-job-btn');
+    if (addJobBtn) {
+        addJobBtn.addEventListener('click', function() {
+            const jobLocationSection = document.getElementById('job-location-section');
+            
+            // Show job location section if not already shown
+            if (jobLocationSection.style.display === 'none') {
+                jobLocationSection.style.display = 'block';
+                // Make location fields required when shown
+                makeLocationFieldsRequired(true);
+            }
+            
+            // Add new job form
+            addJobForm();
+        });
+    }
+    addJobBtn.click()
+    // Pincode change handler for job location
+    const pincodeInput = document.getElementById('pincode_sample');
+    if (pincodeInput) {
+        pincodeInput.addEventListener('input', function() {
+            const pincode = this.value;
+            if (pincode.length === 6) {
+                fetchLocationDetails(pincode, 'state_sample', 'city_sample');
+                updateJobLocation();
+            }
+        });
+    }
+
+    // Job location field change handlers
+    const stateInput = document.getElementById('state_sample');
+    const cityInput = document.getElementById('city_sample');
+    const addressInput = document.getElementById('address_sample');
+    
+    if (stateInput) stateInput.addEventListener('change', updateJobLocation);
+    if (cityInput) cityInput.addEventListener('change', updateJobLocation);
+    if (addressInput) addressInput.addEventListener('input', updateJobLocation);
+
+    // Benefits modal done button handler
+    const benefitsDoneBtn = document.getElementById('benifits_compensation_data_done');
+    if (benefitsDoneBtn) {
+        benefitsDoneBtn.addEventListener('click', function() {
+            const activeJobForm = document.querySelector('.job-form.active');
+            if (activeJobForm) {
+                const selectedBenefits = [];
+                const checkboxes = document.querySelectorAll('.benefits-checkbox:checked');
+                checkboxes.forEach(checkbox => {
+                    selectedBenefits.push(checkbox.value);
+                });
+                
+                const benefitsInput = activeJobForm.querySelector('.benefits-input');
+                if (benefitsInput) {
+                    benefitsInput.value = selectedBenefits.join(', ');
+                }
+                
+                // Clear checkboxes for next use
+                document.querySelectorAll('.benefits-checkbox').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                
+                // Remove active class
+                activeJobForm.classList.remove('active');
+            }
+        });
+    }
+});
+
+function makeLocationFieldsRequired(required) {
+    const locationFields = ['pincode_sample', 'address_sample'];
+    locationFields.forEach(fieldId => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            if (required) {
+                field.setAttribute('required', 'required');
+            } else {
+                field.removeAttribute('required');
+            }
+        }
+    });
+}
+
+function updateJobLocation() {
+    const pincodeEl = document.getElementById('pincode_sample');
+    const stateEl = document.getElementById('state_sample');
+    const districtEl = document.getElementById('city_sample');
+    const addressEl = document.getElementById('address_sample');
+    
+    jobLocation = {
+        pincode: pincodeEl ? pincodeEl.value : '',
+        state: stateEl ? stateEl.value : '',
+        district: districtEl ? districtEl.value : '',
+        address: addressEl ? addressEl.value : ''
+    };
+}
+
+function addJobForm() {
+    jobFormCount++;
+    const container = document.getElementById('job-forms-container');
+    
+    const jobFormHtml = `
+        <div class="job-form border p-3 mb-3" id="job-form-${jobFormCount}" data-form-id="${jobFormCount}">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5>Post Job #${jobFormCount}</h5>
+                <button type="button" class="btn btn-danger btn-sm" onclick="removeJobForm(${jobFormCount})">
+                    Remove
+                </button>
+            </div>
+            <div class="row">
+                <div class="form-group col-md-6">
+                    <label class="form-label">Grade teachers you are looking for</label>
+                    <select class="form-control job-field" name="teacher_grade_${jobFormCount}">
+                        <option value="" hidden>Select</option>
+                        {% for info in grade_data %}
+                        <option value="{{info.name}}">{{info.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="form-label">Subject teacher required</label>
+                    <select class="form-control job-field" name="subject_${jobFormCount}">
+                        <option value="" hidden>Select</option>
+                        {% for info in subject_data %}
+                        <option value="{{info.info}}">{{info.info}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="form-label">Highest Qualification</label>
+                    <select class="form-control job-field" name="highest_qualification_${jobFormCount}">
+                        <option value="" hidden>Select</option>
+                        {% for info in qualification_data %}
+                        <option value="{{info.info}}">{{info.info}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="form-label">Experience Required</label>
+                    <select class="form-control job-field" name="experienced_required_${jobFormCount}">
+                        <option value="" hidden>Select</option>
+                        {% for info in experience_data %}
+                        <option value="{{info.info}}">{{info.info}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="form-label">Salary offered</label>
+                    <select class="form-control job-field" name="salary_offered_${jobFormCount}">
+                        <option value="" hidden>Select</option>
+                        {% for info in salary_data %}
+                        <option value="{{info.info}}">{{info.info}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label class="form-label">Candidate should join</label>
+                    <select class="form-control job-field" name="joining_${jobFormCount}">
+                        <option value="" hidden>Select</option>
+                        <option>Immediately</option>
+                        <option>Within a week</option>
+                        <option>Within a month</option>
+                        <option>We will inform after interview</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="form-label">Benefits & compensation</label>
+                    <input type="text" readonly class="form-control benefits-input" onclick="openBenefitsModal(${jobFormCount})" placeholder="Please select benefits & compensation">
+                </div>
+                <div class="form-group col-md-12">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" name="description_${jobFormCount}" placeholder="Write something about your job post (Max 50 words)" maxlength="250" rows="3"></textarea>
+                    <small class="text-muted">0/50 words</small>
+                </div>
+               
+            </div>
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', jobFormHtml);
+    
+    // Add word count functionality to description textarea
+    const textarea = document.querySelector(`textarea[name="description_${jobFormCount}"]`);
+    const wordCountElement = textarea.parentElement.querySelector('small');
+    
+    textarea.addEventListener('input', function() {
+        const words = this.value.trim().split(/\s+/).filter(word => word.length > 0);
+        const wordCount = this.value.trim() === '' ? 0 : words.length;
+        wordCountElement.textContent = `${wordCount}/50 words`;
+        
+        if (wordCount > 50) {
+            this.style.borderColor = 'red';
+            wordCountElement.style.color = 'red';
+        } else {
+            this.style.borderColor = '';
+            wordCountElement.style.color = '';
+        }
+    });
+}
+
+function removeJobForm(formId) {
+    const form = document.getElementById(`job-form-${formId}`);
+    if (form) {
+        // Remove from draft jobs dictionary
+        delete draftJobsDict[formId];
+        form.remove();
+        
+        // If no job forms left, hide location section and make fields not required
+        const remainingForms = document.querySelectorAll('.job-form');
+        if (remainingForms.length === 0) {
+            const jobLocationSection = document.getElementById('job-location-section');
+            if (jobLocationSection) {
+                jobLocationSection.style.display = 'none';
+                makeLocationFieldsRequired(false);
+            }
+        }
+    }
+}
+
+function openBenefitsModal(formId) {
+    // Set active form
+    document.querySelectorAll('.job-form').forEach(form => {
+        form.classList.remove('active');
+    });
+    document.getElementById(`job-form-${formId}`).classList.add('active');
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('benifits_compensation'));
+    modal.show();
+}
+
+function saveSingleDraftJob(formId) {
+    const form = document.getElementById(`job-form-${formId}`);
+    const jobData = collectJobFormData(form);
+    const mobileNo = document.querySelector('input[name="mobile_no"]').value;
+    
+    if (!mobileNo) {
+        alert('Please enter mobile number first.');
+        return;
+    }
+    
+    if (!validateJobForm(jobData)) {
+        alert('Please fill all required fields for this job post.');
+        return;
+    }
+    
+    // Update job location before saving
+    updateJobLocation();
+    
+    // Create draft job data with job location
+    const draftJobData = {
+        mobile_no: mobileNo,
+        teacher_grade: jobData.teacher_grade,
+        subject: jobData.subject,
+        highest_qualification: jobData.highest_qualification,
+        experienced_required: jobData.experienced_required,
+        salary_offered: jobData.salary_offered,
+        joining: jobData.joining,
+        benifits_compensation: jobData.benifits_compensation,
+        pincode: jobLocation.pincode || '',
+        state: jobLocation.state || '',
+        district: jobLocation.district || '',
+        address: jobLocation.address || '',
+        description: jobData.description,
+        created_at: new Date().toISOString(),
+    };
+    
+    // Store in draft jobs dictionary
+    draftJobsDict[formId] = draftJobData;
+    
+    // Send AJAX request to save draft
+    const formData = new FormData();
+    formData.append('mobile_no', mobileNo);
+    formData.append('job_location', JSON.stringify(jobLocation));
+    formData.append('job_data', JSON.stringify(jobData));
+    formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+    
+    fetch('/save-draft-job/', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Draft job saved successfully!');
+            // Mark as saved
+            form.style.opacity = '0.7';
+            const saveButton = form.querySelector('button[onclick*="saveSingleDraftJob"]');
+            saveButton.textContent = 'Saved';
+            saveButton.disabled = true;
+            saveButton.classList.remove('btn-info');
+            saveButton.classList.add('btn-success');
+        } else {
+            alert('Error saving draft job: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error saving draft job.');
+    });
+}
+
+function saveDraftJobs() {
+    const jobForms = document.querySelectorAll('.job-form');
+    const mobileNo = document.querySelector('input[name="mobile_no"]').value;
+    
+    if (!mobileNo || jobForms.length === 0) {
+        return;
+    }
+    
+    // Update job location before saving all jobs
+    updateJobLocation();
+    
+    jobForms.forEach(form => {
+        const formId = form.getAttribute('data-form-id');
+        
+        // Skip already saved forms
+        if (form.style.opacity === '0.7') {
+            return;
+        }
+        
+        const jobData = collectJobFormData(form);
+        
+        if (validateJobForm(jobData)) {
+            // Create draft job data
+            const draftJobData = {
+                mobile_no: mobileNo,
+                teacher_grade: jobData.teacher_grade,
+                subject: jobData.subject,
+                highest_qualification: jobData.highest_qualification,
+                experienced_required: jobData.experienced_required,
+                salary_offered: jobData.salary_offered,
+                joining: jobData.joining,
+                benifits_compensation: jobData.benifits_compensation,
+                pincode: jobLocation.pincode || '',
+                state: jobLocation.state || '',
+                district: jobLocation.district || '',
+                address: jobLocation.address || '',
+                description: jobData.description,
+                created_at: new Date().toISOString(),
+            };
+            
+            // Store in draft jobs dictionary
+            draftJobsDict[formId] = draftJobData;
+            
+            const formData = new FormData();
+            formData.append('mobile_no', mobileNo);
+            formData.append('job_location', JSON.stringify(jobLocation));
+            formData.append('job_data', JSON.stringify(jobData));
+            formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+            
+            // Send async request 
+            fetch('/save-draft-job/', {
+                method: 'POST',
+                body: formData
+            }).catch(error => {
+                console.error('Error saving draft job:', error);
+            });
+        }
+    });
+}
+
+function collectJobFormData(form) {
+    const formId = form.getAttribute('data-form-id');
+    return {
+        teacher_grade: form.querySelector(`select[name="teacher_grade_${formId}"]`).value,
+        subject: form.querySelector(`select[name="subject_${formId}"]`).value,
+        highest_qualification: form.querySelector(`select[name="highest_qualification_${formId}"]`).value,
+        experienced_required: form.querySelector(`select[name="experienced_required_${formId}"]`).value,
+        salary_offered: form.querySelector(`select[name="salary_offered_${formId}"]`).value,
+        joining: form.querySelector(`select[name="joining_${formId}"]`).value,
+        benifits_compensation: form.querySelector('.benefits-input').value,
+        description: form.querySelector(`textarea[name="description_${formId}"]`).value
+    };
+}
+
+function validateJobForm(jobData) {
+    return jobData.teacher_grade && 
+           jobData.subject && 
+           jobData.highest_qualification && 
+           jobData.experienced_required && 
+           jobData.salary_offered && 
+           jobData.joining;
+}
+
+// Function to fetch location details (you may need to implement this based on your API)
+function fetchLocationDetails(pincode, stateElementId, districtElementId) {
+    // Implement your pincode to location API call here
+    // This is a placeholder function
+    fetch(`/get-location-by-pincode/?pincode=${pincode}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById(stateElementId).value = data.state;
+                document.getElementById(districtElementId).value = data.district;
+                updateJobLocation();
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching location:', error);
+        });
+}
+
+// Function to get draft jobs from dictionary (for debugging or other uses)
+function getDraftJobs() {
+    return draftJobsDict;
+}
+{% endif %}
+
+document.getElementById("register2-btn").addEventListener("click", function () {
+    document.getElementById("user_type").value = "School";
+});
+</script>
+
+{%endblock%}

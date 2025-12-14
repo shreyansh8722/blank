@@ -1,0 +1,20 @@
+{% extends "admin-dashboard/admin_base.html" %}
+{% block title_block %}{{ page_title }}{% endblock %}
+{% block body_block %}
+<div class="box-content">
+    <div class="box-heading">
+        <h3 class="mb-35">Count Records for Selected Date</h3>
+    </div>
+    <form method="GET" action="{% url 'count_records_on_date' %}">
+        <label for="date">Select a Date:</label>
+        <input type="date" id="date" name="date" value="{{ selected_date }}">
+        <button type="submit">Get Count</button>
+    </form>
+    
+    <h4>Counts for {{ selected_date|default:"" }}:</h4>
+    <ul>
+        <li>Job Applications: {{ job_applications_count }}</li>
+        <li>Teachers: {{ teachers_count }}</li>
+    </ul>
+</div>
+{% endblock %}

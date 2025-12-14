@@ -1,0 +1,48 @@
+{%extends "base.html"%}
+{% load static %}
+{%block title_block%}{{page_title}}{%endblock%}
+{%block body_block%}
+<section class="pt-20 pb-20 login-register login-banner">
+    <div class="container">
+        <div class="login-register-cover">
+            <div class="col-md-6 mx-auto">
+                <div class=" p-4">
+                    <div class="form-login-cover">
+                        <div class="text-center">
+                            <h2 class=" mb-20 text-brand-1">Login</h2>
+
+                        </div>
+                        <form class="login-register text-start mt-20" action="" method="post">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="form-group">
+                                    <label class="form-label">Mobile No.</label>
+                                    <input class="form-control" id="input-1" type="tel" required minlength="10"
+                                        maxlength="10" pattern="[0-9]*" name="mobile_no">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">PIN</label>
+                                    <input class="form-control" id="input-4" type="password" required name="password"
+                                        minlength="4" maxlength="4" pattern="[0-9]*">
+                                </div>
+                                {% include 'partials/_alerts.html' %}
+                                <div class="login_footer form-group d-flex justify-content-between">
+                                    <a class="text-muted" href="/forgot-password">Forgot PIN ?</a>
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-brand-1 hover-up w-100" type="submit"
+                                        name="login">Login</button>
+                                </div>
+                                <div class="text-muted text-center">Don't have an account? Register as <a
+                                        href="/registration?type=Teacher" class="text-danger">Teacher</a> or <a
+                                        href="/registration?type=School" class="text-danger">School</a></div>
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{%endblock%}

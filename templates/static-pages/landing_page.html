@@ -1,0 +1,479 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FacultyMe - Teacher Job Alerts</title>
+    
+    <!-- FAVICON (Fixed Path) -->
+    <link rel="icon" type="image/png" href="static/facultyme_img/facultyme_favicon.png" />
+    
+    <!-- META PIXEL CODE -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document, 'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '874442628353263');
+    fbq('track', 'PageView');
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=874442628353263&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- END META PIXEL CODE -->
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        h1, h2, h3, .font-heading { font-family: 'Poppins', sans-serif; }
+        body { font-family: 'Inter', sans-serif; background-color: #F8FAFC; }
+        
+        :root {
+            --brand-dark: rgb(5, 38, 78);
+            --brand-primary: rgb(65, 84, 175);
+            --footer-bg: rgb(15, 13, 85);
+        }
+
+        .btn-primary { 
+            background-color: var(--brand-primary);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(65, 84, 175, 0.3);
+        }
+        .btn-primary:hover { 
+            background-color: rgb(50, 65, 140);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(65, 84, 175, 0.4);
+        }
+
+        .input-modern {
+            transition: all 0.2s;
+            border: 1px solid #e2e8f0;
+        }
+        .input-modern:focus {
+            border-color: var(--brand-primary);
+            box-shadow: 0 0 0 3px rgba(65, 84, 175, 0.1);
+            outline: none;
+        }
+
+        /* Marquee Animation */
+        .marquee-container { overflow: hidden; white-space: nowrap; position: relative; }
+        .marquee-content { display: inline-flex; animation: marquee 30s linear infinite; }
+        .marquee-content:hover { animation-play-state: paused; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .marquee-fade { position: absolute; top: 0; bottom: 0; width: 80px; z-index: 10; pointer-events: none; }
+        .fade-left { left: 0; background: linear-gradient(to right, white, transparent); }
+        .fade-right { right: 0; background: linear-gradient(to left, white, transparent); }
+    </style>
+</head>
+<body class="text-slate-900 flex flex-col min-h-screen">
+
+    <!-- HEADER -->
+    <header class="bg-white shadow-sm sticky top-0 z-50 backdrop-blur-md bg-opacity-95">
+        <div class="w-full px-4 md:px-12 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-2 md:space-x-4">
+                <a href="/" class="block shrink-0">
+                    <!-- FIXED PATH: Removed leading slash -->
+                    <img src="static/facultyme_img/facultyme1.png" alt="FacultyMe" class="h-8 md:h-12 w-auto">
+                </a>
+                
+                <!-- BADGE -->
+                <div class="flex items-center space-x-2 border-l-2 border-slate-200 pl-2 md:pl-4 py-1">
+                    <span class="text-[10px] md:text-sm font-extrabold uppercase tracking-widest text-[#05264e] leading-none">
+                        For Teaching Jobs
+                    </span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <div class="relative overflow-hidden w-full">
+        <div class="max-w-4xl mx-auto px-4 py-8 md:py-16 relative z-10 flex flex-col items-center">
+            
+            <!-- REMOVED: Redundant "For Teaching Jobs" block that was here -->
+
+            <!-- HEADLINE -->
+            <h1 class="text-center font-extrabold text-[#05264e] leading-tight mb-4 font-heading w-full">
+                <span class="block text-2xl mb-1 sm:hidden">Hello Teacher,</span>
+                <span class="block text-xl sm:hidden" style="color: rgb(65, 84, 175);">Looking for a Job / Job Change?</span>
+                <span class="hidden sm:block text-3xl md:text-5xl">
+                    Hello Teacher, <span style="color: rgb(65, 84, 175);">Looking for a Job / Job Change?</span>
+                </span>
+            </h1>
+            
+            <p class="text-center text-slate-600 text-sm sm:text-lg md:text-xl mb-8 md:mb-10 leading-relaxed font-medium px-2 w-full max-w-2xl">
+                Get customized <strong>Job Alerts</strong> (Based on your preferred Subject & Location)
+            </p>
+
+            <!-- FORM CARD -->
+            <div class="bg-white p-6 md:p-10 rounded-2xl shadow-xl border border-slate-100 relative overflow-hidden text-left w-full max-w-xl">
+                <div class="absolute top-0 left-0 w-full h-1" style="background: rgb(65, 84, 175);"></div>
+                <form id="leadForm" class="space-y-5">
+                    
+                    <!-- Name -->
+                    <div>
+                        <label class="block text-xs md:text-sm font-bold text-slate-700 uppercase mb-1 md:mb-2 tracking-wide">Full Name</label>
+                        <div class="relative">
+                            <i class="fa-regular fa-user absolute left-4 top-3.5 md:top-4 text-slate-400 text-base md:text-lg"></i>
+                            <input type="text" id="name" required placeholder="Enter your full name"
+                                class="input-modern w-full pl-12 pr-4 py-3 md:py-3.5 bg-slate-50 rounded-xl font-medium text-slate-800 text-sm md:text-base">
+                        </div>
+                    </div>
+
+                    <!-- WhatsApp -->
+                    <div>
+                        <label class="block text-xs md:text-sm font-bold text-slate-700 uppercase mb-1 md:mb-2 tracking-wide">WhatsApp Number</label>
+                        <div class="relative">
+                            <i class="fa-brands fa-whatsapp absolute left-4 top-3.5 md:top-4 text-green-600 text-lg md:text-xl"></i>
+                            <input type="tel" id="whatsapp" required placeholder="98765 43210" pattern="[0-9]{10}"
+                                class="input-modern w-full pl-12 pr-4 py-3 md:py-3.5 bg-slate-50 rounded-xl font-medium text-slate-800 text-sm md:text-base">
+                        </div>
+                    </div>
+
+                    <!-- Job Category & Subject -->
+                    <div class="grid grid-cols-2 gap-4 md:gap-5">
+                        <div>
+                            <label class="block text-[10px] md:text-sm font-bold text-slate-700 uppercase mb-1 md:mb-2 tracking-wide">Job Category</label>
+                            <select id="grades" required class="input-modern w-full px-3 md:px-4 py-3 md:py-3.5 bg-slate-50 rounded-xl text-xs md:text-base font-medium text-slate-700">
+                                <option value="">Select Category</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] md:text-sm font-bold text-slate-700 uppercase mb-1 md:mb-2 tracking-wide">Subject</label>
+                            <select id="subjects" required disabled class="input-modern w-full px-3 md:px-4 py-3 md:py-3.5 bg-slate-100 rounded-xl text-xs md:text-base cursor-not-allowed">
+                                <option value="">Select First</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Location -->
+                    <div class="grid grid-cols-2 gap-4 md:gap-5">
+                        <div>
+                            <label class="block text-[10px] md:text-sm font-bold text-slate-700 uppercase mb-1 md:mb-2 tracking-wide">State</label>
+                            <select id="state" required class="input-modern w-full px-3 md:px-4 py-3 md:py-3.5 bg-slate-50 rounded-xl text-xs md:text-base font-medium text-slate-700">
+                                <option value="">Select State</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] md:text-sm font-bold text-slate-700 uppercase mb-1 md:mb-2 tracking-wide">District</label>
+                            <select id="district" required disabled class="input-modern w-full px-3 md:px-4 py-3 md:py-3.5 bg-slate-100 rounded-xl text-xs md:text-base cursor-not-allowed">
+                                <option value="">Select First</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="submitBtn"
+                        class="w-full btn-primary text-white font-bold py-3 md:py-4 rounded-xl text-base md:text-xl flex items-center justify-center space-x-2 mt-6">
+                        <span id="btnText">Get Job Alerts</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                    
+                    <p class="text-[10px] md:text-xs text-center text-slate-400 mt-4">
+                        By registering, you agree to our <a href="/terms-condition" target="_blank" class="text-[#4154af] hover:underline">Terms & Conditions</a> and <a href="/privacy-policy" target="_blank" class="text-[#4154af] hover:underline">Privacy Policy</a>.
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- VACANCIES FROM -->
+    <div class="bg-white py-12 md:py-16 border-y border-slate-100">
+        <div class="max-w-7xl mx-auto text-center">
+            <h2 class="text-xl md:text-3xl font-bold font-heading mb-8 md:mb-12 uppercase tracking-widest text-[#05264e]">Vacancies From</h2>
+            <div class="marquee-container relative">
+                <div class="marquee-fade fade-left"></div>
+                <div class="marquee-fade fade-right"></div>
+                <div class="marquee-content gap-8 md:gap-12 px-4 items-center">
+                    <!-- FIXED PATHS: Removed all leading slashes -->
+                    <img src="static/facultyme_img/birla.png" alt="Birla" class="h-10 md:h-16 object-contain opacity-80 hover:opacity-100 transition">
+                    <img src="static/facultyme_img/eurokids.png" alt="EuroKids" class="h-8 md:h-12 object-contain opacity-80 hover:opacity-100 transition">
+                    <img src="static/facultyme_img/bachpan.png" alt="Bachpan" class="h-10 md:h-16 object-contain opacity-80 hover:opacity-100 transition">
+                    <img src="static/facultyme_img/amity.png" alt="Amity" class="h-8 md:h-14 object-contain opacity-80 hover:opacity-100 transition">
+                    <img src="static/facultyme_img/narayana.png" alt="Narayana" class="h-10 md:h-16 object-contain opacity-80 hover:opacity-100 transition">
+                    <img src="static/facultyme_img/asoka.png" alt="Asoka" class="h-10 md:h-16 object-contain opacity-80 hover:opacity-100 transition">
+                    <!-- Duplicates -->
+                    <img src="static/facultyme_img/birla.png" alt="Birla" class="h-10 md:h-16 object-contain opacity-80 hover:opacity-100 transition">
+                    <img src="static/facultyme_img/eurokids.png" alt="EuroKids" class="h-8 md:h-12 object-contain opacity-80 hover:opacity-100 transition">
+                    <img src="static/facultyme_img/bachpan.png" alt="Bachpan" class="h-10 md:h-16 object-contain opacity-80 hover:opacity-100 transition">
+                    <img src="static/facultyme_img/amity.png" alt="Amity" class="h-8 md:h-14 object-contain opacity-80 hover:opacity-100 transition">
+                    <img src="static/facultyme_img/narayana.png" alt="Narayana" class="h-10 md:h-16 object-contain opacity-80 hover:opacity-100 transition">
+                    <img src="static/facultyme_img/asoka.png" alt="Asoka" class="h-10 md:h-16 object-contain opacity-80 hover:opacity-100 transition">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HOW IT WORKS -->
+    <div class="py-12 md:py-20 bg-slate-50">
+        <div class="max-w-5xl mx-auto px-4 text-center">
+            <h2 class="text-2xl md:text-4xl font-bold font-heading mb-12 md:mb-16 text-[#05264e]">How It Works for Teachers</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 relative">
+                <div class="hidden md:block absolute top-10 left-1/6 right-1/6 h-0.5 bg-slate-200 -z-10 border-t-2 border-dashed border-slate-300 w-2/3 mx-auto"></div>
+                <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm hover:shadow-md transition-all border border-slate-100">
+                    <div class="w-14 h-14 md:w-16 md:h-16 text-white font-bold rounded-full flex items-center justify-center mx-auto -mt-12 md:-mt-16 mb-4 md:mb-6 text-xl md:text-2xl shadow-lg border-4 border-white" style="background-color: #4154af;">1</div>
+                    <h3 class="font-bold text-lg md:text-xl text-slate-800 mb-2 font-heading">Register</h3>
+                    <p class="text-sm md:text-base text-slate-500">Create profile with subject details.</p>
+                </div>
+                <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-100">
+                    <div class="w-14 h-14 md:w-16 md:h-16 text-white font-bold rounded-full flex items-center justify-center mx-auto -mt-12 md:-mt-16 mb-4 md:mb-6 text-xl md:text-2xl shadow-lg border-4 border-white" style="background-color: #4154af;">2</div>
+                    <h3 class="font-bold text-lg md:text-xl text-slate-800 mb-2 font-heading">Get Alerts</h3>
+                    <p class="text-sm md:text-base text-slate-500">Receive Job alerts instantly.</p>
+                </div>
+                <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-100">
+                    <div class="w-14 h-14 md:w-16 md:h-16 text-white font-bold rounded-full flex items-center justify-center mx-auto -mt-12 md:-mt-16 mb-4 md:mb-6 text-xl md:text-2xl shadow-lg border-4 border-white" style="background-color: #4154af;">3</div>
+                    <h3 class="font-bold text-lg md:text-xl text-slate-800 mb-2 font-heading">Get Hired</h3>
+                    <p class="text-sm md:text-base text-slate-500">Apply and get interview calls.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ABOUT US -->
+    <div class="bg-white py-12 md:py-16 border-t border-slate-200">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h2 class="text-2xl md:text-3xl font-bold font-heading mb-4 md:mb-6 text-[#05264e]">About Us</h2>
+            <p class="text-slate-600 text-base md:text-2xl leading-relaxed font-medium mb-8 md:mb-10">
+                We are an <span class="font-bold text-[#4154af]">Exclusive Job Portal for Teachers</span> with registered schools across India!!
+            </p>
+            <button onclick="document.getElementById('name').focus();" class="btn-primary text-white font-bold py-3 px-8 rounded-full text-base md:text-lg shadow-lg">Get Job Alerts</button>
+        </div>
+    </div>
+
+    <!-- IMPACT STATS -->
+    <div class="bg-slate-50 py-12 md:py-16 border-t border-slate-200">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                <div class="p-2">
+                    <h3 class="text-3xl md:text-5xl font-extrabold font-heading mb-2" style="color: rgb(65, 84, 175);">100 +</h3>
+                    <p class="text-xs md:text-sm font-bold text-[#05264e] uppercase tracking-wide">Candidates Hired</p>
+                </div>
+                <div class="p-2">
+                    <h3 class="text-3xl md:text-5xl font-extrabold font-heading mb-2" style="color: rgb(65, 84, 175);">1000 +</h3>
+                    <p class="text-xs md:text-sm font-bold text-[#05264e] uppercase tracking-wide">Jobs Posted</p>
+                </div>
+                <div class="p-2">
+                    <h3 class="text-3xl md:text-5xl font-extrabold font-heading mb-2" style="color: rgb(65, 84, 175);">1000 +</h3>
+                    <p class="text-xs md:text-sm font-bold text-[#05264e] uppercase tracking-wide">Associated Schools</p>
+                </div>
+                <div class="p-2">
+                    <h3 class="text-3xl md:text-5xl font-extrabold font-heading mb-2" style="color: rgb(65, 84, 175);">25 K+</h3>
+                    <p class="text-xs md:text-sm font-bold text-[#05264e] uppercase tracking-wide">Associated Teachers</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="text-white py-10 mt-auto" style="background-color: rgb(15, 13, 85);">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex justify-center space-x-8 mb-8">
+                <a href="https://www.facebook.com/Facultyme?mibextid=ZbWKwL" target="_blank" class="text-white hover:text-blue-200 text-2xl transition"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="https://www.linkedin.com/company/facultymeindia/" target="_blank" class="text-white hover:text-blue-200 text-2xl transition"><i class="fa-brands fa-linkedin-in"></i></a>
+                <a href="https://youtube.com/channel/UCCVwk6njMwZw-Cvs2OphH2A" target="_blank" class="text-white hover:text-red-400 text-2xl transition"><i class="fa-brands fa-youtube"></i></a>
+                <a href="https://instagram.com/facultyme?igshid=ZDdkNTZiNTM=" target="_blank" class="text-white hover:text-pink-400 text-2xl transition"><i class="fa-brands fa-instagram"></i></a>
+            </div>
+            <div class="border-t border-slate-700 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-slate-300 font-medium">
+                <div class="mb-4 md:mb-0">
+                    <span>Copyright &copy; 2023. Facultyme all right reserved</span>
+                </div>
+                <div class="flex flex-wrap justify-center gap-6">
+                    <a href="/privacy-policy" target="_blank" class="hover:text-white transition">Privacy Policy</a>
+                    <a href="/terms-condition" target="_blank" class="hover:text-white transition">Terms &amp; Conditions</a>
+                    <a href="/refund-cancellation-policy" target="_blank" class="hover:text-white transition">Refund/ Cancellation policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- LOGIC SCRIPT-->
+    <script>
+        // 1. EXACT JOB CATEGORIES
+        const jobCategories = {
+            "Pre-primary": ["All subjects", "Mother teacher", "Assistant Teacher", "Others"],
+            "Primary": ["All subjects", "English", "Hindi", "Mathematics", "EVS", "Computer", "Science", "Social Studies", "General Science", "General Studies", "Others"],
+            "Middle school": ["English", "Hindi", "Mathematics", "Science", "Social Science", "Sanskrit", "Computer", "General Science", "Others"],
+            "Secondary": ["Mathematics", "Science", "English", "Social Science", "Hindi", "Computer Science", "Physics", "Chemistry", "Biology", "Home science", "Robotics", "Artificial intelligence", "Others"],
+            "Senior secondary": ["Physics", "Chemistry", "Mathematics", "Biology", "English", "Accountancy", "Business Studies", "Economics", "History", "Political Science", "Geography", "Psychology", "Sociology", "Computer Science", "Physical Education", "Others"],
+            "CA / CPT": ["Accountancy", "Economics", "Mercantile Laws", "General Economics", "Quantitative Aptitude", "Others"],
+            "NEET/JEE Foundation": ["Physics", "Chemistry", "Mathematics", "Biology", "Botany", "Zoology", "Others"],
+            "NEET/JEE Faculty": ["Physics", "Chemistry", "Mathematics", "Biology", "Botany", "Zoology", "Others"],
+            "Indian Language Teacher": ["Sanskrit", "Tamil", "Telugu", "Kannada", "Malayalam", "Marathi", "Gujarati", "Bengali", "Punjabi", "Urdu", "Odia", "Assamese", "Sindhi", "Rajasthani", "Nepali", "Konkani", "Others"],
+            "Foreign language Teacher": ["French", "German", "Spanish", "Japanese", "Chinese", "Russian", "Others"],
+            "Non Teaching School Staff": ["Librarian", "Warden", "Clerk", "Front desk executive", "Admission counsellor", "Security guard", "Security head", "Maid", "Cook", "Accounting staff", "Supervisor", "Others"],
+            "(Administration) (principal/Headmaster etc)": ["Principal", "Vice principal", "Headmaster", "Headmistress", "Director", "Academic dean", "Academic Incharge", "Academic coordinator", "Centre head", "Others"],
+            "Music/Dance/Sport/PT etc": ["Physical Education", "Music Teacher", "Dance Teacher", "Art & Craft", "Karate Teacher", "Yoga", "Basket ball", "Foot ball Coach", "Valley ball coach", "Cricket coach", "Instrumental", "Vocal Music", "Guitar teacher", "Painting", "Physical Training & Games", "Others"],
+            "Others": ["Others"]
+        };
+
+        // 2. COMPLETE LOCATION DB (ALL STATES & DISTRICTS OF INDIA)
+        const locationDB = {
+            "Andaman and Nicobar Islands": ["Nicobar", "North and Middle Andaman", "South Andaman"],
+            "Andhra Pradesh": ["Adilabad", "Anantapur", "Chittoor", "East Godavari", "Guntur", "Hyderabad", "Kadapa", "Karimnagar", "Khammam", "Krishna", "Kurnool", "Mahbubnagar", "Medak", "Nalgonda", "Nellore", "Nizamabad", "Prakasam", "Rangareddi", "Srikakulam", "Visakhapatnam", "Vizianagaram", "Warangal", "West Godavari"],
+            "Arunachal Pradesh": ["Anjaw", "Changlang", "East Kameng", "East Siang", "Kurung Kumey", "Lohit", "Lower Dibang Valley", "Lower Subansiri", "Papum Pare", "Tawang", "Tirap", "Upper Dibang Valley", "Upper Siang", "Upper Subansiri", "West Kameng", "West Siang"],
+            "Assam": ["Baksa", "Barpeta", "Bongaigaon", "Cachar", "Chirang", "Darrang", "Dhemaji", "Dhubri", "Dibrugarh", "Goalpara", "Golaghat", "Hailakandi", "Jorhat", "Kamrup", "Karbi Anglong", "Karimganj", "Kokrajhar", "Lakhimpur", "Marigaon", "Nagaon", "Nalbari", "North Cachar Hills", "Sibsagar", "Sonitpur", "Tinsukia", "Udalguri"],
+            "Bihar": ["Araria", "Arwal", "Aurangabad", "Banka", "Begusarai", "Bhagalpur", "Bhojpur", "Buxar", "Darbhanga", "East Champaran", "Gaya", "Gopalganj", "Jamui", "Jehanabad", "Kaimur", "Katihar", "Khagaria", "Kishanganj", "Lakhisarai", "Madhepura", "Madhubani", "Munger", "Muzaffarpur", "Nalanda", "Nawada", "Patna", "Purnia", "Rohtas", "Saharsa", "Samastipur", "Saran", "Sheikhpura", "Sheohar", "Sitamarhi", "Siwan", "Supaul", "Vaishali", "West Champaran"],
+            "Chandigarh": ["Chandigarh"],
+            "Chhattisgarh": ["Bastar", "Bilaspur", "Dantewada", "Dhamtari", "Durg", "Janjgir", "Jashpur", "Kanker", "Kawardha", "Korba", "Koriya", "Mahasamund", "Raigarh", "Raipur", "Rajnandgaon", "Surguja"],
+            "Daman and Diu": ["Daman", "Diu"],
+            "Delhi": ["Central", "City Zone", "Civil Line", "Karol Bagh", "Najafgarh", "Narela", "Rohini", "S. Pahar Ganj", "Shahadra (N)", "Shahadra (S)", "South", "West"],
+            "Dadra and Nagar Haveli": ["Dadra and Nagar Haveli"],
+            "Goa": ["Goa"],
+            "Gujarat": ["Ahmedabad", "Amreli", "Anand", "Banaskantha", "Bharuch", "Bhavnagar", "Dahod", "Dang", "Gandhinagar", "Godhra", "Jamnagar", "Junagadh", "Kheda", "Kutch", "Mahesana", "Narmada", "Navsari", "Patan", "Porbandar", "Rajkot", "Sabarkantha", "Surat", "Surendranagar", "Vadodara", "Valsad", "Tapi"],
+            "Himachal Pradesh": ["Bilaspur", "Chamba", "Hamirpur", "Kangra", "Kullu", "Mandi", "Shimla", "Sirmaur", "Solan", "Una"],
+            "Haryana": ["Ambala", "Bhiwani", "Faridabad", "Fatehabad", "Gurgaon", "Hisar", "Jhajjar", "Jind", "Kaithal", "Karnal", "Kurukshetra", "Mewat", "Narnaul", "Palwal", "Panchkula", "Panipat", "Rewari", "Rohtak", "Sirsa", "Sonipat", "Yamunanagar"],
+            "Jharkhand": ["Bokaro", "Chatra", "Deogarh", "Dhanbad", "Dumka", "East Singhbhum", "Garhwa", "Giridih", "Godda", "Gumla", "Hazaribagh", "Jamtara", "Kodarma", "Lathehar", "Lohardaga", "Pakur", "Palamu", "Ranchi", "Sahibganj", "Saraikela-Kharsawan", "Simdega", "West Singhbhum"],
+            "Jammu and Kashmir": ["Baramula", "Doda", "Jammu", "Kathua", "Kishtwar", "Poonch", "Rajouri", "Ramban", "Reasi", "Sambha", "Udhampur"],
+            "Karnataka": ["Bagalkot", "Bangalore Rural", "Bangalore Urban", "Belgaum", "Bellary", "Bidar", "Bijapur", "Chamarajanagar", "Chikkaballapur", "Chikmagalur", "Chitradurga", "Dakshina Kannada", "Davanagere", "Dharwad", "Gadag", "Gulbarga", "Hassan", "Haveri", "Kodagu", "Kolar", "Koppal", "Mandya", "Mysore", "Raichur", "Ramanagara", "Shimoga", "Tumkur", "Udupi", "Uttara Kannada"],
+            "Kerala": ["Alappuzha", "Ernakulam", "Idukki", "Kannur", "Kasaragod", "Kollam", "Kottayam", "Kozhikode", "Malappuram", "Palakkad", "Pathanamthitta", "Thiruvananthapuram", "Thrissur", "Wayanad"],
+            "Lakshadweep": ["Lakshadweep"],
+            "Meghalaya": ["Bhoi", "East Garo Hills", "East Khasi Hills", "Jaintia Hills", "South Garo Hills", "West Garo Hills", "West Khasi Hills"],
+            "Maharashtra": ["Ahmednagar", "Akola", "Amaravati", "Aurangabad", "Beed", "Bhandara", "Buldana", "Chandrapur", "Dhule", "Gadchiroli", "Gondia", "Hingoli", "Jalgaon", "Jalna", "Kolhapur", "Latur", "Nagpur", "Nanded", "Nandurbar", "Nasik", "Osmanabad", "Parbhani", "Pune", "Raigad", "Ratnagiri", "Sangli", "Satara", "Sindhudurg", "Solapur", "Thane", "Wardha", "Washim", "Yawatmal"],
+            "Manipur": ["Bishnupur", "Chandel", "Churachandpur", "Imphal East", "Imphal West", "Kangpokpi", "Senapati", "Tamenglong", "Thoubal", "Ukhrul"],
+            "Madhya Pradesh": ["Anupur", "Ashok Nagar", "Balaghat", "Barwani", "Betul", "Bhind", "Bhopal", "Burhanpur", "Chhatarpur", "Chhindwara", "Damoh", "Datia", "Dewas", "Dhar", "Dindori", "Guna", "Gwalior", "Harda", "Hoshangabad", "Indore", "Jabalpur", "Jhabua", "Katni", "Khandwa", "Khargone", "Mandla", "Mandsaur", "Morena", "Narsinghpur", "Neemuch", "Panna", "Raisen", "Rajgarh", "Ratlam", "Rewa", "Sagar", "Satna", "Seoni", "Shahdol", "Shajapur", "Sheopur", "Shivpuri", "Sidhi", "Tikamgarh", "Ujjain", "Umaria", "Vidisha"],
+            "Mizoram": ["Aizawl West", "Aizawl East", "Champhai", "Kolasib", "Lawngtlai", "Lunglei", "Mamit", "Saiha", "Serchhip"],
+            "Nagaland": ["Dimapur", "Kiphire", "Kohima", "Longleng", "Mokokchung", "Mon", "Peren", "Phek", "Tuensang", "Wokha", "Zunheboto"],
+            "Odisha": ["Angul", "Balangir", "Baleshwar", "Bargarh", "Baudh", "Bhadrak", "Cuttack", "Debagarh", "Dhenkanal", "Gajapati", "Ganjam", "Jagatsinghapur", "Jajpur", "Jharsuguda", "Kalahandi", "Kandhamal", "Kendrapara", "Keonjhar", "Khurda", "Koraput", "Malkangiri", "Mayurbhanj", "Nabarangapur", "Nayagarh", "Nuapada", "Puri", "Rayagada", "Sambalpur", "Sonapur", "Sundargarh"],
+            "Pondicherry": ["Pondicherry"],
+            "Punjab": ["Amritsar", "Bathinda", "Barnala", "Faridkot", "Fategarh Sahib", "Firozpur", "Gurdaspur", "Hoshiarpur", "Jalandhar", "Kapurthala", "Ludhiana", "Mansa", "Moga", "Mohali", "Mukatsar", "Nawanshahr", "Patiala", "Rupnagar", "Sangrur", "Tarn Taran"],
+            "Rajasthan": ["Ajmer", "Alwar", "Banswara", "Baran", "Barmer", "Bharatpur", "Bhilwara", "Bikaner", "Bundi", "Chittaurgarh", "Churu", "Dausa", "Dhaulpur", "Dungarpur", "Ganganagar", "Hanumangarh", "Jaipur", "Jaisalmer", "Jalore", "Jhalawar", "Jhunjhunun", "Jodhpur", "Karauli", "Kota", "Nagaur", "Pali", "Pratapgarh", "Rajsamand", "Sawai Madhopur", "Sikar", "Sirohi", "Tonk", "Udaipur"],
+            "Sikkim": ["East", "North", "South", "West"],
+            "Tamil Nadu": ["Kancheepuram", "Saidapet", "Thiruvallore", "Poonamallee", "Vellore", "Thiruppattur", "Tiruvannamalai", "Cheyyar", "Cuddalore", "Villupuram", "Kallakurichi", "Thanjavur", "Thiruvarur", "Nagapattinam", "Thiruchirapalli", "Karur", "Perambalur", "Pudukottai", "Aranthangi", "Madurai", "Theni", "Dindigul", "Palani", "Ramanathapuram", "Paramakudi", "Sivaganga", "Virudhunagar", "Sivakasi", "Thirunelveli", "Sankarankoil", "Thoothukudi", "Kovilpatti", "Nagercoil", "Salem", "Namakkal", "Dharmapuri", "Krishnagiri", "Coimbatore", "Thiruppur", "Erode", "Dharapuram", "The Nilgiris", "Chennai Corp"],
+            "Tripura": ["East/Dhalai Tripura", "North Tripura", "South Tripura", "West Tripura"],
+            "Uttar Pradesh": ["Agra", "Aligarh", "Allahabad", "Ambedkar Nagar", "Auraiya", "Azamgarh", "Baghpat", "Bahraich", "Ballia", "Balrampur", "Banda", "Barabanki", "Bareilly", "Basti", "Bijnor", "Budaun", "Bulandshahar", "Chandauli", "Chitrakoot", "Deoria", "Etah", "Etawah", "Faizabad", "Farrukhabad", "Fatehpur", "Firozabad", "Gautam Budh Nagar", "Ghaziabad", "Ghazipur", "Gonda", "Gorakhpur", "Hamirpur", "Hardoi", "Hathras", "Jalaun", "Jaunpur", "Jhansi", "Jyotiba Phule Nagar", "Kannauj", "Kanpur Nagar", "Kanpur Dehat", "Kaushambi", "Kheri", "Kushinagar", "Lalitpur", "Lucknow", "Maharajganj", "Mahoba", "Mainpuri", "Mathura", "Mau", "Meerut", "Mirzapur", "Moradabad", "Muzaffarnagar", "Pilibhit", "Pratapgarh", "Raebareli", "Rampur", "Saharanpur", "Sant Kabir Nagar", "Sant Ravidas Nagar", "Shahjahanpur", "Shravasti", "Siddharthnagar", "Sitapur", "Sonbhadra", "Sultanpur", "Unnao", "Varanasi"],
+            "Uttrakhand": ["Almora", "Bageshwar", "Chamoli", "Champawat", "Dehradun", "Pauri Garhwal", "Hardwar", "Nainital", "Pithoragarh", "Rudraprayag", "Tehri Garhwal", "Udham Singh Nagar", "Uttarkashi"],
+            "West Bengal": ["Bankura", "Barddhaman", "Birbhum", "Cooch Behar", "Dakshin Dinajpur", "Darjiling", "East Medinipur", "Howrah", "Hugly", "Jalpaiguri", "Kolkata", "Maldah", "Murshidabad", "Nadia", "North 24 Parganas", "Puruliya", "South 24 Parganas", "Uttar Dinajpur", "West Mednapur"]
+        };
+
+        const gradesSelect = document.getElementById('grades');
+        const subjectsSelect = document.getElementById('subjects');
+        const stateSelect = document.getElementById('state');
+        const districtSelect = document.getElementById('district');
+
+        // Populate Job Categories (Grades)
+        Object.keys(jobCategories).forEach(grade => {
+            const option = document.createElement('option');
+            option.value = grade;
+            option.textContent = grade;
+            gradesSelect.appendChild(option);
+        });
+
+        // Populate States
+        Object.keys(locationDB).sort().forEach(state => {
+            const option = document.createElement('option');
+            option.value = state;
+            option.textContent = state;
+            stateSelect.appendChild(option);
+        });
+
+        // Event: Grade Change -> Update Subject
+        gradesSelect.addEventListener('change', function() {
+            const selectedGrade = this.value;
+            subjectsSelect.innerHTML = '<option value="">Select Subject</option>';
+            
+            if (selectedGrade && jobCategories[selectedGrade]) {
+                subjectsSelect.disabled = false;
+                subjectsSelect.classList.remove('bg-slate-100', 'cursor-not-allowed');
+                
+                jobCategories[selectedGrade].sort().forEach(subj => {
+                    const option = document.createElement('option');
+                    option.value = subj;
+                    option.textContent = subj;
+                    subjectsSelect.appendChild(option);
+                });
+            } else {
+                subjectsSelect.disabled = true;
+                subjectsSelect.classList.add('bg-slate-100', 'cursor-not-allowed');
+            }
+        });
+
+        // Event: State Change -> Update District
+        stateSelect.addEventListener('change', function() {
+            const selectedState = this.value;
+            districtSelect.innerHTML = '<option value="">Select District</option>';
+            
+            if (selectedState && locationDB[selectedState]) {
+                districtSelect.disabled = false;
+                districtSelect.classList.remove('bg-slate-100', 'cursor-not-allowed');
+                
+                locationDB[selectedState].sort().forEach(dist => {
+                    const option = document.createElement('option');
+                    option.value = dist;
+                    option.textContent = dist;
+                    districtSelect.appendChild(option);
+                });
+            } else {
+                districtSelect.disabled = true;
+                districtSelect.classList.add('bg-slate-100', 'cursor-not-allowed');
+            }
+        });
+
+        // --- AUTO-SAVE LEAD LOGIC ---
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+
+        document.getElementById('leadForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const state = document.getElementById('state').value;
+            const district = document.getElementById('district').value;
+            const combinedLocation = `${district}, ${state}`;
+
+            const formData = {
+                name: document.getElementById('name').value,
+                whatsapp: document.getElementById('whatsapp').value,
+                subjects: document.getElementById('subjects').value,
+                grades: document.getElementById('grades').value,
+                location: combinedLocation
+            };
+
+            const btn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            btnText.innerText = "Submitting...";
+            btn.classList.add('opacity-75');
+
+            // --- API ENDPOINT ---
+            const API_URL = "save-lead"; 
+            fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "X-CSRFToken": csrftoken },
+                body: JSON.stringify(formData)
+            })
+            .then(response => { 
+                if (typeof fbq === 'function') {
+                    fbq('track', 'Lead');
+                }
+                setTimeout(function( ){
+                    window.location.href = "/teacher-pricing"
+                           },300
+                    ); 
+            })
+            .catch(error => { window.location.href = "/teacher-pricing"; 
+            });
+        });
+    </script>
+</body>
+</html>

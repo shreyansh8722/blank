@@ -1,0 +1,198 @@
+{%extends "admin-dashboard/admin_base.html"%}
+{% load static %}
+{%block title_block%}{{page_title}}{%endblock%}
+{%block body_block%}
+
+<div class="box-content">
+    <div class="box-heading">
+        <div class="box-title">
+            <h3 class="mb-35">My Jobs</h3>
+        </div>
+        <div class="box-breadcrumb">
+            <div class="breadcrumbs">
+                <ul>
+                    <li> <a class="icon-home" href="/admin-dashboard">Home</a></li>
+                    <li><span>My Jobs</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xxl-12 col-xl-12 col-lg-12">
+            <div class="section-box">
+                <div class="container">
+                    <div class="panel-white mb-30">
+                        <div class="box-padding">
+                            <div class="mb-30 float-right w-100 d-flex justify-content-end">
+                                <button class="btn btn-success mr-10 btn-sm py-2" data-type="job"  id="approve_all">Approve</button>
+                                <button class="btn btn-danger mr-10 btn-sm py-2" data-type="job"  id="disable_all">Disable</button>
+                            </div>
+                            <div class="table-responsive">
+                                <table id="active-jobs" class="row-border hover " style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox" id="multiple_teacher_selection_all" class="form-check-input "></th>
+                                            <th>Job Title</th>
+                                            <th>Experience</th>
+                                            <th>Salary</th>
+                                            <th>Job Location</th>
+                                            <th>Posted Date</th>
+                                            <th>Joining date</th>
+                                            <th>Expiry Date</th>
+                                            <th>Highlight</th>
+                                            <th>View/Edit</th>
+                                            <th>Approve</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for job in jobs %}
+                                        <tr>
+                                            <td>
+                                                <input type="checkbox" data-id="{{job.id}}" value="{{job.id}}" name="multiple_teacher_selection" class="form-check-input multiple_teacher_selection">
+                                            </td>
+                                            <td>{{job.subject}} {{job.teacher_grade}}</td>
+                                            <td>{{job.experienced_required}}</td>
+                                            <td>{{job.salary_offered}}</td>
+                                            <td>{{job.district}}, {{job.state}}</td>
+                                            <td>{{job.timestamp | date:"d M Y"}}</td>
+                                            <td>{{job.joining_date}}</td>
+                                            <td>{{job.expiry_date | date:"d M Y"}}</td>
+                                            
+                                            <td class="text-center">
+                                                <a href="#job-heighlight" data-id="{{job.id}}" data-bs-toggle="modal" class="btn {% if job.promo_applied %}  btn-success {% else %} btn-warning {% endif %}  py-1 promote_job"> {% if job.promo_applied %} Applied {% else %} Promote {% endif %} </a>
+                                           </td>
+                                           <td class="text-center"> <a target="_blank" href="/admin/cog_static_app/postjob/{{job.id}}/change/" class="btn btn-success py-1"> Edit
+                                           </a> </td>
+                                           <td class="text-center"> <a  target="_blank"  href="/job-application-candidate?job_id={{job.id}}" class="btn btn-default py-1 position-relative"> View <span class="app-count">{{job.job_app_count}}</span></a> </td>
+                                        </tr>
+                                        {% endfor %}                                        
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--Candidates -->
+<div class="modal fade" id="Candidates" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content apply-job-form">
+            <div class="modal-header">
+                <h5 class="modal-title" id="Application-Detail">Candidates</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-30">
+                    <h6>Job position : Mathematics</h6>
+                    <h6>Posted On : 23 Mar 2023</h6>
+                </div>
+                <div class="table-responsive">
+                    <table id="candidates-table" class="row-border hover " style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Mobile</th>
+                                <th>Qualification</th>
+                                <th>Subject</th>
+                                <th>Preferred Location</th>
+                                <th>Last Login</th>
+                                <th>Resume</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Aeba</td>
+                                <td>admin@facultyme.com</td>
+                                <td>8050168161</td>
+                                <td> B.Com</td>
+                                <td>Art & craft,</td>
+                                <td>Bangalore</td>
+                                <td>23 Mar 2023</td>
+                                <td><a href="" class="btn btn-default py-1">Download</a></td>
+                                <td><a href="" class="btn btn-danger py-1">Disapprove</a></td>
+                            </tr>
+                            <tr>
+                                <td>Aeba</td>
+                                <td>admin@facultyme.com</td>
+                                <td>8050168161</td>
+                                <td> B.Com</td>
+                                <td>Art & craft,</td>
+                                <td>Bangalore</td>
+                                <td>23 Mar 2023</td>
+                                <td><a href="" class="btn btn-default py-1">Download</a></td>
+                                <td><a href="" class="btn btn-success py-1">Approve</a></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Education</th>
+                                <th>Qualification</th>
+                                <th>Subject</th>
+                                <th>Preferred Location</th>
+                                <th>Last Login</th>
+                                <th>Resume</th>
+                                <th>Action</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Employer -->
+<div class="modal fade" id="Employer" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog " role="document">
+        <div class="modal-content apply-job-form">
+            <div class="modal-header">
+                <h5 class="modal-title" id="Activity-Detail">Employer Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                
+                <ul class="modal-list" id="employer_body">
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!--Plan-Details -->
+<div class="modal fade" id="job-heighlight" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content apply-job-form">
+            <div class="modal-header">
+                <h5 class="modal-title" id="Application-Detail">Promotion Details</h5>
+                <a class="btn-close" data-bs-dismiss="modal" aria-label="Close"></a>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" >Start Date</label>
+                    <input  type="date" required  id="start_date" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label" >End Date</label>
+                    <input  type="date" required  id="end_date" />
+                </div>
+                <div class="form-group">
+                    <input type="hidden" id="job_id" >
+                    <a class="btn btn-brand-1 hover-up w-100" id="promotion_save" >Save</a>
+                </div>
+            </div>
+            <div class="modal-footer">
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

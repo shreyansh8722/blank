@@ -1,0 +1,29 @@
+{%extends "base.html"%}
+{% load static %}
+{%block title_block%}{{page_title}}{%endblock%}
+{%block body_block%}
+<section class="section-box">
+    <div class="breacrumb-cover">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 mx-auto text-center">
+                    <h2 class="mb-10 color-white">Refund/Cancellation Policy</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="cog-section">
+    <div class="container">
+        <div class="col-md-10 mx-auto">
+            <div class="cog-term-head">
+                <h4>{{policy.title}}</h4>
+            </div>
+            <div class="cog-term-body">
+                <p>{{policy.policy|safe}}</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

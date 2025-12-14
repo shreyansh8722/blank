@@ -1,0 +1,263 @@
+{%extends "admin-dashboard/admin_base.html"%}
+{% load static %}
+{%block title_block%}{{page_title}}{%endblock%}
+{%block body_block%}
+
+<div class="container mt-4">
+    <div class="box-content">
+        <div class="box-heading d-flex justify-content-between align-items-center">
+            <div class="box-title">
+                <h3 class="mb-3">New Jobs</h3>
+            </div>
+            <div class="box-breadcrumb">
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a class="icon-home" href="/admin-dashboard">Home</a></li>
+                    <li class="breadcrumb-item active">New Jobs</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="section-box">
+                    <div class="panel-white mb-3 p-3 border rounded">
+                        <div class="d-flex justify-content-end mb-3">
+                            <button class="btn btn-success me-2 btn-sm py-2" data-type="job" id="approve_all">Approve</button>
+                            <button class="btn btn-danger me-2 btn-sm py-2" data-type="job" id="disable_all">Disable</button>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table id="active-jobs" class="table table-bordered table-hover">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th><input type="checkbox" id="multiple_teacher_selection_all" class="form-check-input"></th>
+                                        <th>Job Code</th>                                            
+                                        <th>Job Title</th>
+                                        <th>Experience</th>
+                                        <th>Salary</th>
+                                        <th>Job Location</th>
+                                        <th>Posted Date</th>
+                                        <th>Joining Date</th>
+                                        <th>Candidate Should Join</th>
+                                        <th>Expiry Date</th>
+                                        <th>Posted By</th>
+                                        <th>View/Edit</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for job in jobs %}
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" data-id="{{ job.id }}" value="{{ job.id }}" name="multiple_teacher_selection" class="form-check-input multiple_teacher_selection">
+                                        </td>
+                                        <td>{{ job.job_code }}</td>
+                                        <td>{{ job.subject }} {{ job.teacher_grade }}</td>
+                                        <td>{{ job.experienced_required|default:"Walkin Job" }}</td>
+                                        <td>
+                                            {% if job.salary_offered %}
+                                                {{ job.salary_offered }}
+                                            {% elif job.salary_range %}
+                                                {{ job.salary_range }}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if job.district %}{{ job.district }}{% endif %}
+                                            {% if job.district and job.state %}, {% endif %}
+                                            {% if job.state %}{{ job.state }}{% endif %}
+                                            {% if not job.district and not job.state %}N/A{% endif %}
+                                        </td>
+                                        <td>{{ job.timestamp | date:"d M Y" }}</td>
+                                        <td>
+                                            {% if job.joining_date %}
+                                                {{ job.joining_date }}
+                                            {% elif job.walkin_date %}
+                                                {{ job.walkin_date }}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if job.joining %}
+                                                {{ job.joining }}
+                                            {% elif job.walkin_date %}
+                                                {{ job.walkin_date }}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if job.expiry_date %}
+                                                {{ job.expiry_date | date:"d M Y" }}
+                                            {% elif job.walkin_date %}
+                                                {{ job.walkin_date | date:"d M Y" }}
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a class="btn btn-info text-white py-1 employer" data-id="{{ job.user.id }}" href="#Employer" data-bs-toggle="modal">
+                                                {{ job.user }}
+                                            </a>
+                                        </td>
+                                        {% if job.job_code.5 == 'J' %}
+                                        <td class="text-center">
+                                            <a target="_blank" href="/admin/cog_static_app/postjob/{{ job.id }}/change/" class="btn btn-success py-1"> Edit </a>
+                                        </td>
+                                        {% else %}
+                                        <td class="text-center">
+                                            <a target="_blank" href="/admin/cog_static_app/walkinjob/{{ job.id }}/change/" class="btn btn-success py-1"> Edit </a>
+                                        </td>
+                                        {% endif %}
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination Controls -->
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <ul class="pagination mb-0">
+                                {% if jobs.has_previous %}
+                                    <li class="page-item"><a class="page-link" href="?page=1">&laquo; First</a></li>
+                                    <li class="page-item"><a class="page-link" href="?page={{ jobs.previous_page_number }}">Previous</a></li>
+                                {% endif %}
+
+                                {% for num in jobs.paginator.page_range %}
+                                    {% if jobs.number == num %}
+                                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                                    {% else %}
+                                        <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% if jobs.has_next %}
+                                    <li class="page-item"><a class="page-link" href="?page={{ jobs.next_page_number }}">Next</a></li>
+                                    <li class="page-item"><a class="page-link" href="?page={{ jobs.paginator.num_pages }}">Last &raquo;</a></li>
+                                {% endif %}
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Candidates -->
+<div class="modal fade" id="Candidates" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content apply-job-form">
+            <div class="modal-header">
+                <h5 class="modal-title" id="Application-Detail">Candidates</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-30">
+                    <h6>Job position : Mathematics</h6>
+                    <h6>Posted On : 23 Mar 2023</h6>
+                </div>
+                <div class="table-responsive">
+                    <table id="candidates-table" class="row-border hover " style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Mobile</th>
+                                <th>Qualification</th>
+                                <th>Subject</th>
+                                <th>Preferred Location</th>
+                                <th>Last Login</th>
+                                <th>Resume</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Aeba</td>
+                                <td>admin@facultyme.com</td>
+                                <td>8050168161</td>
+                                <td> B.Com</td>
+                                <td>Art & craft,</td>
+                                <td>Bangalore</td>
+                                <td>23 Mar 2023</td>
+                                <td><a href="" class="btn btn-default py-1">Download</a></td>
+                                <td><a href="" class="btn btn-danger py-1">Disapprove</a></td>
+                            </tr>
+                            <tr>
+                                <td>Aeba</td>
+                                <td>admin@facultyme.com</td>
+                                <td>8050168161</td>
+                                <td> B.Com</td>
+                                <td>Art & craft,</td>
+                                <td>Bangalore</td>
+                                <td>23 Mar 2023</td>
+                                <td><a href="" class="btn btn-default py-1">Download</a></td>
+                                <td><a href="" class="btn btn-success py-1">Approve</a></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Education</th>
+                                <th>Qualification</th>
+                                <th>Subject</th>
+                                <th>Preferred Location</th>
+                                <th>Last Login</th>
+                                <th>Resume</th>
+                                <th>Action</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Employer -->
+<div class="modal fade" id="Employer" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog " role="document">
+        <div class="modal-content apply-job-form">
+            <div class="modal-header">
+                <h5 class="modal-title" id="Activity-Detail">Employer Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul class="modal-list" id="employer_body">
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Plan-Details -->
+<div class="modal fade" id="job-heighlight" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content apply-job-form">
+            <div class="modal-header">
+                <h5 class="modal-title" id="Application-Detail">Promotion Details</h5>
+                <a class="btn-close" data-bs-dismiss="modal" aria-label="Close"></a>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label" >Start Date</label>
+                    <input  type="date" required  id="start_date" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label" >End Date</label>
+                    <input  type="date" required  id="end_date" />
+                </div>
+                <div class="form-group">
+                    <input type="hidden" id="job_id" >
+                    <a class="btn btn-brand-1 hover-up w-100" id="promotion_save" >Save</a>
+                </div>
+            </div>
+            <div class="modal-footer">
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

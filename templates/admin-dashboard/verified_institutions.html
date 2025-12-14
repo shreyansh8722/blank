@@ -1,0 +1,261 @@
+{%extends "admin-dashboard/admin_base.html"%}
+{% load static %}
+{%block title_block%}{{page_title}}{%endblock%}
+{%block body_block%}
+
+<div class="box-content">
+    <div class="box-heading">
+        <div class="box-title">
+            <h3 class="mb-35">Approved Institutions</h3>
+        </div>
+        <div class="box-breadcrumb">
+            <div class="breadcrumbs">
+                <ul>
+                    <li> <a class="icon-home" href="/admin-dashboard">Home</a></li>
+                    <li><span>Approved Institutions</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xxl-12 col-xl-12 col-lg-12">
+            <div class="section-box">
+                <div class="container">
+                    <div class="panel-white mb-30">
+                        <div class="box-padding">
+                            <div class="mb-30 float-right w-100 d-flex justify-content-end">                                
+                                <button class="btn btn-default mr-10 btn-sm py-2" data-type="school"  id="send_pin">Send 4 digit pin</button>
+                                <button class="btn btn-danger mr-10 btn-sm py-2" data-type="school"  id="disable_all">Disable</button>
+                                <button class="btn btn-warning mr-10 btn-sm py-2" href="#school-filter" data-bs-toggle="modal" >Filter</button>
+                            </div>
+                            <div class="table-responsive">
+                                <table id="verified-school" class="row-border hover " style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox" id="multiple_teacher_selection_all" class="form-check-input "></th>
+                                            <th>Whatsapp</th>
+                                            {% comment %} <th>Teachers List</th> {% endcomment %}
+                                            <th>Joined On</th>
+                                            <th>Recent Activity</th>
+                                            <th>Last Login</th>
+                                            <th>Payment</th>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Mobile No.</th>
+                                            <th>Alt. Mobile No</th>
+                                            <th>Website</th>
+                                            <th>Institute Type</th>
+                                            <th>Location</th>
+                                            <th>Jobs & Applications </th>
+                                            <th>Label</th>
+                                            <th>Edit Data</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for school in schools %}
+                                        <tr>
+                                            <td>
+                                                <input type="checkbox" data-id="{{school.id}}" value="{{school.id}}" name="multiple_teacher_selection" class="form-check-input multiple_teacher_selection">
+                                            </td>
+                                            <td>
+                                                <a class="send_whatsapp btn btn-warning py-2" data-type="pin" data-for="school" data-mobile="{{school.user.mobile_no}}"  data-school="{{school.user.id}}" >Sent</a>
+                                            </td>                                          
+                                            {% comment %} <td><span class="badge bg-danger">Disable</span></td> {% endcomment %}
+                                            <td>{{school.timestamp|date:"d M Y"}}</td>
+                                            <td><a href="#Activity-Detail" data-id="{{school.id}}"  class="user_log" data-bs-toggle="modal"> <u> {{school.user.last_login | date:"d M Y"}}</u></a></td>
+                                            <td>{{school.user.last_login}}</td>
+                                            <td class="text-center"> <a href="#plan-detail" data-bs-toggle="modal" class="btn btn-default py-1"> {{school.plan}} </a>
+                                            <td>{{school.user.name}}</td>
+                                            <td>{{school.user.email}}</td>
+                                            <td>{{school.user.mobile_no}}</td>
+                                            <td>{{school.user.alt_mobile_no}}</td>
+                                            <td><a href="{{school.website}}" target="_blank" >{{school.website}}</a></td>
+                                            <td>{{school.institute_type}}</td>
+                                            <td>{{school.district}}, {{school.state}}</td>
+                                            <td class="text-center"> 
+                                                <a target="_blank" href="/job-application?school={{school.id}}" class="btn btn-default py-1 position-relative"> View </a> 
+                                            </td>
+                                            <td class="text-center">
+                                                <select class="form-control change_label" data-type="school" data-id="{{school.id}}" style="width:100px">
+                                                    <option>Select</option>
+                                                    {% for label in labels %}
+                                                        <option {% if school.label == label.name %} selected {% endif %}  >{{label.name}}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </td>
+                                            
+                                            <td class="text-center"> <a target="_blank" href="/admin/cog_static_app/school/{{school.id}}/change/" class="btn btn-warning py-1"> Edit </a>
+
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--Activity-Detail -->
+<div class="modal fade" id="Activity-Detail" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog " role="document">
+        <div class="modal-content apply-job-form">
+            <div class="modal-header">
+                <h5 class="modal-title" id="Activity-Detail">Recent Activities</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Date</th>
+                            <th>Activity</th>
+                        </tr>
+                    </thead>
+                    <tbody id="log_body">
+                    </tbody>
+
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Application-Detail -->
+<div class="modal fade" id="application-detail" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content apply-job-form">
+            <div class="modal-header">
+                <h5 class="modal-title" id="Application-Detail">Application Detail</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table id="application-details" class="row-border hover " style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Job Id</th>
+                                <th>School Name</th>
+                                <th>Job Posted On</th>
+                                <th>Category</th>
+                                <th>Subject</th>
+                                <th>Qualification</th>
+                                <th>Experience</th>
+                                <th>Salary</th>
+                                <th>Date of Joining</th>
+                                <th>Benefits & Compensation</th>
+                                <th>Location</th>
+                                <th>Admin Approval</th>
+                                <th>Interview Call Detail</th>
+                                <th>Rejected/pending</th>
+                            </tr>
+                        </thead>
+                        <tbody id="application_detail_body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Plan-Details -->
+<div class="modal fade" id="plan-detail" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content apply-job-form">
+            <div class="modal-header">
+                <h5 class="modal-title" id="Application-Detail">Plan Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table  class="row-border hover ">
+                        <tbody>
+                            <tr><td><b>Plan Name:</b> Basic</td></tr>
+                            <tr><td><b>Purchase Date:</b> 22 May 2023</td></tr>
+                            <tr><td><b>Valid Till:</b> 21 May 2024</td></tr>
+                            <tr> <td><b>Amount Paid:</b> ₹ 100</td></tr>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--School Filter -->
+<div class="modal fade" id="school-filter" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <form action="/verified-institutions" method="post">
+            {% csrf_token %}
+        <div class="modal-content apply-job-form">
+            <div class="modal-header">
+                <h5 class="modal-title">School List Filters</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+               
+                    <table class="row-border hover " style="width:100%">
+                        <thead>
+                            <tr>
+                                <td class="text-center">
+                                    <select class="form-control" name="payment" >
+                                        <option value="">Payment</option>
+                                        <option>Paid</option>
+                                        <option>Unpaid</option>
+                                    </select>
+                                </td>                               
+                            </tr>
+                            <tr>
+                                <td class="text-center">
+                                    <select class="form-control" name="school_type" >
+                                        <option value="">School Type</option>
+                                        <option value="Institute">Institute</option>
+                                        <option value="Academy">Academy</option>
+                                        <option value="School">School</option>
+                                    </select>
+                                </td>                               
+                            </tr>
+                            <tr>
+                                <td class="text-center">
+                                    <select class="form-control" name="state" >
+                                        <option value="">State</option>
+                                        {% for state in state_data %}
+                                        <option>{{state.name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>                               
+                            </tr>
+                            <tr>
+                                <td class="text-center">
+                                    <select class="form-control" name="district" >
+                                        <option value="">District</option>
+                                        {% for district in district_data %}
+                                        <option>{{district.name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>                               
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" type="submit">Filter</button>
+            </div>
+        </div>
+        </form>
+
+    </div>
+</div>
+{% endblock %}

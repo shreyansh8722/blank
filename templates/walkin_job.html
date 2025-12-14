@@ -1,0 +1,559 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title_block %}{{ page_title }}{% endblock %}
+{% block body_block %}
+<main class="main">
+    <section class="section-box">
+        <div class="breacrumb-cover">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-6 col-xs-6">
+                  <a onclick="backButton()" class="pointer"><i class=" fa fa-arrow-left mr-10"></i>Back</a>
+                </div>
+                <div class="col-lg-6  col-xs-6 text-end">
+                  <ul class="breadcrumbs">
+                    <li><a href="/school-account">Home</a></li>
+                    <li>Walk-in Job</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+        </div>
+    </section>
+    <section class="section-box mt-30 mb-30">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    {% include 'partials/_alerts.html' %}
+                    <form action="/post-walkin-job" method="post" class="p-3">
+                        {% csrf_token %}
+                        <h4 class="mb-20 text-center">Post a Walk-in Job</h4>
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label class="form-label" for="grade-dropdown">Grade teachers you are looking for (select up to 4)</label>
+                                <select class="form-control" id="grade_change" name="teacher_grade" >
+                                    <option value="" hidden>Select ({{ grade_data|length }} available)</option>
+                                    {% for info in grade_data %}
+                                    <option value="{{info.id}}" data-name="{{info.name}}">{{info.name}}</option>
+                                    {% endfor %}
+                                </select>
+                                <div id="selected-grades-container" class="mt-2">
+                                    <small class="text-muted" id="grade-selection-count">0/4 grades selected</small>
+                                    <div id="selected-grades-badges" class="mt-1"></div>
+                                </div>
+                                <!-- Hidden input to store selected grades -->
+                                <div id="selected-grades-inputs"></div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="form-label" for="subject-dropdown">Subject teacher required (select up to 4)</label>
+                                <select class="form-control" id="grade_subject" name="subject" disabled>
+                                    <option value="" hidden>Select (0 available)</option>
+                                </select>
+                                <div id="selected-subjects-container" class="mt-2">
+                                    <small class="text-muted" id="subject-selection-count">0/4 subjects selected</small>
+                                    <div id="selected-subjects-badges" class="mt-1"></div>
+                                </div>
+                                <!-- Hidden input to store selected subjects -->
+                                <div id="selected-subjects-inputs"></div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="form-label" for="input-1">Salary Range</label>
+                                <input type="text" class="form-control " name="salary_range" required placeholder="Enter salary range">
+                            </div>
+                            <div class="form-group col-md-6 date">
+                                <label class="form-label" for="">Walk-in Date</label>
+                                <input type="date" class="form-control date-custom-input" name="walkin_date" required min="{{ min_walkin_date }}">
+                                <small class="text-muted">Must be at least 6 days from today</small>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="form-label" for="input-1">Contact Person Name</label>
+                                <input type="text" class="form-control " name="contact_name" required placeholder="Enter contact name">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="form-label" for="input-1">Designation</label>
+                                <input type="text" class="form-control " name="contact_designation" required placeholder="Enter contact designation">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="form-label" for="input-1">Mobile Number</label>
+                                <input type="text" class="form-control " name="contact_mobile" required placeholder="Enter contact mobile">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="form-label" for="input-1">Alternative Mobile No</label>
+                                <input type="text" class="form-control " name="alternative_mobile" required placeholder="Enter alternative number">
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label" for="input-1">Description</label>
+                                <textarea type="text" name="description" placeholder="Write something about your walk-in job post (Max 50 words)" 
+                                          id="description_data" cols="30" rows="5" oninput="countWords()"></textarea>
+                                <small id="wordCount">0/50 words</small>
+                            </div>
+                        </div>
+                        <div class="col-12 text-center mt-3">
+                            <button type="submit" class="btn btn-default w-100">Post Walk-in Job</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+    function backButton() {
+        window.history.back();
+    }
+    
+    function countWords() {
+        let text = document.getElementById("description_data").value;
+        let words = text.trim().split(/\s+/).filter(word => word.length > 0);
+        let wordCount = words.length;
+    
+        document.getElementById("wordCount").innerText = wordCount + "/50 words";
+    
+        if (wordCount > 50) {
+            alert("You can enter a maximum of 50 words.");
+            // Trim to 50 words
+            document.getElementById("description_data").value = words.slice(0, 50).join(" ");
+            document.getElementById("wordCount").innerText = "50/50 words";
+        }
+    }
+
+    // Store grade-subject mapping data
+    const gradeSubjectsMap = {};
+    let selectedGradeIds = [];
+    let selectedGradeNames = [];
+    let selectedSubjectsMap = {}; // New structure: { gradeId: [subjects] }
+    const maxGradeSelections = 4;
+    const maxSubjectsPerGrade = 4;
+
+    let updateInProgress = false;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Setup Grade selection
+        setupGradeSelection();
+        
+        // Setup Subject selection
+        setupSubjectSelection();
+    });
+
+    function fetchSubjectsForGrade(gradeId) {
+        return new Promise((resolve, reject) => {
+            // Don't refetch if we already have the data
+            if (gradeSubjectsMap[gradeId]) {
+                resolve(gradeSubjectsMap[gradeId]);
+                return;
+            }
+            
+            // Add a timeout to prevent hanging requests
+            const timeoutId = setTimeout(() => {
+                console.warn(`Request timeout for grade ${gradeId}`);
+                // Create an empty array as fallback
+                gradeSubjectsMap[gradeId] = [];
+                resolve([]);
+            }, 5000); // 5 second timeout
+            
+            fetch(`/api/subjects-by-grade/${gradeId}/`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    clearTimeout(timeoutId); // Clear the timeout
+                    if (data.success) {
+                        // Store the subjects data
+                        gradeSubjectsMap[gradeId] = data.subjects || [];
+                        resolve(data.subjects || []);
+                    } else {
+                        gradeSubjectsMap[gradeId] = []; // Set empty array to prevent retries
+                        reject(new Error(data.error || 'Unknown error'));
+                    }
+                })
+                .catch(error => {
+                    clearTimeout(timeoutId); // Clear the timeout
+                    console.error('Error fetching subjects for grade ' + gradeId + ':', error);
+                    gradeSubjectsMap[gradeId] = []; // Set empty array to prevent retries
+                    reject(error);
+                });
+        });
+    }
+
+    function setupGradeSelection() {
+        const gradeDropdown = document.getElementById('grade_change');
+        const gradesBadgesContainer = document.getElementById('selected-grades-badges');
+        const gradesInputsContainer = document.getElementById('selected-grades-inputs');
+        const gradeSelectionCounter = document.getElementById('grade-selection-count');
+        
+        gradeDropdown.addEventListener('change', function() {
+            const selectedGradeId = this.value;
+            if (!selectedGradeId) return; // Skip if no value selected
+            
+            const selectedGradeName = this.options[this.selectedIndex].getAttribute('data-name');
+            
+            // Check if already selected
+            if (!selectedGradeIds.includes(selectedGradeId)) {
+                
+                // Check maximum selections
+                if (selectedGradeIds.length >= maxGradeSelections) {
+                    alert(`You can select a maximum of ${maxGradeSelections} grades.`);
+                    this.selectedIndex = 0;
+                    return;
+                }
+                
+                // Add to selected grades
+                selectedGradeIds.push(selectedGradeId);
+                selectedGradeNames.push(selectedGradeName);
+                
+                // Initialize subjects array for this grade
+                selectedSubjectsMap[selectedGradeId] = [];
+                
+                // Update UI
+                updateGradesDisplay();
+                
+                // Start fetching in the background, but don't wait here
+                fetchSubjectsForGrade(selectedGradeId)
+                    .catch(error => {
+                        console.error('Error in subject fetch:', error);
+                    });
+                
+                // Update available subjects immediately (without waiting for fetch)
+                // This will show loading state, then update when the fetch completes
+                setTimeout(() => {
+                    updateAvailableSubjects();
+                }, 50);
+            }
+            
+            // Reset dropdown
+            this.selectedIndex = 0;
+        });
+        
+        function updateGradesDisplay() {
+            // Clear previous badges and inputs
+            gradesBadgesContainer.innerHTML = '';
+            gradesInputsContainer.innerHTML = '';
+            
+            // Update counter
+            gradeSelectionCounter.innerText = `${selectedGradeIds.length}/${maxGradeSelections} grades selected`;
+            
+            // Create badges and hidden inputs for each selected grade
+            selectedGradeIds.forEach((gradeId, index) => {
+                // Create badge
+                const badge = document.createElement('span');
+                badge.className = 'badge bg-primary me-2 mb-1 p-2';
+                badge.innerHTML = selectedGradeNames[index] + ' <a href="#" class="text-white ms-1" data-index="' + index + '">×</a>';
+                gradesBadgesContainer.appendChild(badge);
+                
+                // Create hidden input
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'teacher_grade[]';
+                hiddenInput.value = gradeId;
+                gradesInputsContainer.appendChild(hiddenInput);
+                
+                // Add event listener to remove button
+                badge.querySelector('a').addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const indexToRemove = parseInt(this.getAttribute('data-index'));
+                    const gradeIdToRemove = selectedGradeIds[indexToRemove];
+                    
+                    // Remove grade
+                    selectedGradeIds.splice(indexToRemove, 1);
+                    selectedGradeNames.splice(indexToRemove, 1);
+                    
+                    // Remove associated subjects
+                    delete selectedSubjectsMap[gradeIdToRemove];
+                    
+                    updateGradesDisplay();
+                    
+                    // Use setTimeout to ensure this runs after the DOM updates
+                    setTimeout(() => {
+                        updateSubjectsDisplay();
+                        updateAvailableSubjects();
+                    }, 50);
+                });
+            });
+        }
+    }
+
+    async function updateAvailableSubjects() {
+        const subjectDropdown = document.getElementById('grade_subject');
+        const gradeDropdown = document.getElementById('grade_change');
+        
+        // Prevent multiple concurrent updates
+        if (updateInProgress) {
+            return;
+        }
+        
+        updateInProgress = true;
+        
+        // If no grades selected, disable subject dropdown
+        if (selectedGradeIds.length === 0) {
+            subjectDropdown.disabled = true;
+            subjectDropdown.innerHTML = '<option value="" hidden>Select (0 available)</option>';
+            updateSubjectsDisplay();
+            updateInProgress = false;
+            return;
+        }
+        
+        // Show loading state
+        subjectDropdown.disabled = true;
+        subjectDropdown.innerHTML = '<option value="" hidden>Loading subjects...</option>';
+        
+        try {
+            // Use Promise.allSettled instead of Promise.all to handle partial failures
+            const results = await Promise.allSettled(selectedGradeIds.map(gradeId => 
+                fetchSubjectsForGrade(gradeId)
+            ));
+            
+            // Log the results for debugging
+            results.forEach((result, index) => {
+                if (result.status === 'rejected') {
+                    console.warn(`Failed to load subjects for grade ${selectedGradeIds[index]}: ${result.reason}`);
+                }
+            });
+            
+            // Get current grade ID selection
+            const gradeSelectElement = document.getElementById('grade_for_subject') || 
+                                        document.createElement('select'); // Create dummy if doesn't exist yet
+            const currentGradeId = gradeSelectElement.value || selectedGradeIds[0];
+            
+            // Don't update if we're already not the current update (prevents race conditions)
+            if (!updateInProgress) return;
+            
+            // Create grade selector for subjects if we have multiple grades
+            let gradeSelector = '';
+            if (selectedGradeIds.length > 1) {
+                gradeSelector = `<div class="form-group mb-2">
+                    <label class="form-label" for="grade_for_subject">Select grade to add subjects for:</label>
+                    <select class="form-control" id="grade_for_subject">`;
+                
+                selectedGradeIds.forEach((gradeId, index) => {
+                    const selected = (gradeId === currentGradeId) ? 'selected' : '';
+                    gradeSelector += `<option value="${gradeId}" ${selected}>${selectedGradeNames[index]}</option>`;
+                });
+                
+                gradeSelector += `</select></div>`;
+                
+                // Insert grade selector before subject dropdown if not already present
+                const selectorContainer = document.getElementById('grade-selector-container');
+                if (!selectorContainer) {
+                    const newContainer = document.createElement('div');
+                    newContainer.id = 'grade-selector-container';
+                    newContainer.innerHTML = gradeSelector;
+                    subjectDropdown.parentNode.insertBefore(newContainer, subjectDropdown);
+                    
+                    // Add event listener to the new grade selector
+                    setTimeout(() => {
+                        const gradeForSubject = document.getElementById('grade_for_subject');
+                        if (gradeForSubject) {
+                            gradeForSubject.addEventListener('change', function() {
+                                updateAvailableSubjects();
+                            });
+                        }
+                    }, 0);
+                } else {
+                    selectorContainer.innerHTML = gradeSelector;
+                }
+            } else {
+                // Remove grade selector if it exists and we only have one grade
+                const selectorContainer = document.getElementById('grade-selector-container');
+                if (selectorContainer) {
+                    selectorContainer.remove();
+                }
+            }
+            
+            // Get the current effective grade ID (either from selector or first grade)
+            const effectiveGradeId = selectedGradeIds.length > 1 ? 
+                (document.getElementById('grade_for_subject')?.value || selectedGradeIds[0]) : 
+                selectedGradeIds[0];
+            
+            // Get subjects for the effective grade
+            const availableSubjects = gradeSubjectsMap[effectiveGradeId] || [];
+            
+            // Get already selected subjects for this grade
+            const selectedSubjectsForGrade = selectedSubjectsMap[effectiveGradeId] || [];
+            
+            // Enable subject dropdown
+            subjectDropdown.disabled = false;
+            
+            // Update dropdown options
+            subjectDropdown.innerHTML = `<option value="" hidden>Select subjects for ${selectedGradeNames[selectedGradeIds.indexOf(effectiveGradeId)]} (${availableSubjects.length} available)</option>`;
+            
+            // Add available subjects that haven't been selected yet for this grade
+            availableSubjects
+                .sort((a, b) => a.localeCompare(b)) // Sort alphabetically
+                .forEach(subject => {
+                    if (!selectedSubjectsForGrade.includes(subject)) {
+                        const option = document.createElement('option');
+                        option.value = subject;
+                        option.textContent = subject;
+                        option.setAttribute('data-grade-id', effectiveGradeId);
+                        subjectDropdown.appendChild(option);
+                    }
+                });
+                
+            // Update the count
+            const subjectSelectionCounter = document.getElementById('subject-selection-count');
+            const totalSelectedSubjects = Object.values(selectedSubjectsMap).reduce((total, subjects) => total + subjects.length, 0);
+            const maxPossibleSubjects = selectedGradeIds.length * maxSubjectsPerGrade;
+            subjectSelectionCounter.innerText = `${totalSelectedSubjects}/${maxPossibleSubjects} subjects selected (max ${maxSubjectsPerGrade} per grade)`;
+            
+        } catch (error) {
+            console.error('Error updating subjects:', error);
+            subjectDropdown.innerHTML = '<option value="" hidden>Error loading subjects</option>';
+            subjectDropdown.disabled = true;
+        } finally {
+            updateInProgress = false;
+        }
+    }
+
+    function updateSubjectsDisplay() {
+        const subjectsBadgesContainer = document.getElementById('selected-subjects-badges');
+        const subjectsInputsContainer = document.getElementById('selected-subjects-inputs');
+        const subjectSelectionCounter = document.getElementById('subject-selection-count');
+        
+        // Clear previous badges and inputs
+        subjectsBadgesContainer.innerHTML = '';
+        subjectsInputsContainer.innerHTML = '';
+        
+        // Calculate total selected subjects
+        const totalSelectedSubjects = Object.values(selectedSubjectsMap).reduce((total, subjects) => total + subjects.length, 0);
+        const maxPossibleSubjects = selectedGradeIds.length * maxSubjectsPerGrade;
+        
+        // Update counter
+        subjectSelectionCounter.innerText = `${totalSelectedSubjects}/${maxPossibleSubjects} subjects selected (max ${maxSubjectsPerGrade} per grade)`;
+        
+        // Create badges and hidden inputs for each selected subject, grouped by grade
+        selectedGradeIds.forEach((gradeId, gradeIndex) => {
+            const gradeName = selectedGradeNames[gradeIndex];
+            const subjectsForGrade = selectedSubjectsMap[gradeId] || [];
+            
+            if (subjectsForGrade.length > 0) {
+                // Add grade header for subjects
+                const gradeHeader = document.createElement('div');
+                gradeHeader.className = 'mb-1 mt-2';
+                gradeHeader.innerHTML = `<small class="text-muted">${gradeName} (${subjectsForGrade.length}/${maxSubjectsPerGrade}):</small>`;
+                subjectsBadgesContainer.appendChild(gradeHeader);
+                
+                // Add subjects for this grade
+                subjectsForGrade.forEach((subject, subjectIndex) => {
+                    // Create badge
+                    const badge = document.createElement('span');
+                    badge.className = 'badge bg-info me-2 mb-1 p-2';
+                    badge.innerHTML = subject + ' <a href="#" class="text-white ms-1" data-grade-id="' + gradeId + '" data-index="' + subjectIndex + '">×</a>';
+                    subjectsBadgesContainer.appendChild(badge);
+                    
+                    // Create hidden input with grade and subject information
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'subject[]';
+                    hiddenInput.value = subject;
+                    
+                    // Additional hidden input for grade-subject relationship
+                    const gradeSubjectInput = document.createElement('input');
+                    gradeSubjectInput.type = 'hidden';
+                    gradeSubjectInput.name = 'grade_subject[]';
+                    gradeSubjectInput.value = `${gradeId}:${subject}`;
+                    
+                    subjectsInputsContainer.appendChild(hiddenInput);
+                    subjectsInputsContainer.appendChild(gradeSubjectInput);
+                    
+                    // Add event listener to remove button
+                    badge.querySelector('a').addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const gradeId = this.getAttribute('data-grade-id');
+                        const indexToRemove = parseInt(this.getAttribute('data-index'));
+                        
+                        // Remove subject from the grade
+                        if (selectedSubjectsMap[gradeId]) {
+                            selectedSubjectsMap[gradeId].splice(indexToRemove, 1);
+                            updateSubjectsDisplay();
+                            updateAvailableSubjects();
+                        }
+                    });
+                });
+            }
+        });
+    }
+
+    function setupSubjectSelection() {
+        const subjectDropdown = document.getElementById('grade_subject');
+        
+        subjectDropdown.addEventListener('change', function() {
+            const selectedSubject = this.value;
+            if (!selectedSubject) return;
+            
+            // Get the grade ID either from the grade selector or the data attribute
+            let gradeId;
+            const gradeForSubject = document.getElementById('grade_for_subject');
+            
+            if (gradeForSubject) {
+                gradeId = gradeForSubject.value;
+            } else if (selectedGradeIds.length === 1) {
+                gradeId = selectedGradeIds[0];
+            } else {
+                // Get grade ID from the selected option
+                gradeId = this.options[this.selectedIndex].getAttribute('data-grade-id');
+            }
+            
+            // Initialize the array if it doesn't exist
+            if (!selectedSubjectsMap[gradeId]) {
+                selectedSubjectsMap[gradeId] = [];
+            }
+            
+            // Check if subject is already selected for this grade
+            if (!selectedSubjectsMap[gradeId].includes(selectedSubject)) {
+                // Check maximum selections for this grade
+                if (selectedSubjectsMap[gradeId].length >= maxSubjectsPerGrade) {
+                    alert(`You can select a maximum of ${maxSubjectsPerGrade} subjects per grade.`);
+                    this.selectedIndex = 0;
+                    return;
+                }
+                
+                // Add to selected subjects for this grade
+                selectedSubjectsMap[gradeId].push(selectedSubject);
+                
+                // Update UI
+                updateSubjectsDisplay();
+                
+                // Refresh available subjects in dropdown
+                updateAvailableSubjects();
+            }
+            
+            // Reset dropdown
+            this.selectedIndex = 0;
+        });
+    }
+
+    function countWords() {
+        let text = document.getElementById("description_data").value;
+        let words = text.trim().split(/\s+/).filter(word => word.length > 0);
+        let wordCount = words.length;
+
+        document.getElementById("wordCount").innerText = wordCount + "/50 words";
+
+        if (wordCount > 50) {
+            alert("You can enter a maximum of 50 words.");
+            // Trim to 50 words
+            document.getElementById("description_data").value = words.slice(0, 50).join(" ");
+            document.getElementById("wordCount").innerText = "50/50 words";
+        }
+    }
+</script>
+<style>
+    .badge {
+        font-size: 0.9rem;
+    }
+    
+    .badge a {
+        cursor: pointer;
+        text-decoration: none;
+    }
+    
+    .form-control:disabled {
+        background-color: #f8f9fa;
+        opacity: 0.8;
+    }
+</style>
+{% endblock %}

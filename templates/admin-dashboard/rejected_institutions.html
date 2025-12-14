@@ -1,0 +1,130 @@
+{%extends "admin-dashboard/admin_base.html"%}
+{% load static %}
+{%block title_block%}{{page_title}}{%endblock%}
+{%block body_block%}
+
+<div class="box-content">
+    <div class="box-heading">
+        <div class="box-title">
+            <h3 class="mb-35">Rejected Institutes</h3>
+        </div>
+        <div class="box-breadcrumb">
+            <div class="breadcrumbs">
+                <ul>
+                    <li> <a class="icon-home" href="/admin-dashboard">Home</a></li>
+                    <li><span>Rejected Institutes</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xxl-12 col-xl-12 col-lg-12">
+            <div class="section-box">
+                <div class="container">
+                    <div class="panel-white mb-30">
+                        <div class="box-padding">
+                            <div class="mb-30 float-right w-100 d-flex justify-content-end">
+                                <button class="btn btn-success mr-10 btn-sm py-2" data-type="school" id="approve_all">Approve</button>
+                            </div>
+                            <div class="table-responsive">
+                                <table id="unverified-school" class="row-border hover " style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox" id="multiple_teacher_selection_all" class="form-check-input "></th>
+                                            <th>Created At</th>
+                                            <th>School Name</th>
+                                            <th>Mobile No</th>
+                                            <th>Alternate Mobile No</th>
+                                            <th>Plan</th>
+                                            <th>Mobile Verified</th>
+                                            <th>Edit</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for school in schools %}
+                                            <tr>
+                                                <td>
+                                                    <input type="checkbox" data-id="{{school.id}}" value="{{school.id}}" name="multiple_teacher_selection" class="form-check-input multiple_teacher_selection">
+                                                </td>
+                                                <td>{{school.timestamp | date:"d M Y"}}</td>
+                                                <td>{{school.user.name}}</td>
+                                                <td>{{school.user.mobile_no}}</td>
+                                                <td>{{school.user.alt_mobile_no}}</td>
+                                                <td>{{school.plan}}</td>
+                                                <td>
+                                                    {% if school.user.is_mobile_no_verified %}
+                                                        Verified
+                                                    {% else %}
+                                                        Unverified
+                                                    {% endif %}
+                                                </td>
+                                                <td class="text-center"> <a target="_blank" href="/admin/cog_static_app/school/{{school.id}}/change/" class="btn btn-warning py-1"> Edit </a>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!--School Filter -->
+<div class="modal fade" id="school-filter" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content apply-job-form">
+            <div class="modal-header">
+                <h5 class="modal-title">School List Filters</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="row-border hover " style="width:100%">
+                        <thead>
+                            <tr>
+                                <td class="text-center">
+                                    <select class="form-control" >
+                                        <option>Payment</option>
+                                        <option>Paid</option>
+                                        <option>Unpaid</option>
+                                    </select>
+                                </td>                               
+                            </tr>
+                            <tr>
+                                <td class="text-center">
+                                    <select class="form-control" >
+                                        <option>School Type</option>
+                                        <option value="Institute">Institute</option>
+                                        <option value="Academy">Academy</option>
+                                    </select>
+                                </td>                               
+                            </tr>
+                            <tr>
+                                <td class="text-center">
+                                    <select class="form-control" >
+                                        <option>State</option>
+                                        <option>Karnataka</option>
+                                        <option>Delhi</option>
+                                    </select>
+                                </td>                               
+                            </tr>
+                            <tr>
+                                <td class="text-center">
+                                    <select class="form-control" >
+                                        <option>District</option>
+                                        <option>Bangalore</option>
+                                        <option>Bidar</option>
+                                    </select>
+                                </td>                               
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

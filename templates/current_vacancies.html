@@ -1,0 +1,735 @@
+
+{% extends "base.html" %}
+{% load static %}
+{% block title_block %}{{page_title}}{% endblock %}
+{% block body_block %}
+
+<style>
+    .pagination {
+        display: flex;
+        padding-left: 0;
+        list-style: none;
+        border-radius: 0.25rem;
+    }
+    
+    .page-item:first-child .page-link {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
+    
+    .page-item:last-child .page-link {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+    
+    .page-item.active .page-link {
+        z-index: 3;
+        color: #fff;
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+    
+    .page-item.disabled .page-link {
+        color: #6c757d;
+        pointer-events: none;
+        cursor: auto;
+        background-color: #fff;
+        border-color: #dee2e6;
+    }
+    
+    .page-link {
+        position: relative;
+        display: block;
+        padding: 0.5rem 0.75rem;
+        margin-left: -1px;
+        line-height: 1.25;
+        color: #007bff;
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+        min-width: 40px;
+        text-align: left;
+    }
+    
+    .page-link:hover {
+        z-index: 2;
+        color: #0056b3;
+        text-decoration: none;
+        background-color: #e9ecef;
+        border-color: #dee2e6;
+    }
+    
+    .page-link:focus {
+        z-index: 3;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+    
+    /* Make the active page look exactly like the image */
+    .page-item.active .page-link {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+    
+    /* Some slight modifications to match the image */
+    .pagination {
+        margin: 20px 0;
+    }
+    
+    .page-link {
+        border-radius: 0;
+        min-height: 40px;
+        display: flex;
+        align-items: left;
+        justify-content: center;
+    }
+    
+    /* Updated Filter tag styling */
+    .filter-tag {
+        display: inline-block;
+        padding: 3px 6px;
+        margin: 5px;
+        background-color: #007bff;
+        color: white;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 14px;
+    }
+    .filter-tag:hover {
+        background-color:rgb(0, 98, 203);
+    }
+    .filter-tag i {
+        margin-left: 5px;
+        cursor: pointer;
+    }
+    .filter-container {
+        margin-top: 15px;
+        margin-bottom: 10px;
+        text-align: center; 
+    }
+
+    #filter-tags {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center; 
+    }
+
+    /* Multiselect styling */
+    .multiselect-dropdown {
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        width: 100%;
+        cursor: pointer;
+        background-color: white;
+        position: relative;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .multiselect-dropdown .dropdown-toggle {
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 10px;
+        height: 38px; 
+        font-size: 14px;
+    }
+
+    /* Improve search button alignment */
+    #filter-form .btn {
+        height: 38px; /* Match the height of the dropdowns */
+        display: flex;
+        align-items: center;
+        gap: 0px;
+        justify-content: center;
+    }
+
+    #reset-search-btn {
+        display: inline-flex;
+        align-items: center;
+        color: #007bff;
+        font-size: 14px;
+        margin-left: auto;
+        margin-right: 0;
+    }
+
+    #active-filters h6 {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    /* Reduce checkbox size inside dropdown */
+    .multiselect-dropdown input[type="checkbox"] {
+        width: 12px;
+        height: 12px;
+        margin-right: 6px;
+        vertical-align: middle;
+    }
+
+    .multiselect-dropdown .dropdown-toggle:focus {
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+    .multiselect-dropdown .dropdown-menu {
+        max-height: 150px; /* Reduced height */
+        overflow-y: auto;
+        overflow-x: hidden;
+        {% comment %} margin-top: 2px; {% endcomment %}
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+        border: 1px solid rgba(0,0,0,0.1);
+        text-align: Left;
+        padding: 0;
+        justify-content: flex-start; /* Left alignment */
+    }
+
+    .multiselect-dropdown .dropdown-item {
+        display: flex-start;
+        align-items: left;
+        border-bottom: 1px solid #f1f1f1;
+        white-space: nowrap;
+        font-size: 13px;
+        padding: 3px 5px;
+    }
+
+    .multiselect-dropdown .dropdown-item:last-child {
+        border-bottom: none;
+    }
+
+    .multiselect-dropdown .dropdown-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .multiselect-dropdown .form-check {
+        padding-left: 0;
+        margin-left: 0;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        width: 100%;
+        justify-content: flex-start; /* Left alignment */
+    }
+
+    .multiselect-dropdown .form-check-input {
+        margin-right: 3px; /* Reduced margin */
+        margin-left: 0;
+        mergin-top: 0;
+        position: static;
+        margin-top: 0;
+        width: 10px; /* Adjusted size */
+        height: 10px; /* Adjusted size */
+        cursor: pointer;
+    }
+
+    .multiselect-dropdown .form-check-label {
+        margin-bottom: 0;
+        cursor: pointer;
+        flex-grow: 1;
+        text-align: left;
+    }
+
+    .multiselect-selected {
+        display: inline-block;
+        width: calc(100% - 20px);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        text-align: left;
+    }
+
+    /* Improve Custom Select Styling */
+    .custom-select-container {
+        position: relative;
+        text-align: left;
+    }
+
+    .custom-select-container select[multiple] {
+        height: auto;
+        padding: 6px 10px; /* Reduced padding */
+        border-radius: 4px;
+    }
+
+    .selected-options {
+        margin-top: 6px; 
+        display: flex;
+        flex-wrap: wrap;
+        gap: 3px;
+        justify-content: flex-start; /* Left alignment */
+    }
+
+    .selected-option {
+        display: inline-flex;
+        align-items: center;
+        background-color: #e9ecef;
+        padding: 3px 8px; /* Reduced padding */
+        border-radius: 4px;
+        font-size: 12px; /* Smaller font */
+        border: 1px solid #dee2e6;
+    }
+
+    .selected-option .remove {
+        margin-left: 4px; 
+        cursor: pointer;
+        font-size: 11px; 
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .selected-option .remove:hover {
+        color: #dc3545;
+    }
+
+    /* Apply button */
+    .filter-apply-btn {
+        margin-top: 10px;
+        width: 100%;
+    }
+</style>
+
+<main class="main">
+    <section class="section-box">
+        <div class="breacrumb-cover">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6 col-xs-6 ">
+                        <a onclick="backButton()" class="pointer"><i class=" fa fa-arrow-left mr-10"></i>Back</a>
+                    </div>
+                    <div class="col-lg-6 col-xs-6  text-end">
+                        <ul class="breadcrumbs">
+                            <li><a>Home</a></li>
+                            <li>Search Jobs</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="jobs-section" class="section-box-2 mt-30">
+        <div class="container">
+            <div class="banner-hero banner-single banner-single-bg">
+                <div class="block-banner text-center">
+                    {% include 'partials/_alerts.html' %}
+
+                    <!-- Button for finding jobs (similar to teachers page) -->
+                    <button id="show-search-btn" class="btn btn-default wow animate__animated animate__fadeInUp" style="font-size: 18px;">
+                        <i class="fa fa-search mr-10"></i> Find Jobs
+                    </button>
+                    <!-- Jobs count that will be hidden when form is shown -->
+                    <p id="jobs-count" style="margin-top: 10px;">{% if jobs_count > 0 %}({{jobs_count}} Jobs){% endif %}</p>
+
+                    <!-- Search Form (hidden by default) -->
+                    <div id="search-form-container" class="form-find text-start mt-40 wow animate__animated animate__fadeInUp" style="display: none;" data-wow-delay=".2s">
+                        <form method="GET">
+                            <select class="form-control select-active" id="grade_change" name="grade">
+                                <option value="" disabled selected hidden>Grade to Teach</option>
+                                {% for gc in grade_categories %}
+                                <option {% if grade == gc.name %} selected {% endif %} >{{gc.name}}</option>
+                                {% endfor %}
+                            </select>
+                            <select class="form-control select-active" id="grade_subject" name="subject">
+                              {% if subject_s %}
+                                <option>{{subject_s}}</option>  
+                             {% endif %}
+                            {% if not grade and not subject_s %}
+                                <option value="" disabled selected hidden>Subject</option>
+                                {% for gc in subjects %}
+                                    <option>{{ gc }}</option>
+                                {% endfor %}
+                            {% endif %}                           
+                            </select>
+                            <select class="form-control select-active" id="state_to"  name="state">
+                                <option disabled selected hidden>State</option>
+                                {% for info in state_data %}
+                                <option {% if state_s == info.name %} selected {% endif %}>{{info.name}}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
+                        </form>
+                        <a id="reset-search-btn" href="/current-vacancies" class="float-right btn"><u><i class="fa-solid fa-arrows-rotate mr-10"></i>Reset Search</u></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchFormContainer = document.getElementById('search-form-container');
+            const showSearchBtn = document.getElementById('show-search-btn');
+            const jobsCount = document.getElementById('jobs-count');
+            const activeFilters = document.getElementById('active-filters');
+            
+            // Set up event listener for the button
+            if (showSearchBtn) {
+                showSearchBtn.addEventListener('click', function() {
+                    searchFormContainer.style.display = 'block';
+                    showSearchBtn.style.display = 'none';
+                    jobsCount.style.display = 'none'; // Hide the jobs count
+                });
+            }
+            
+            // Show form directly and hide count if filters are applied
+            {% if grades or subject_s or state_s %}
+                searchFormContainer.style.display = 'block';
+                if (showSearchBtn) {
+                    showSearchBtn.style.display = 'none';
+                }
+                if (jobsCount) {
+                    jobsCount.style.display = 'none';
+                }
+            {% endif %}
+            
+            // Handle state dropdown - submit form when selection changes
+            const stateDropdown = document.getElementById('state_to');
+            if (stateDropdown) {
+                stateDropdown.addEventListener('change', function() {
+                    document.getElementById('filter-form').submit();
+                });
+            }
+            
+            // Function to update the multiselect dropdown text
+            function updateMultiselectText() {
+                // For grade dropdown
+                const gradeCheckboxes = document.querySelectorAll('.grade-checkbox:checked');
+                const gradeDropdown = document.querySelector('.form-group:nth-child(1) .multiselect-selected');
+                
+                if (gradeCheckboxes.length === 0) {
+                    gradeDropdown.textContent = 'Grade to Teach';
+                } else if (gradeCheckboxes.length === 1) {
+                    gradeDropdown.textContent = gradeCheckboxes[0].value;
+                } else {
+                    gradeDropdown.textContent = gradeCheckboxes.length + ' grades selected';
+                }
+                
+                // For subject dropdown
+                const subjectCheckboxes = document.querySelectorAll('.subject-checkbox:checked');
+                const subjectDropdown = document.querySelector('.form-group:nth-child(2) .multiselect-selected');
+                
+                if (subjectCheckboxes.length === 0) {
+                    subjectDropdown.textContent = 'Subject';
+                } else if (subjectCheckboxes.length === 1) {
+                    subjectDropdown.textContent = subjectCheckboxes[0].value;
+                } else {
+                    subjectDropdown.textContent = subjectCheckboxes.length + ' subjects selected';
+                }
+            }
+            
+            // Initialize dropdown texts
+            updateMultiselectText();
+            
+            // Add event listeners to checkboxes for updating text
+            document.querySelectorAll('.grade-checkbox, .subject-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    updateMultiselectText();
+                    // Auto-submit when a checkbox is changed
+                    document.getElementById('filter-form').submit();
+                });
+            });
+            
+            // Set up event listeners for filter tag removal
+            const removeFilters = document.querySelectorAll('.remove-filter');
+            removeFilters.forEach(function(element) {
+                element.addEventListener('click', function() {
+                    const filterType = this.getAttribute('data-type');
+                    const filterValue = this.getAttribute('data-value');
+                    
+                    // Create a form to submit the updated filters
+                    const form = document.createElement('form');
+                    form.method = 'GET';
+                    form.action = window.location.pathname;
+                    
+                    // Add current page number if exists
+                    const urlParams = new URLSearchParams(window.location.search);
+                    if (urlParams.has('page')) {
+                        const pageInput = document.createElement('input');
+                        pageInput.type = 'hidden';
+                        pageInput.name = 'page';
+                        pageInput.value = urlParams.get('page');
+                        form.appendChild(pageInput);
+                    }
+                    
+                    // Count how many filters will remain after removal
+                    let remainingFilters = 0;
+                    
+                    {% for grade in grades %}
+                        if (!(filterType === 'grade' && filterValue === '{{ grade }}')) {
+                            const gradeInput = document.createElement('input');
+                            gradeInput.type = 'hidden';
+                            gradeInput.name = 'grade';
+                            gradeInput.value = '{{ grade }}';
+                            form.appendChild(gradeInput);
+                            remainingFilters++;
+                        }
+                    {% endfor %}
+                    
+                    {% for sub in subject_s %}
+                        if (!(filterType === 'subject' && filterValue === '{{ sub }}')) {
+                            const subjectInput = document.createElement('input');
+                            subjectInput.type = 'hidden';
+                            subjectInput.name = 'subject';
+                            subjectInput.value = '{{ sub }}';
+                            form.appendChild(subjectInput);
+                            remainingFilters++;
+                        }
+                    {% endfor %}
+                    
+                    {% if state_s %}
+                        if (!(filterType === 'state' && filterValue === '{{ state_s }}')) {
+                            const stateInput = document.createElement('input');
+                            stateInput.type = 'hidden';
+                            stateInput.name = 'state';
+                            stateInput.value = '{{ state_s }}';
+                            form.appendChild(stateInput);
+                            remainingFilters++;
+                        }
+                    {% endif %}
+                    
+                    {% if job_code %}
+                        const jobCodeInput = document.createElement('input');
+                        jobCodeInput.type = 'hidden';
+                        jobCodeInput.name = 'jobcode';
+                        jobCodeInput.value = '{{ job_code }}';
+                        form.appendChild(jobCodeInput);
+                    {% endif %}
+                    
+                    // If no filters remain, redirect to /current-vacancies
+                    if (remainingFilters === 0) {
+                        window.location.href = '/current-vacancies';
+                        return;
+                    }
+                    
+                    // Submit the form with remaining filters
+                    document.body.appendChild(form);
+                    form.submit();
+                });
+            });
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function(event) {
+                const dropdowns = document.querySelectorAll('.multiselect-dropdown');
+                dropdowns.forEach(dropdown => {
+                    if (!dropdown.contains(event.target)) {
+                        const dropdownMenu = dropdown.querySelector('.dropdown-menu');
+                        if (dropdownMenu.classList.contains('show')) {
+                            dropdownMenu.classList.remove('show');
+                        }
+                    }
+                });
+            });
+            
+            // Toggle dropdown menu manually (for bootstrap compatibility)
+            document.querySelectorAll('.dropdown-toggle').forEach(button => {
+                button.addEventListener('click', function() {
+                    const dropdownMenu = this.nextElementSibling;
+                    dropdownMenu.classList.toggle('show');
+                    event.stopPropagation();
+                });
+            });
+        });
+    </script>
+
+    <section class="section-box mt-30 mb-50">
+        <div class="container">
+            <div class="row flex-row-reverse">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 float-right">
+                    <div class="content-page">
+                        <div class="row display-list">
+                            {% if jobs_count > 0 %}
+                            {% for info in page_obj %}
+                            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
+                                <div class="card-grid-2 hover-up">
+                                    <div class="card-grid-2-image-left">
+                                        <div class="right-info">
+                                            {% if info.job_type == 'walkin' %}
+                                            <span class="badge bg-primary text-white mb-2">Walk-in</span>
+                                            {% endif %}
+                                            <a class="name-job" href="javascript:void()">
+                                                {% if info.job_type == 'walkin' %}
+                                                    Walk in at {{info.user.school_name}}
+                                                {% else %}
+                                                    {{info.subject}} {{info.teacher_grade}}
+                                                {% endif %}
+                                            </a>    
+                                            
+                                        </div>
+                                    </div>
+                                    <div class="card-block-info">
+                                        {% if info.job_type == 'regular' %}
+                                        <!-- Regular job display -->
+                                        <p><b>School/Institute:</b> {{info.user.name}}</p>                                        
+                                        <p><b>Job Location:</b> {{info.district}}, {{info.state}}</p>
+                                        <p><b>Job Address:</b> {{info.address}}</p>
+                                        <p><b>Joining:</b> {{info.joining}}</p>
+                                        <p><b>Qualification:</b> {{info.highest_qualification}}</p>
+                                        <p><b>Experience:</b> {{info.experienced_required}}</p>
+                                        <p><b>Salary:</b> {{info.salary_offered}}</p>
+                                        <p><b>Subjects:</b> {{info.subject}}</p>
+                                        <div class="mt-30">
+                                            <p class="mb-2"><b>Benefits & Compensation</b></p> 
+                                            <p class="mb-2">{{info.benifits_compensation}}</p> 
+                                            <br/>
+                                            {% if info.description %}
+                                            <p><b>Job Description:</b> {{ info.description }}</p>
+                                            {% else %}
+                                            <p><b>Job Description:</b> Not provided.</p>
+                                            {% endif %}
+                                        {% else %}
+                                        <!-- Walkin job display -->
+                                        <p><b>Grades:</b> {{info.teacher_grade}}</p>
+                                        <p><b>Subjects:</b> {{info.subject}}</p>
+                                        <p><b>Walk-in Date:</b> {{info.walkin_date|date:"F d, Y"}}</p>
+                                        <p><b>Salary Range:</b> {{info.salary_range}}</p>
+                                        <p><b>Job Location:</b> {{info.user.district}}, {{info.user.state}}</p>
+                                        <p><b>Job Address:</b> {{info.user.address}}</p>
+                                        {% comment %} <p><b>Contact Person:</b> {{info.contact_name}}{% if info.contact_designation %}, {{info.contact_designation}}{% endif %}</p>
+                                        <p><b>Contact:</b> {{info.contact_mobile}}{% if info.alternative_mobile %}, {{info.alternative_mobile}}{% endif %}</p>
+                                         {% endcomment %}
+                                        <div class="mt-30">
+                                            {% if info.description %}
+                                            <p><b>Description:</b> {{ info.description }}</p>
+                                            {% else %}
+                                            <p><b>Description:</b> Not provided.</p>
+                                            {% endif %}
+                                        {% endif %}
+                                            <div class="card-2-bottom mt-30">
+                                                <div class="row">
+                                                    {% if info.job_type == 'regular' %}
+                                                        {% if info.is_applied %}
+                                                        <a href="javascript:void()">
+                                                            <div class="col-lg-12 col-12 text-end">
+                                                                <div class="btn btn-success w-100"><i class="fa fa-check text-white"></i> Applied</div>
+                                                            </div>
+                                                        </a>
+                                                        {% else %}
+                                                        {% if request.user.is_authenticated and request.user.user_type == 'Teacher' %}
+                                                        <a href="/apply-for-job?job={{info.id}}&jobcode={{info.job_code}}">
+                                                            <div class="col-lg-12 col-12 text-end">
+                                                                <div class="btn btn-default w-100">Apply now</div>
+                                                            </div>
+                                                        </a>
+                                                        {% else %}
+                                                        <a href="/login?job={{info.id}}&jobcode={{info.job_code}}">
+                                                            <div class="col-lg-12 col-12 text-end">
+                                                                <div class="btn btn-default w-100">Apply Now</div>
+                                                            </div>
+                                                            <div class="col-lg-12 col-12 text-center mt-5">
+                                                                <a href="https://api.whatsapp.com/send/?type=phone_number&app_absent=0&text=https://facultyme.com/current-vacancies?jobcode={{info.job_code}}">Share on Whatsapp</a>
+                                                            </div>
+                                                        </a>
+                                                        {% endif %}
+                                                        {% endif %}
+                                                    {% else %}
+                                                         {% if request.user.is_authenticated and request.user.user_type == 'Teacher' %}
+                                                         <a href="/apply-for-job?job={{info.id}}&jobcode={{info.job_code}}">
+                                                            <div class="col-lg-12 col-12 text-end">
+                                                                <div class="btn btn-default w-100">Walk-in Interview</div>
+                                                            </div>
+                                                            <div class="col-lg-12 col-12 text-center mt-5">
+                                                                <a href="https://api.whatsapp.com/send/?type=phone_number&app_absent=0&text=https://facultyme.com/current-vacancies?jobcode={{info.job_code}}">Share on Whatsapp</a>
+                                                            </div>
+                                                        </a>
+                                                        {% else %} <a href="/login?job={{info.id}}&jobcode={{info.job_code}}">
+                                                            <div class="col-lg-12 col-12 text-end">
+                                                                <div class="btn btn-default w-100">Apply for Walk-in Interview</div>
+                                                            </div>
+                                                            <div class="col-lg-12 col-12 text-center mt-5">
+                                                                <a href="https://api.whatsapp.com/send/?type=phone_number&app_absent=0&text=https://facultyme.com/current-vacancies?jobcode={{info.job_code}}">Share on Whatsapp</a>
+                                                            </div>
+                                                        </a>
+                                                        {% endif %}
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+
+                            <!-- Pagination Navigation -->
+                            {% if page_obj.has_other_pages %}
+                            <div class="col-xl-12 col-lg-12 col-md-10 col-sm-8 col-12">
+                                <div class="paginations text-center mt-30">
+                                    <nav aria-label="Page navigation">
+                                        <ul class="pagination justify-content-center">
+                                            <!-- First Page -->
+                                            <li class="page-item {% if page_obj.number == 1 %}disabled{% endif %}">
+                                                <a class="page-link" href="{% if page_obj.number != 1 %}?page=1{% for grade_item in grades %}&grade={{ grade_item|urlencode }}{% endfor %}{% for subject_item in subject_s %}&subject={{ subject_item|urlencode }}{% endfor %}{% if state_s %}&state={{ state_s }}{% endif %}{% if job_code %}&jobcode={{ job_code }}{% endif %}{% else %}javascript:void(0){% endif %}">
+                                                    First
+                                                </a>
+                                            </li>
+                                            
+                                            <!-- Previous Page -->
+                                            <li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+                                                <a class="page-link" href="{% if page_obj.has_previous %}?page={{ page_obj.previous_page_number }}{% for grade_item in grades %}&grade={{ grade_item|urlencode }}{% endfor %}{% for subject_item in subject_s %}&subject={{ subject_item|urlencode }}{% endfor %}{% if state_s %}&state={{ state_s }}{% endif %}{% if job_code %}&jobcode={{ job_code }}{% endif %}{% else %}javascript:void(0){% endif %}">
+                                                    Previous
+                                                </a>
+                                            </li>
+                                            
+                                            <!-- Page Numbers -->
+                                            {% for i in paginator.page_range %}
+                                                {% if i > page_obj.number|add:'-2' and i < page_obj.number|add:'2' %}
+                                                    <li class="page-item {% if page_obj.number == i %}active{% endif %}">
+                                                        <a class="page-link" href="{% if page_obj.number != i %}?page={{ i }}{% for grade_item in grades %}&grade={{ grade_item|urlencode }}{% endfor %}{% for subject_item in subject_s %}&subject={{ subject_item|urlencode }}{% endfor %}{% if state_s %}&state={{ state_s }}{% endif %}{% if job_code %}&jobcode={{ job_code }}{% endif %}{% else %}javascript:void(0){% endif %}">
+                                                            {{ i }}
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+                                            {% endfor %}
+                                            
+                                            <!-- Ellipsis -->
+                                            {% if paginator.num_pages > page_obj.number|add:'2' %}
+                                                <li class="page-item disabled">
+                                                    <span class="page-link">...</span>
+                                                </li>
+                                                <li class="page-item">
+                                                    <a class="page-link" href="?page={{ paginator.num_pages }}{% for grade_item in grades %}&grade={{ grade_item|urlencode }}{% endfor %}{% for subject_item in subject_s %}&subject={{ subject_item|urlencode }}{% endfor %}{% if state_s %}&state={{ state_s }}{% endif %}{% if job_code %}&jobcode={{ job_code }}{% endif %}">
+                                                        {{ paginator.num_pages }}
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+                                            
+                                            <!-- Next Page -->
+                                            <li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+                                                <a class="page-link" href="{% if page_obj.has_next %}?page={{ page_obj.next_page_number }}{% for grade_item in grades %}&grade={{ grade_item|urlencode }}{% endfor %}{% for subject_item in subject_s %}&subject={{ subject_item|urlencode }}{% endfor %}{% if state_s %}&state={{ state_s }}{% endif %}{% if job_code %}&jobcode={{ job_code }}{% endif %}{% else %}javascript:void(0){% endif %}">
+                                                    Next
+                                                </a>
+                                            </li>
+                                            
+                                            <!-- Last Page -->
+                                            <li class="page-item {% if page_obj.number == paginator.num_pages %}disabled{% endif %}">
+                                                <a class="page-link" href="{% if page_obj.number != paginator.num_pages %}?page={{ paginator.num_pages }}{% for grade_item in grades %}&grade={{ grade_item|urlencode }}{% endfor %}{% for subject_item in subject_s %}&subject={{ subject_item|urlencode }}{% endfor %}{% if state_s %}&state={{ state_s }}{% endif %}{% if job_code %}&jobcode={{ job_code }}{% endif %}{% else %}javascript:void(0){% endif %}">
+                                                    Last
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% else %}
+                                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                    <div class="card-grid-2 hover-up text-center pt-30 pb-3">
+                                        <h3>No result found</h3>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<!-- Include required JavaScript for Select2 -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    function backButton() {
+        window.history.back();
+    }
+</script>
+{% endblock %}

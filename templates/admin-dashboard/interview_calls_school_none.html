@@ -1,0 +1,76 @@
+{%extends "admin-dashboard/admin_base.html"%}
+{% load static %}
+{%block title_block%}{{page_title}}{%endblock%}
+{%block body_block%}
+
+<div class="box-content">
+    <div class="box-heading">
+        <div class="box-title">
+            <h3 class="mb-35">Dashboard 3</h3>
+        </div>
+        <div class="box-breadcrumb">
+            <div class="breadcrumbs">
+                <ul>
+                    <li> <a class="icon-home" href="/admin-dashboard">Home</a></li>
+                    <li><span>Dashboard 2</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xxl-12 col-xl-12 col-lg-12">
+            <div class="section-box">
+                <div class="container">
+                    <div class="panel-white mb-30">
+                        <div class="box-padding">
+                            <div class="table-responsive">
+                            <table id="current-application" class="row-border hover " style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>School Name</th>
+                                        <th>New Jobs</th>
+                                        <th>Approved Jobs</th>
+                                        <th>New Application</th>
+                                        <th>Approved Application</th>
+                                        <th>New Interview Calls</th>
+                                        <th>Approved Interview Calls</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for k in school_list %}
+                                    {%  for k1,v1 in k.items %}
+                                    <tr>
+                                        <td>{{k1}}</td>
+                                        <td><a href="pending-approval?school={{k1}}" class="btn btn-success py-1">{{v1.new_job_count}}</a></td>
+                                        <td><a href="active-jobs?school={{k1}}" class="btn btn-success py-1">{{v1.approved_job_count}}</a></td>
+                                        <td><a href="current-application?school={{k1}}" class="btn btn-success py-1">{{v1.new_job_applicant_count}}</a></td>
+                                        <td><a href="approved-application?school={{k1}}" class="btn btn-success py-1">{{v1.approved_job_applicant_count}}</a></td>
+                                        <td><a href="new-interview-calls?school={{k1}}" class="btn btn-success py-1">{{v1.new_interview_count}}</a></td>
+                                        <td><a href="approved-interview-calls?school={{k1}}" class="btn btn-success py-1">{{v1.approved_interview_count}}</a></td>
+                                    </tr>  
+                                    {% endfor %}                                
+                                    {% endfor %}                                
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th>School Name</th>
+                                        <th>New Jobs</th>
+                                        <th>Approved Jobs</th>
+                                        <th>New Application</th>
+                                        <th>Approved Application</th>
+                                        <th>New Interview Calls</th>
+                                        <th>Approved Interview Calls</th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

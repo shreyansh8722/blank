@@ -1,0 +1,68 @@
+{%extends "admin-dashboard/admin_base.html"%}
+{% load static %}
+{%block title_block%}{{page_title}}{%endblock%}
+{%block body_block%}
+
+<div class="box-content">
+    <div class="box-heading">
+        <div class="box-title">
+            <h3 class="mb-35">Recent Login School</h3>
+        </div>
+        <div class="box-breadcrumb">
+            <div class="breadcrumbs">
+                <ul>
+                    <li> <a class="icon-home" href="/admin-dashboard">Home</a></li>
+                    <li><span>Recent Login School</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xxl-12 col-xl-12 col-lg-12">
+            <div class="section-box">
+                <div class="container">
+                    <div class="panel-white mb-30">
+                        <div class="box-padding">
+                            <div class="table-responsive">
+                            <table id="recent-login-school" class="row-border hover " style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>Joined On</th>
+                                        <th>Last Login</th>
+                                        <th>School Name</th>
+                                        <th>Email</th>
+                                        <th>Mobile No</th>
+                                        <th>Alternate Mobile No</th>
+                                        <th>Website</th>
+                                        <th>School Type</th>
+                                        <th>Address</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in users %}
+                                        {{user.school.qualification}}
+                                        <tr>
+                                            <td>{{user.joining_date | date:"d M Y"}}</td>
+                                            <td>{{user.last_login}}</td>
+                                            <td>{{user.name}}</td>
+                                            <td>{{user.email}}</td>
+                                            <td>{{user.mobile_no}}</td>
+                                            <td>{{user.alt_mobile_no}}</td>
+                                            <td>{{user.school.website}}</td>  
+                                            <td>{{user.school.institute_type}}</td>
+                                            <td>{{user.school.address_district}}, {{user.school.address_state}}</td>
+                                        </tr>
+                                        {% endfor %}                                    
+                                </tbody>
+                            </table>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

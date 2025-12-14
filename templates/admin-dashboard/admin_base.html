@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="msapplication-TileColor" content="#0E0E0E">
+  <meta name="template-color" content="#0E0E0E">
+  <link rel="manifest" href="" crossorigin>
+  <meta name="msapplication-config" content="">
+  <meta name="description" content="Index page">
+  <meta name="keywords" content="index, page">
+  <meta name="author" content="">
+  <link rel="shortcut icon" type="image/x-icon" href="/static/facultyme_img/facultyme_favicon.png">
+  <link href="/static/admin-dashboard/css/stylecd4e.css?version=4.1" rel="stylesheet">
+  <link rel="stylesheet" href="/static/admin-dashboard/css/jquery.datatables.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
+  <link rel="stylesheet" href="/static/admin-dashboard/css/custom.css">
+  <link rel="stylesheet" href="/static/css/bootstrap-datepicker.min.css">
+  <title>{{page_title}}</title>
+</head>
+
+<body>
+  <div id="preloader-active">
+    <div class="preloader d-flex align-items-center justify-content-center">
+      <div class="preloader-inner position-relative">
+        <div class="text-center"><img src="/static/admin-dashboard/imgs/template/loading.gif" alt=""></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- header  -->
+  <header class="header sticky-bar">
+    <div class="container">
+      <div class="main-header">
+        <div class="header-left">
+          <div class="header-logo">
+            <a class="d-flex" href="/admin-dashboard">
+              <img alt="" src="/static/facultyme_img/facultyme1.png" style="width: 160px;">
+            </a>
+          </div>
+        </div>
+
+        <div class="header-menu d-none d-md-block">
+
+        </div>
+        <div class="header-right">
+          <div class="member-login">
+            <div class="info-member"> <strong class="color-brand-1">{{request.user.name}}</strong>
+              <div class="dropdown"><a class="font-xs color-text-paragraph-2 icon-down" id="dropdownProfile"
+                  type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-display="static">Super
+                  Admin</a>
+                <ul class="dropdown-menu dropdown-menu-light dropdown-menu-end" aria-labelledby="dropdownProfile">
+                  <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+  </header>
+
+  <!-- Mobile Header  -->
+  <div class="burger-icon burger-icon-white"><span class="burger-icon-top"></span><span
+      class="burger-icon-mid"></span><span class="burger-icon-bottom"></span></div>
+  <div class="mobile-header-active mobile-header-wrapper-style perfect-scrollbar">
+    <div class="mobile-header-wrapper-inner">
+      <div class="mobile-header-content-area">
+        <div class="perfect-scroll">
+          <div class="mobile-search mobile-header-border mb-30">
+            <form action="#">
+              <input type="text" placeholder="Search…"><i class="fi-rr-search"></i>
+            </form>
+          </div>
+          <div class="mobile-menu-wrap mobile-header-border">
+            <!-- mobile menu start-->
+            <nav>
+              <ul class="main-menu">
+                <li> <a class="dashboard2 active" href="/admin-dahboard"><img
+                      src="/static/admin-dashboard/imgs/page/dashboard/dashboard.svg" alt=""><span
+                      class="name">Dashboard</span></a>
+                </li>
+                <li> <a class="dashboard2 active" href="/approved_application"><img
+                  src="/static/admin-dashboard/imgs/page/dashboard/dashboard.svg" alt=""><span
+                  class="name">Approved Applications</span></a>
+              </li>
+                <li> <a class="dashboard2 active" href="/current_application"><img
+                      src="/static/admin-dashboard/imgs/page/dashboard/dashboard.svg" alt=""><span
+                      class="name">New Applications</span></a>
+                </li>
+                <li> <a class="dashboard2" href="/"><img
+                      src="/static/admin-dashboard/imgs/page/dashboard/candidates.svg" alt=""><span
+                      class="name">Recent login-teacher</span></a>
+                </li>
+                <li> <a class="dashboard2" href="/"><img
+                      src="/static/admin-dashboard/imgs/page/dashboard/recruiters.svg" alt=""><span
+                      class="name">Recent login-school</span></a>
+                </li>
+                <li> <a class="dashboard2" href="/"><img src="/static/admin-dashboard/imgs/page/dashboard/jobs.svg"
+                      alt=""><span class="name">Verified teachers</span></a>
+                </li>
+                <li> <a class="dashboard2" href="/"><img src="/static/admin-dashboard/imgs/page/dashboard/tasks.svg"
+                      alt=""><span class="name">Unverified teachers</span></a>
+                </li>
+                <li> <a class="dashboard2" href="/"><img src="/static/admin-dashboard/imgs/page/dashboard/tasks.svg"
+                  alt=""><span class="name">Expired teachers approval</span></a>
+                </li>
+                <li> <a class="dashboard2" href="/"><img src="/static/admin-dashboard/imgs/page/dashboard/profiles.svg"
+                      alt=""><span class="name">Institutions</span></a>
+                </li>
+                <li> <a class="dashboard2" href="/"><img src="/static/admin-dashboard/imgs/page/dashboard/cv-manage.svg"
+                      alt=""><span class="name">Unverified institutions</span></a>
+                </li>
+                <li> <a class="dashboard2" href="/"><img src="/static/admin-dashboard/imgs/page/dashboard/settings.svg"
+                      alt=""><span class="name">Job
+                      alerts</span></a>
+                </li>
+                <li> <a class="dashboard2" href="/"><img
+                      src="/static/admin-dashboard/imgs/page/dashboard/authentication.svg" alt=""><span
+                      class="name">My jobs</span></a>
+                </li>
+                <li> <a class="dashboard2" href="/"><img src="/static/admin-dashboard/imgs/page/dashboard/logout.svg"
+                      alt=""><span class="name">Active jobs</span></a>
+                </li>
+
+                <li> <a class="dashboard2" href="/"><img src="/static/admin-dashboard/imgs/page/dashboard/logout.svg"
+                      alt=""><span class="name">Expired jobs</span></a>
+                </li>
+                <li> <a class="dashboard2" href="/"><img src="/static/admin-dashboard/imgs/page/dashboard/logout.svg"
+                      alt=""><span class="name">Pending Job Approval</span></a>
+                </li>
+                <li> <a class="dashboard2" href="/admin-post-job"><img src="/static/admin-dashboard/imgs/page/dashboard/logout.svg"
+                      alt=""><span class="name">Admin Post
+                      a job</span></a>
+                </li>
+                <li> <a class="dashboard2" href="/"><img src="/static/admin-dashboard/imgs/page/dashboard/logout.svg"
+                      alt=""><span class="name">Setting</span></a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+          <div class="mobile-account">
+            <h6 class="mb-10">Your Account</h6>
+            <ul class="mobile-menu font-heading">
+              <li><a href="#">Profile</a></li>
+              <li><a href="#">Work Preferences</a></li>
+              <li><a href="#">Account Settings</a></li>
+              <li><a href="#">Go Pro</a></li>
+              <li><a href="/">Sign Out</a></li>
+            </ul>
+            <div class="mb-15 mt-15"> <a class="btn btn-default icon-edit hover-up" href="/">Post Job</a>
+            </div>
+          </div>
+          <div class="site-copyright">Copyright 2023 &copy; FacultyMe</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <main class="main">
+
+    <!-- Sidebar  -->
+    <div class="nav">
+      <nav class="nav-main-menu">
+        <ul class="main-menu">
+          <li> <a class="dashboard2 {% if path == '/admin-dashboard' %} active {% endif %}" href="/admin-dashboard"><span
+            class="name">Dashboard</span></a>
+          </li>
+          <li> <a class="dashboard2 {% if path == '/interview-calls-school' %} active {% endif %}"  href="/interview-calls-school"><span class="name">Dashboard 2</span></a></li>
+          <li> <a class="dashboard2 {% if path == '/interview-calls-school-none' %} active {% endif %}"  href="/interview-calls-school-none"><span class="name">Dashboard 3</span></a></li>
+
+          <li> <a class="dashboard2 {% if path == '/approved-application' %} active {% endif %}"  href="/approved-application"><span class="name">Approved applications </span></a>
+          </li>
+          <li> <a class="dashboard2 {% if path == '/current-application' %} active {% endif %}"  href="/current-application"><span class="name">New applications </span></a>
+          </li>
+          <li> <a class="dashboard2 {% if path == '/approved-interview-calls' %} active {% endif %}"  href="/approved-interview-calls"><span class="name">Approved Interview Calls</span></a>
+          </li>
+          <li> <a class="dashboard2 {% if path == '/new-interview-calls' %} active {% endif %}"  href="/new-interview-calls"><span class="name">New Interview Calls</span></a>
+          </li>
+          <li> <a class="dashboard2 {% if path == '/shortlisted' %} active {% endif %}" href="/shortlisted"><span class="name">Short Listed</span></a>
+          </li>
+          <li> <a class="dashboard2 {% if path == '/old-shortlisted' %} active {% endif %}" href="/old-shortlisted"><span class="name">Old Short Listed</span></a>
+          </li>
+          <li> <a class="dashboard2 {% if path == '/recent-login-teacher' %} active {% endif %}" href="/recent-login-teacher"><span class="name">Recent login teachers</span></a>
+          </li>
+          <li> <a class="dashboard2 {% if path == '/recent-login-school' %} active {% endif %}" href="/recent-login-school"><span class="name">Recent login schools</span></a>
+          </li>
+          <li> <a class="dashboard2 {% if path == '/verified-teachers' %} active {% endif %}" href="/verified-teachers"><span class="name">Approved teachers</span></a>
+          </li>
+          <li> <a class="dashboard2 {% if path == '/unverified-teachers' %} active {% endif %}" href="/unverified-teachers"><span class="name">New teachers</span></a>
+          </li>
+          <li> <a class="dashboard2 {% if path == '/expired-teachers-approval' %} active {% endif %}" href="/expired-teachers-approval"><span class="name">Expired teachers approval</span></a>
+          </li>
+          <li> <a class="dashboard2 {% if path == '/teacher-payment' %} active {% endif %}" href="/teacher-payment"><span class="name">Teachers Pricing</span></a>
+          </li>
+          <li> <a class="dashboard2 {% if path == '/school-payment' %} active {% endif %}" href="/school-payment"><span class="name">Institute Pricing</span></a>
+          </li>
+          <li> <a class="dashboard2 {% if path == '/verified-institutions' %} active {% endif %}" href="/verified-institutions"><span class="name">Approved Institutions</span></a>
+          </li>
+          <li> <a class="dashboard2 {% if path == '/unverified-institutions' %} active {% endif %}"  href="/unverified-institutions"><span class="name">New Institutions</span></a>
+          </li>
+          <li> <a class="dashboard2 {% if path == '/admin-job-alert' %} active {% endif %}" href="/admin-job-alert"><span class="name">Job
+                alerts</span></a>
+          </li>
+          <li> <a class="dashboard2 {% if path == '/admin-my-jobs' %} active {% endif %}" href="/admin-my-jobs"><span class="name">My jobs</span></a>
+          </li>
+          <li> <a class="dashboard2 {% if path == '/active-jobs' %} active {% endif %}" href="/active-jobs"><span class="name">Active jobs</span></a>
+          </li>
+
+          <li> <a class="dashboard2 {% if path == '/admin-expired-jobs' %} active {% endif %}" href="/admin-expired-jobs"><span class="name">Expired jobs</span></a>
+          </li>
+          <li> <a class="dashboard2 {% if path == '/pending_approval' %} active {% endif %}" href="/pending-approval"><span class="name">New Jobs</span></a>
+          </li>
+          <li> <a class="dashboard2 {% if path == '/admin-post-job' %} active {% endif %}"  href="/admin-post-job" target="_blank"><span class="name">Admin Post
+                a job</span></a>
+          </li>
+          <li> <a class="dashboard2 {% if path == '/walkin-job' %} active {% endif %}"  href="/admin-walkin-job" target="_blank"><span class="name">Admin Walk In Job</span></a> </li>
+          <li> <a class="dashboard2 {% if path == '/admin-settings' %} active {% endif %}" href="/admin/" target="_blank"><span class="name">Settings</span></a>
+          </li>
+          <li> <a class="dashboard2 {% if path == '/change-password' %} active {% endif %}" href="/admin/password_change/"><span class="name">Change password</span></a>
+          </li>
+          <li> <a class="dashboard2 {% if path == '/rejected-applications' %} active {% endif %}" href="/rejected-applications"><span class="name">Rejected Applications</span></a>
+          </li>
+          <li> <a class="dashboard2 {% if path == '/rejected-teachers' %} active {% endif %}" href="/rejected-teachers"><span class="name">Rejected Teachers</span></a>
+          </li>
+          <li> <a class="dashboard2 {% if path == '/rejected-schools' %} active {% endif %}"  href="/rejected-schools"><span class="name">Rejected Institutions</span></a>
+          </li>
+          <li> <a class="dashboard2 {% if path == '/rejected-jobs' %} active {% endif %}"  href="/rejected-jobs"><span class="name">Rejected Jobs</span></a>
+          </li>
+          <li> <a class="dashboard2" href="/logout"><span class="name">logout</span></a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+
+    {% block body_block %} {% endblock %}
+  </main>
+
+  </div>
+  <script src="/static/js/vendor/modernizr-3.6.0.min.js"></script>
+  <script src="/static/js/vendor/jquery-3.6.0.min.js"></script>
+  <script src="/static/js/vendor/jquery-migrate-3.3.0.min.js"></script>
+  <script src="/static/js/vendor/bootstrap.bundle.min.js"></script>
+  <script src="/static/js/plugins/waypoints.js"></script>
+  <script src="/static/js/plugins/magnific-popup.js"></script>
+  <script src="/static/js/plugins/perfect-scrollbar.min.js"></script>
+  <!-- <script src="/static/js/plugins/select2.min.js"></script> -->
+  <script src="/static/js/plugins/swiper-bundle.min.js"></script>
+  <script src="/static/admin-dashboard/js/plugins/jquery.circliful.js"></script>
+  <script src="/static/admin-dashboard/js/main8c94.js?v=4.1"></script>
+  <script src="/static/admin-dashboard/js/jquery.datatables.min.js"></script>
+  <script src="/static/admin-dashboard/js/datatable.js"></script>
+  <script src="/static/js/bootstrap-datepicker.min.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+  <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+  <script>
+
+    $(".send_whatsapp").each(function() {
+      var mobile_no = $(this).data('mobile');
+    
+      if(localStorage.getItem(mobile_no)){
+          $(this).html('Sent');
+          $(this).removeClass("btn-warning");
+          $(this).addClass("btn-success");
+      }
+    });
+
+    
+    $(".send_whatsapp_welcome_teacher").each(function() {
+      var mobile_no = $(this).data('mobile');
+    
+      if(localStorage.getItem(mobile_no+"W")){
+          $(this).html('Sent');
+          $(this).removeClass("btn-warning");
+          $(this).addClass("btn-success");
+      }
+    });
+
+    $(".send_whatsapp_welcome_school").each(function() {
+      var mobile_no = $(this).data('mobile');
+    
+      if(localStorage.getItem(mobile_no+"WT")){
+          $(this).html('Sent');
+          $(this).removeClass("btn-warning");
+          $(this).addClass("btn-success");
+      }
+    });
+
+    $(document).on('click','.send_interview_details',function(e){   
+      var id = $(this).data('id');
+      var th = $(this);
+
+      $.ajax({ 
+        type: "GET", // GET or POST
+        url: "/send_interview_details?job_app_id="+id, // the file to call
+        success: function (data) { 
+          th.addClass('btn-success');
+          th.removeClass('btn-default');
+        }
+      });
+    }); 
+
+    $(document).on('click','.reject_application',function(e){   
+      var id = $(this).data('id');
+      var th = $(this);
+      $.ajax({ 
+        type: "GET", // GET or POST
+        url: "/reject_application?job_app_id="+id, // the file to call
+        success: function (data) { 
+          th.addClass('btn-danger');
+          th.removeClass('btn-default');
+        }
+      });
+    }); 
+
+    $(document).on('click','.admin_approve',function(e){   
+      var id = $(this).data('id');
+      var th = $(this);
+      $.ajax({ 
+        type: "GET", // GET or POST
+        url: "/admin_approve?job_app_id="+id, // the file to call
+        success: function (data) { 
+          th.text('Approved');
+          th.addClass('btn-success');
+          th.removeClass('btn-warning');
+        }
+      });
+    }); 
+    $(document).on('change','.change_label',function(e){   
+      var id = $(this).data('id');
+      var label = $(this).val();
+      var type =  $(this).data('type');
+
+      var th = $(this);
+      $.ajax({ 
+        type: "GET", // GET or POST
+        url: "/change_labels?teacher="+id+"&label="+label+"&type="+type, // the file to call
+        success: function (data) {  
+            if(data){
+              alert("Label Updated")
+            }
+        }
+      });
+    }); 
+    
+    $(document).on('click','.user_log',function(e){   
+      var id = $(this).data('id');
+      var th = $(this);
+      $.ajax({ 
+        type: "GET", // GET or POST
+        url: "/log_entry?user="+id, // the file to call
+        success: function (data) { 
+          $("#log_body").html('');    
+            if(data){
+                $.each(data, function(index, value) {
+                  str = '<tr><td>'+(Number(index)+1)+'</td><td>'+value.timestamp+'</td><td>'+value.action+'</td></tr>';
+                  $('#log_body').append(str);
+                });
+            }
+        }
+      });
+    }); 
+
+    $(document).on('click','.employer',function(e){   
+      var id = $(this).data('id');
+      var th = $(this);
+      $.ajax({ 
+        type: "GET", // GET or POST
+        url: "/employer-details?user="+id, // the file to call
+        success: function (data) { 
+          $("#employer_body").html('');    
+            if(data){
+                  str = ' <li><b>School / Institution Name :</b>  '+data.school_name+'</li>'+
+                  '<li><b>Email :</b> 	'+data.email+'	</li>'+
+                  '<li><b>Mobile No. : '+data.mobile_no+'</b></li>'+
+                  '<li><b>Alternate Mobile No. : '+data.alt_mobile_no+'</b></li>'+
+                  '<li><b>Website :</b> '+data.website+'</li>'
+                  $('#employer_body').append(str);
+            }
+        }
+      });
+    }); 
+
+    $(document).on('click','.jobcode',function(e){   
+      var id = $(this).data('id');
+      var th = $(this);
+      $.ajax({ 
+        type: "GET", // GET or POST
+        url: "/job-details?job_id="+id, // the file to call
+        success: function (data) { 
+          $("#job_body").html('');    
+            if(data){
+                  str = ' <li><b>School Name :</b>  '+data.school_name+'</li>'+
+                  '<li><b>Contact No :</b> 	'+data.school_mobile+'	</li>'+
+                  '<li><b>Job Code :</b> 	'+data.job_code+'	</li>'+
+                  '<li><b>Teacher Grade : '+data.teacher_grade+'</b></li>'+
+                  '<li><b>Subject : '+data.subject+'</b></li>'+
+                  '<li><b>Qualification :</b> '+data.highest_qualification+'</li>'+
+                  '<li><b>experienced_required :</b> '+data.experienced_required+'</li>'+
+                  '<li><b>Salary Offered :</b> '+data.salary_offered+'</li>'+
+                  '<li><b>Expiry Date :</b> '+data.expiry_date+'</li>'+
+                  '<li><b>Benifits Compensation :</b> '+data.benifits_compensation+'</li>'+
+                  '<li><b>Location :</b> '+data.district+', '+data.state+', '+data.pincode+'</li>'+
+                  '<li><b>Timestamp :</b> '+data.timestamp+'</li>';
+                  
+                  $('#job_body').append(str);
+            }
+        }
+      });
+    }); 
+
+    $(".app_details").click(function() {
+      var id = $(this).data('id');
+      var type = $(this).data('type');
+
+      $.ajax({
+        type: "POST",
+        url: '/app_details?teacher='+id+"type="+type,
+        success: function(data){
+            $("#application_detail_body").html('');    
+            if(data){
+                $.each(data.job_app, function(index, value) {
+                  var str = '<tr><td>'+value.job_code+'</td>'+
+                      '<td>'+value.school+'</td>'+
+                      '<td>'+value.timestamp+'</td>'+
+                      '<td>'+value.teacher_grade+'</td>'+
+                      '<td>'+value.subject+'</td>'+
+                      '<td>'+value.highest_qualification+'</td>'+
+                      '<td>'+value.experienced_required+'</td>'+
+                      '<td>'+value.salary_offered+'</td>'+
+                      '<td>'+value.joining_date+'</td>'+
+                      '<td>'+value.benifits_compensation+'</td>'+
+                      '<td>'+value.district+', '+value.state+'</td>';
+                    
+                      if (value.status == 'New' ){
+                        str += '<td class="text-center"><a  data-id="'+value.id+'" class="btn btn-warning py-1 admin_approve">Pending</a></td>';
+                      }else{
+                        str += '<td class="text-center"><a  class="btn btn-success py-1">'+value.status+'</a></td>';
+                      }
+                      str +='<td class="text-center"><a  data-id="'+value.id+'" class="send_interview_details btn btn-default py-1">Sent</a></td>'+
+                      '<td class="text-center"><a  data-id="'+value.id+'"  class="reject_application btn btn-default py-1">Reject</a></td></td>';
+                    
+                      $("#application_detail_body").append(str);
+                });
+            }
+        },
+        error: function(data){
+            var str = '<tr class="text-center"><td colspan="14" class="text-center">No Data</td></tr>';
+            $("#application_detail_body").append(str);
+        }          
+    });
+  });
+
+  $(".promote_job").click(function() {
+    var job_id = $(this).data('id');
+    $('#job_id').val(job_id);
+  });
+
+  $("#promotion_save").click(function() {
+        var start_date = $('#start_date').val();
+        var end_date = $('#end_date').val();
+        var job_id = $('#job_id').val();
+        $.ajax({ 
+          type: "GET", // GET or POST
+          url: "/set_promotion?start_date="+start_date+'&end_date='+end_date+'&job='+job_id, // the file to call
+          success: function (data) { 
+            alert("Promotion Enabled")
+            location.reload();
+          }
+        });
+  });
+
+  
+    $("#approve_all").click(function() {
+    var type = $(this).data('type');
+    console.log("Approval type:", type); // Debug to verify type value
+    
+    var yourArray = [];
+    var teachers = '';
+    var i = 0;
+    
+    $("input:checkbox[name=multiple_teacher_selection]:checked").each(function(){
+        yourArray.push($(this).val());
+        if(i==0){
+            teachers = $(this).val();
+        } else {
+            teachers = teachers + ',' + $(this).val();
+        }
+        i = i + 1;
+    });
+    
+    if (yourArray.length === 0) {
+        alert("Please select at least one item to approve");
+    } else {
+        // Add a debug alert to verify data being sent
+        console.log("Sending approval for:", teachers, "Type:", type);
+        
+        $.ajax({ 
+            type: "GET",
+            url: "/approve_teacher",
+            data: {
+                teachers: teachers,
+                type: type
+            },
+            success: function(data) {
+                console.log("Approval response:", data);
+                location.reload();
+            },
+            error: function(xhr, status, error) {
+                console.error("Approval error:", error);
+                console.error("Status:", status);
+                console.error("Response:", xhr.responseText);
+                alert("Error approving selections. Please check console for details.");
+            }
+        });
+    }
+});
+    $("#start_date, #end_date, #interview_date").change(function() {
+      $(this).prop("type","text");
+    });
+    
+    $("#disable_all").click(function() {
+      var type = $(this).data('type');
+
+      var yourArray = Array();
+      var teachers = ''
+      var i = 0
+      $("input:checkbox[name=multiple_teacher_selection]:checked").each(function(){
+        yourArray.push($(this).val());
+        if(i==0){
+          teachers = $(this).val()
+        }else{
+          teachers = teachers+','+$(this).val()
+        }
+        i = i + 1;
+      });
+      if (yourArray.length === 0) {
+
+      }else{
+        $.ajax({ 
+          type: "GET", // GET or POST
+          url: "/disable_teacher?teachers="+teachers+'&type='+type, // the file to call
+          success: function (data) { 
+              location.reload();
+          }
+        });
+      }
+  });
+
+  $("#approve_all").click(function() {
+    var type = $(this).data('type');
+
+    var yourArray = Array();
+    var teachers = ''
+    var i = 0
+    $("input:checkbox[name=multiple_teacher_selection]:checked").each(function(){
+      yourArray.push($(this).val());
+      if(i==0){
+        teachers = $(this).val()
+      }else{
+        teachers = teachers+','+$(this).val()
+      }
+      i = i + 1;
+    });
+    if (yourArray.length === 0) {
+
+    }else{
+      $.ajax({ 
+        type: "GET", // GET or POST
+        url: "/approve_application?teachers="+teachers, // the file to call
+        success: function (data) { 
+            location.reload();
+        }
+      });
+    }
+});
+
+   $("#send_call_for_interview_btn").click(function() {
+    var teachers = ''
+
+    $("input:checkbox[name=multiple_teacher_selection]:checked").each(function(){
+      yourArray.push($(this).val());
+      if(i==0){
+        teachers = $(this).val()
+      }else{
+        teachers = teachers+','+$(this).val()
+      }
+      i = i + 1;
+    });
+    $('#call_for_job_ids').val(teachers)
+  }); 
+  
+    $("#send_pin").click(function() {
+      var type = $(this).data('type');
+
+      var yourArray = Array();
+      var teachers = ''
+      var i = 0
+      $("input:checkbox[name=multiple_teacher_selection]:checked").each(function(){
+        yourArray.push($(this).val());
+        if(i==0){
+          teachers = $(this).val()
+        }else{
+          teachers = teachers+','+$(this).val()
+        }
+        i = i + 1;
+      });
+      if (yourArray.length === 0) {
+
+      }else{
+        $.ajax({ 
+          type: "GET", // GET or POST
+          url: "/send_pin_teacher?teachers="+teachers+'&type='+type, // the file to call
+          success: function (data) { 
+              location.reload();
+          }
+        });
+      }
+  });
+
+    $("#multiple_teacher_selection_all").click(function() {
+      var multiple_teacher_selection_all = $("#multiple_teacher_selection_all").prop("checked");;
+      if(multiple_teacher_selection_all){
+        console.log(1)
+        $('.multiple_teacher_selection').prop("checked",true);
+      }else{
+        console.log(7)
+        $('.multiple_teacher_selection').prop("checked",false);
+      }
+    });
+    
+    $( ".send_whatsapp" ).click(function() {
+      var mobile_no = $(this).data('mobile');
+      
+      var type = $(this).data('type');
+      var fora = $(this).data('for');
+      var school = $(this).data('school');
+    
+      localStorage.setItem(mobile_no,'true');            
+
+      url = "/send-whatsapp?mobile_no="+mobile_no+"&type="+type+"&for="+fora+'&school='+school;
+      var x = $(this)
+      x.html('<i class="fa-solid fa-spinner fa-spin"></i>');
+      $.get(url, function( data ) {
+
+              x.html('Sent');
+              x.removeClass("btn-warning");
+              x.addClass("btn-success");
+          
+      });
+    });
+
+        
+    $( ".send_whatsapp_welcome_teacher" ).click(function() {
+      var mobile_no = $(this).data('mobile');
+      var name = $(this).data('name');
+    
+      localStorage.setItem(mobile_no+"W",'true');            
+
+      url = "/send-whatsapp-teacher-welcome?mobile_no="+mobile_no+"&name="+name;
+      var x = $(this)
+      x.html('<i class="fa-solid fa-spinner fa-spin"></i>');
+      $.get(url, function( data ) {
+
+              x.html('Sent');
+              x.removeClass("btn-warning");
+              x.addClass("btn-success");
+          
+      });
+    });
+
+            
+    $( ".send_whatsapp_welcome_school" ).click(function() {
+      var mobile_no = $(this).data('mobile');
+      var name = $(this).data('name');
+    
+      localStorage.setItem(mobile_no+"WT",'true');            
+
+      url = "/send-whatsapp-school-welcome?mobile_no="+mobile_no+"&name="+name;
+      var x = $(this)
+      x.html('<i class="fa-solid fa-spinner fa-spin"></i>');
+      $.get(url, function( data ) {
+
+              x.html('Sent');
+              x.removeClass("btn-warning");
+              x.addClass("btn-success");
+          
+      });
+    });
+
+        //Edit Address 
+$("#custom_whatsapp_form").submit(function(e) {
+
+  e.preventDefault();
+
+  var form = $(this);
+  console.log("teachers")
+  var yourArray = Array();
+  var teachers = ''
+  var i = 0
+  $("input:checkbox[name=multiple_teacher_selection]:checked").each(function(){
+    yourArray.push($(this).val());
+    if(i==0){
+      teachers = $(this).val()
+      console.log(teachers)
+    }else{
+      teachers = teachers+','+$(this).val()
+    }
+    i = i + 1;
+  });
+  var actionUrl = '/custom_whatsapp_form?teachers='+teachers;
+
+  if (yourArray.length === 0) {
+
+  }else{
+  $.ajax({
+      type: "POST",
+      url: actionUrl,
+      data: form.serialize(),
+      success: function(data){
+          if(data==true){            
+              alert('Sent');
+              $('#custom_whatsapp_form')[0].reset();
+              $('#close_me_whatasapp').click();
+          }else{
+              alert('Something went wrong, we will back shortly');
+          }
+      }
+  });
+  }
+});
+
+  //Edit Address 
+  $("#custom_whatsapp_form_job_alert").submit(function(e) {
+
+    e.preventDefault();
+  
+    var form = $(this);
+    console.log("teachers")
+    var yourArray = Array();
+    var teachers = ''
+    var i = 0
+    $("input:checkbox[name=multiple_teacher_selection]:checked").each(function(){
+      yourArray.push($(this).val());
+      if(i==0){
+        teachers = $(this).val()
+        console.log(teachers)
+      }else{
+        teachers = teachers+','+$(this).val()
+      }
+      i = i + 1;
+    });
+    var actionUrl = '/custom_whatsapp_form_job_alert?teachers='+teachers;
+  
+    if (yourArray.length === 0) {
+  
+    }else{
+    $.ajax({
+        type: "POST",
+        url: actionUrl,
+        data: form.serialize(),
+        success: function(data){
+            if(data==true){            
+                alert('Sent');
+                $('#custom_whatsapp_form')[0].reset();
+                $('#close_me_whatasapp').click();
+                location.reload();
+                
+            }else{
+                alert('Something went wrong, we will back shortly');
+            }
+        }
+    });
+    }
+  });
+    //Edit Address 
+$("#call_for_interview_form").submit(function(e) {
+
+  e.preventDefault();
+
+  var form = $(this);
+
+  var yourArray = Array();
+  var teachers = ''
+  var i = 0
+  $("input:checkbox[name=multiple_teacher_selection]:checked").each(function(){
+    yourArray.push($(this).val());
+    if(i==0){
+      teachers = $(this).val()
+    }else{
+      teachers = teachers+','+$(this).val()
+    }
+    i = i + 1;
+  });
+  var actionUrl = '/call_for_interview_submit?job_app_ids='+teachers;
+
+  if (yourArray.length === 0) {
+
+  }else{
+  $.ajax({
+      type: "POST",
+      url: actionUrl,
+      data: form.serialize(),
+      success: function(data){
+          if(data==true){            
+              alert('Information is Updated');
+              $('#call_for_interview_form')[0].reset();
+              $('#close_me').click();
+          }else{
+              alert('Something went wrong, we will back shortly');
+          }
+      }
+  });
+  }
+});
+
+
+$(document).ready(function () {
+  var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+  $('#toggleWelcome').change(function () {
+      $.ajax({
+          type: 'POST',
+          url: '/toggle-welcome-message-controler/',
+         
+          success: function (response) {
+              if (response.status === 'success') {
+                if (response.welcome_enabled){
+                  alert('Auto Welcome Message On!');
+                }else{
+                  alert('Auto Welcome Message Off!');
+                }
+                 
+              } else {
+                  alert('Error toggling welcome message!');
+              }
+          }
+      });
+  });
+});
+
+
+$("#multiple_shortlist_selection_all").click(function() {
+  var multiple_shortlist_selection_all = $("#multiple_shortlist_selection_all").prop("checked");;
+  if(multiple_shortlist_selection_all){
+    $('.multiple_shortlist_selection').prop("checked",true);
+  }else{
+    $('.multiple_shortlist_selection').prop("checked",false);
+  }
+});
+
+$("#shortlist_review_all").click(function() {
+  var type = $(this).data('type');
+
+  var yourArray = Array();
+  var shortlist = ''
+  var i = 0
+  $("input:checkbox[name=multiple_shortlist_selection]:checked").each(function(){
+    yourArray.push($(this).val());
+    if(i==0){
+      shortlist = $(this).val()
+    }else{
+      shortlist = shortlist+','+$(this).val()
+    }
+    i = i + 1;
+  });
+  if (yourArray.length === 0) {
+
+  }else{
+    $.ajax({ 
+      type: "GET", // GET or POST
+      url: "/review_shortlisted?shortlist="+shortlist+'&type='+type, // the file to call
+      success: function (data) { 
+          location.reload();
+      }
+    });
+  }
+});
+$(document).on('change','#grade',function(e){
+  var state = $(this).val();
+  if(state){
+    $.ajax({ 
+    type: "GET", // GET or POST
+    url: "/load_subject?grade="+state, // the file to call
+    success: function (data)  { 
+        if(data != ''){
+          $('#subject').html('<option value="">Select</option>');
+          $(data).each(function (k,v) {
+            var opt = '<option>'+v+'</option>'
+            $('#subject').append(opt);
+          });
+        }else{
+          $('#subject').html('<option value="">Select</option>');
+
+        }
+    
+      }
+    });
+  }else{
+    alert("Please enter pincode")
+  }
+  return false;
+});
+
+$("#shortlist_all").click(function() {
+      var type = $(this).data('type');
+      var fora = $(this).data('for');
+
+      var mobileArray = Array();
+      var schoolArray = Array();
+
+      var shortlist = ''
+      var i = 0
+      $("input:checkbox[name=multiple_shortlist_selection]:checked").each(function(){
+        mobileArray.push($(this).data('mobile'));
+        schoolArray.push($(this).data('school'));
+
+        i = i + 1;
+      });
+      if(mobileArray.length == 0) {
+        mobileArray.push(mobile_no);
+      }
+      if(schoolArray.length == 0) {
+        schoolArray.push(school);
+      }
+      console.log(mobileArray)
+      console.log(schoolArray)
+      url = "/send-whatsapp?mobile_no="+mobileArray+"&type="+type+"&for="+fora+'&school='+schoolArray;
+      console.log(url)
+      var x = $(this)
+      x.html('<i class="fa-solid fa-spinner fa-spin"></i>');
+      $.get(url, function( data ) {
+
+              x.html('Sent');
+              x.removeClass("btn-warning");
+              x.addClass("btn-success");
+          
+      });
+});
+
+
+$("#multiple_selection_job_alert_all").click(function() {
+  var multiple_selection_job_alert_all = $("#multiple_selection_job_alert_all").prop("checked");;
+  if(multiple_selection_job_alert_all){
+    $('.multiple_job_alert_selection').prop("checked",true);
+  }else{
+    $('.multiple_job_alert_selection').prop("checked",false);
+  }
+});
+
+$("#selected_job_alert_delete").click(function() {
+  var type = $(this).data('type');
+  console.log("dkdkdkdkdkdk")
+  var yourArray = Array();
+  var job_alert = ''
+  var i = 0
+  $("input:checkbox[name=multiple_teacher_selection]:checked").each(function(){
+    yourArray.push($(this).val());
+    if(i==0){
+      job_alert = $(this).val()
+    }else{
+      job_alert = job_alert+','+$(this).val()
+    }
+    i = i + 1;
+  });
+  if (yourArray.length === 0) {
+    console.log("0")
+
+  }else{
+    $.ajax({ 
+      type: "POST", // GET or POST
+      url: "/selected_job_alert_delete",
+      data: {
+        'job_alert': job_alert,
+        'type': type,
+        // Add any other parameters as needed
+    },
+      success: function (data) { 
+          alert("Delete successfully")
+          location.reload();
+      }
+    });
+  }
+});
+$(document).on('change','input[name="benifits_compensation_data"]',function(e){
+     
+  var checked = $('input[name=benifits_compensation_data]:checked').length;
+
+    var sList = "";
+    var i=0;
+    $('input[name=benifits_compensation_data]:checked').each(function () {
+        if(i == 0){
+          sList +=  $(this).val();
+        }else{
+          sList += "," + $(this).val();
+        }
+        i = i+1;
+    });
+    $('#benifits_compensation_data').val(sList)
+
+});
+$(function(){
+  $('#datepicker').datepicker({ format: 'dd-mm-yyyy', autoclose:true}); 
+});
+
+$(function(){
+  $('#datepicker1').datepicker({ format: 'dd-mm-yyyy', autoclose:true}); 
+});
+
+
+$(document).on('change','#pincode_sample',function(e){
+  var pincode = $('#pincode_sample').val();
+  if(pincode){
+    $.ajax({ 
+    type: "GET", // GET or POST
+    url: "/get-pincode-details/"+pincode, // the file to call
+    success: function (data)  { 
+        if(data['is_exists']==true){
+          $('#city_sample').val(data['city']);
+          $('#state_sample').val(data['state']);
+        }else{
+          $('#city_sample').val('');
+          $('#state_sample').val('');
+          $('#city_sample').removeAttr('readonly');
+          $('#state_sample').removeAttr('readonly');
+          alert("Pincode does not exist")
+        }
+    
+      }
+    });
+  }else{
+    alert("Please enter pincode")
+  }
+  return false;
+});
+
+  </script>
+  <script>
+    function resetform() {
+      document.getElementById("filter_form").reset();
+      $("select").each(function() {
+        $(this).prop('selectedIndex',0);
+        $(this).removeClass('text-danger');
+      });
+    }
+    </script>
+</body>
+
+</html>

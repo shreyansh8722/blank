@@ -1,0 +1,805 @@
+{%extends "base.html"%}
+{% load static %}
+{% csrf_token %}
+{%block title_block%}{{page_title}}{%endblock%}
+
+{%block body_block%}
+<main class="main">
+
+    <section class="section-box mt-30">
+        <div class="container">
+
+            <div class="row">
+                <div class="col-md-12">
+                    {% include 'partials/_alerts.html' %}
+                    <form action="/add-teacher-profile" method="post" id="teacher_profile_form" class="p-3">
+                        {% csrf_token %}
+                        <h4 class="mb-20 text-center">Complete Your Profile</h4>
+                        <h6 class="mb-20 text-center text-danger">Fill Details For Free Job Alerts</h6>
+
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label class="form-label" for="">Mobile No. <small>To edit contact admin</small></label>
+                                <input type="text" class="form-control" readonly style="background-color: white;" value="{{request.user.mobile_no}}">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="form-label" for="input-1">Gender</label>
+                                <select class="form-control"  name="gender" required>
+                                    <option {% if teacher_info.gender %}value="{{teacher_info.gender}}"{% else %}value=""{% endif %} hidden selected>{% if teacher_info.gender %}{{teacher_info.gender}}{% else %}Select{% endif %}</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="form-label" for="dob-input">Date Of Birth <small class="text-muted">(DD-MM-YYYY)</small></label>
+                                <div class="input-group">
+                                    <input type="text" 
+                                           id="dob-input" 
+                                           class="form-control" 
+                                           placeholder="DD-MM-YYYY" 
+                                           {% if teacher_info.dob %} 
+                                           value="{{teacher_info.dob|date:'d-m-Y'}}" 
+                                           {% endif %} 
+                                           required
+                                           maxlength="10"
+                                           autocomplete="off">
+                                    <input type="hidden" 
+                                           id="dob-hidden" 
+                                           name="dob" 
+                                           {% if teacher_info.dob %} 
+                                           value="{{teacher_info.dob}}" 
+                                           {% else %} 
+                                           value="" 
+                                           {% endif %}>
+                                    <span class="input-group-text" id="dob-calendar-btn" style="cursor:pointer;">
+                                        <i class="fa fa-calendar" aria-hidden="true"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="form-label" for="input-1">Qualification</label>
+                                <select class="form-control" required name="qualification" >
+                                    <option {% if teacher_info.qualification %}value="{{teacher_info.qualification}}"{% else %}value=""{% endif %} hidden selected>{% if teacher_info.qualification %}{{teacher_info.qualification}}{% else %}Select{% endif %}</option>
+                                    {% for info in qualification_data %}
+                                    <option value="{{info.info}}">{{info.info}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <script>
+                        // DOB Calendar: progressive formatter + jQuery UI datepicker
+                        $(document).ready(function() {
+                            var dobInput = $('#dob-input');
+                            var dobHidden = $('#dob-hidden');
+                            var dobCalendarBtn = $('#dob-calendar-btn');
+
+                            if(!dobInput.length || !dobHidden.length) return;
+
+                            var currentYear = new Date().getFullYear();
+                            var minYear = 1940;
+                            var maxYear = currentYear - 18;
+
+                            function isLeapYear(y){
+                                return ((y % 4 === 0) && (y % 100 !== 0)) || (y % 400 === 0);
+                            }
+
+                            function daysInMonth(mm, yy){
+                                if(mm === 2) return isLeapYear(yy) ? 29 : 28;
+                                return [0,31,28,31,30,31,30,31,31,30,31,30,31][mm];
+                            }
+
+                            function parseAndValidateDDMMYYYY(str){
+                                // expects DD-MM-YYYY
+                                var m = (''+str).trim().match(/^(\d{2})-(\d{2})-(\d{4})$/);
+                                if(!m) return { valid: false, reason: 'Please enter date in DD-MM-YYYY format' };
+                                var d = parseInt(m[1],10), mo = parseInt(m[2],10), y = parseInt(m[3],10);
+
+                                if(mo < 1 || mo > 12) return { valid: false, reason: 'Month must be between 01 and 12' };
+                                if(y < minYear || y > maxYear) return { valid: false, reason: 'Year must be between ' + minYear + ' and ' + maxYear };
+                                var dim = daysInMonth(mo, y);
+                                if(d < 1 || d > dim) return { valid: false, reason: 'Invalid day for given month/year' };
+
+                                // Age check: must be at least 18 years on today's date
+                                var today = new Date();
+                                var birth = new Date(y, mo - 1, d);
+                                var age = today.getFullYear() - birth.getFullYear();
+                                var mDiff = today.getMonth() - birth.getMonth();
+                                if(mDiff < 0 || (mDiff === 0 && today.getDate() < birth.getDate())) age--;
+                                if(age < 18) return { valid: false, reason: 'You must be at least 18 years old' };
+
+                                return { valid: true, date: birth, components: { d: d, m: mo, y: y } };
+                            }
+
+                            // Initialize jQuery UI datepicker if available
+                            if($.fn && typeof $.fn.datepicker === 'function'){
+                                dobInput.datepicker({
+                                    dateFormat: 'dd-mm-yy',
+                                    changeMonth: true,
+                                    changeYear: true,
+                                    yearRange: minYear + ':' + maxYear,
+                                    maxDate: new Date(maxYear, 11, 31),
+                                    minDate: new Date(minYear, 0, 1),
+                                    showButtonPanel: true,
+                                    onSelect: function(dateText) {
+                                        var parsed = parseAndValidateDDMMYYYY(dateText);
+                                        if(parsed.valid){
+                                            dobHidden.val(parsed.components.y + '-' + String(parsed.components.m).padStart(2,'0') + '-' + String(parsed.components.d).padStart(2,'0'));
+                                        } else {
+                                            toastr.error(parsed.reason);
+                                            dobHidden.val('');
+                                        }
+                                    }
+                                });
+
+                                // show on calendar icon click
+                                dobCalendarBtn.on('click', function(e){
+                                    e.preventDefault();
+                                    try{ dobInput.datepicker('show'); } catch(err) { console.warn(err); }
+                                });
+                            } else {
+                                console.warn('jQuery UI datepicker not available');
+                            }
+
+                            // Progressive formatter: user types digits and we format to DD-MM-YYYY progressively
+                            dobInput.on('input', function(){
+                                var raw = this.value.replace(/\D/g, '').slice(0,8); // up to DDMMYYYY
+                                var d1 = raw.slice(0,1);
+                                var d2 = raw.slice(1,2);
+                                var m1 = raw.slice(2,3);
+                                var m2 = raw.slice(3,4);
+                                var y = raw.slice(4,8);
+
+                                var day = '';
+                                if(raw.length >= 2) day = raw.slice(0,2);
+                                else if(raw.length === 1) day = '0' + raw.slice(0,1);
+
+                                var month = '';
+                                if(raw.length >= 4) month = raw.slice(2,4);
+                                else if(raw.length >= 3) month = '0' + raw.slice(2,3);
+
+                                var formatted = '';
+                                if(day) formatted += day + '-';
+                                else if(raw.length >= 1) formatted += (raw.slice(0,1)).padStart(2,'0') + '-';
+
+                                if(raw.length >= 3) formatted += month + '-';
+                                if(y.length > 0) formatted += y;
+
+                                this.value = formatted;
+                            });
+
+                            // On blur validate and update hidden field
+                            dobInput.on('blur', function(){
+                                var val = this.value.trim();
+                                if(!val) { dobHidden.val(''); return; }
+
+                                var res = parseAndValidateDDMMYYYY(val);
+                                if(!res.valid){
+                                    toastr.error(res.reason);
+                                    dobHidden.val('');
+                                    return;
+                                }
+
+                                // If valid, set hidden field in YYYY-MM-DD
+                                dobHidden.val(res.components.y + '-' + String(res.components.m).padStart(2,'0') + '-' + String(res.components.d).padStart(2,'0'));
+                            });
+                        });
+                        </script>
+                            <div class="form-group col-md-6">
+                                <label class="form-label" for=""> Subject of specialization</label>
+                                <select class="form-control" required name="subject_of_specialization" >
+                                    <option {% if teacher_info.subject_of_specialization %}value="{{teacher_info.subject_of_specialization}}"{% else %}value=""{% endif %} hidden selected>{% if teacher_info.subject_of_specialization %}{{teacher_info.subject_of_specialization}}{% else %}Select{% endif %}</option>
+                                    {% for info in specialization_data %}
+                                    <option value="{{info.info}}">{{info.info}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="form-label" for="input-1">Experience type</label>
+                                <select  class="form-control" required name="experience_type" id="experience-type-2">
+                                    <option value="">Select</option>
+                                    {% for info in experience_type_data %}
+                                    <option value="{{info.info}}" 
+                                        {% if teacher_info %}
+                                            {% if info.info == teacher_info.experience_type %}
+                                            selected
+                                            {% endif %}
+                                        {% endif %}
+                                        >{{info.info}}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <div id="experienced-form" class="row {% if teacher_info.experience_type == 'Experienced' %}show{% else %}hide{% endif %}">
+                                      
+                                        <div class="form-group col-md-6">
+                                            <label class="form-label" for="input-1">Experienced in (Max 2 selection)</label>
+                                          <input type="text" readonly  name="experience_in" id="experienced_in" value="{% if teacher_info.experience_in != None %}{{teacher_info.experience_in}}{% endif %}" data-bs-toggle="modal" placeholder="Please select grade to teach" data-bs-target="#experienced-in" >
+                                          
+                                        </div>
+                                        <div class="form-group col-md-6">
+                                            <label class="form-label" for="input-1">Subject of Experience<small> (Max 3
+                                                Selection)</small></label>
+                                          <input type="text"  readonly  data-bs-toggle="modal" value="{% if teacher_info.subject_of_experience != None %}{{teacher_info.subject_of_experience}}{% endif %}" name="subject_of_experience" placeholder="Please select subject of experience" id="experience_subject_data" data-bs-target="#subject-experienced" >
+                                        </div>
+                                  
+                                    <div class="form-group col-md-6">
+                                        <label  class="form-label" for="input-1">Years of experience</label>
+                                        <select class="form-control"   id="years_of_experience" name="years_of_experience" >
+                                            <option {% if teacher_info.years_of_experience %}value="{{teacher_info.years_of_experience}}"{% else %}value=""{% endif %} hidden selected>{% if teacher_info.years_of_experience %}{{teacher_info.years_of_experience}}{% else %}Select{% endif %}</option>
+                                            {% for info in experience_year_data %}
+                                            <option value="{{info.info}}">{{info.info}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label class="form-label" for="input-1">Current Salary</label>
+                                        <select class="form-control"  id="current_salary" name="current_salary" >
+                                            <option {% if teacher_info.current_salary %}value="{{teacher_info.current_salary}}"{% else %}value=""{% endif %} hidden selected>{% if teacher_info.current_salary %}{{teacher_info.current_salary}}{% else %}Select{% endif %}</option>
+                                            {% for info in current_salary_data %}
+                                            <option value="{{info.info}}">{{info.info}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div id="fresher-form" class="row {% if teacher_info.experience_type == 'Fresher' %}show {% else %} hide{% endif %}">
+                                    
+                                    <div class="form-group col-md-6">
+                                        <label class="form-label" for="input-1">I want to teach for</label>
+                                      <input readonly  placeholder="Please select grade to teach" name="want_to_teach_for" value="{% if teacher_info.want_to_teach_for != None %}{{teacher_info.want_to_teach_for}}{% endif %}"   id="experience_in_fresher" type="text" data-bs-toggle="modal" data-bs-target="#teach-for" >
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label class="form-label" for="input-1">Subject i can teach</label>
+                                      <input  readonly  placeholder="Please select subject of experience" name="subject_i_teach" value="{% if teacher_info.subject_i_teach != None %}{{teacher_info.subject_i_teach}}{% endif %}"  id="subject_i_teach_data" type="text" data-bs-toggle="modal" data-bs-target="#subject-teach" >
+                                    </div>
+                                   
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="form-label" for="input-1">Expected Salary</label>
+                                    <select class="form-control" required name="expected_salary" >
+                                        <option {% if teacher_info.expected_salary %}value="{{teacher_info.expected_salary}}"{% else %}value=""{% endif %} hidden selected>{% if teacher_info.expected_salary %}{{teacher_info.expected_salary}}{% else %}Select{% endif %}</option>
+                                        {% for info in expected_salary_data %}
+                                        <option value="{{info.info}}">{{info.info}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>  
+                                
+                            <div class="col-md-12 mb-10 mt-5" id="preferred_locations_section">
+                                <h6 class="d-flex align-items-center justify-content-between">Preferred Job Locations 
+                                    <div>
+                                        {%if preferred_location_district_list%}
+                                        <a class="btn btn-success py-2 me-2" id="add_location_modal_aa" data-bs-toggle="modal" href="#add-location-modal"> <i class="fa fa-plus"></i> Add More Location </a>
+
+                                        {%else%}
+                                        <a class="btn btn-success py-2" id="add_location_modal_a" data-bs-toggle="modal" href="#add-location-modal"> <i class="fa fa-plus"></i> Add Location </a>
+                                        {% endif %}
+                                    </div>
+                                </h6> 
+                            </div>
+                            <div>
+                                <div class="col-md-12 mb-3">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <div class="border p-3 rounded" id="preferred_locations_body" style="max-height: 400px; overflow-y: auto;">
+                                        <div class="mb-3">
+                                            {% for x in preferred_location_district_list %}
+                                            {% for k,v in x.items %}
+                                            <h6 class="mb-3 d-flex align-items-center justify-content-between">{{k}}
+                                                <div class="fz-12">
+                                                    <a class="text-success edit_location me-3" data-state="{{k}}" data-bs-toggle="modal" href="#add-location-modal"> 
+                                                        <span class="fa fa-edit text-success"></span> Edit</a>
+                                                    <a href="javascript:void(0);" class="text-danger delete_location" onclick="deleteLocation('{{k}}')">
+                                                        <span class="fa fa-trash text-danger"></span> Remove</a>                                                        
+                                                </div>
+                                            </h6>
+                                            {% for d in v %}
+                                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                                <span class="btn btn-grey-small mr-5">{{d}}</span>
+                                                {% if v|length > 1 %}
+                                                <a class="text-danger delete_district" data-state="{{k}}" data-district="{{d}}"> 
+                                                    <span class="fa fa-trash text-danger"></span>
+                                                </a>
+                                                {% endif %}
+                                            </div>
+                                            {% endfor %}
+                                            <hr>
+                                            {% endfor %}            
+                                            {% endfor %}     
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                                
+                                <div class="col-md-12 mb-10 mt-5">
+                                    <h6>Permanent Address</h6>
+                                </div>
+                                <div class="form-group col-md-6" hidden>
+                                    <label for="">Job code</label>
+                                    <input type="text"   name="jobcode" required class="form-control" value="{{ jobcode }}">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="">Pincode</label>
+                                    <input type="text"  pattern="[0-9]*" maxlength="6" minlength="6" id="pincode_permanent" name="address_pincode" required class="form-control pincode_sample" data-city-target="#city_sample_permanent" data-state-target="#state_sample_permanent" {% if teacher_info.address_pincode %}value="{{teacher_info.address_pincode}}"{% endif %}>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="form-label" for="input-1">State</label>
+                                        <input class="form-control" readonly id="state_sample_permanent" {% if teacher_info.address_state %}value="{{teacher_info.address_state}}"{% else %}value=""{% endif %}  name="address_state" >
+                                       
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="form-label" for="input-1">District</label>
+                                        <input class="form-control" readonly id="city_sample_permanent"  name="address_district" {% if teacher_info.address_district %}value="{{teacher_info.address_district}}"{% else %}value=""{% endif %}  />
+                                     
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="form-label" for="">Town/Street/House No</label>
+                                    <textarea name="address"  class="form-control"   cols="30" rows="10">{% if teacher_info.address %}{{teacher_info.address}}{% endif %}</textarea>
+                                </div>
+                            </div>
+                            <div class="col-12 text-center mt-3">
+                                <input type="submit" style="z-index: 999999; position: relative;"  class="btn btn-default w-100" value="Save Details"/>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+
+    </section>
+</main>
+  
+  <!--teach-for Modal -->
+<div class="modal fade" id="teach-for" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog " role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="teach-for">I want to teach for </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                {% for info in experience_in_fresher_data %}
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="{{info.name}}" name="experience_in_fresher" id="ddd{{info.id}}">
+                    <label class="form-check-label" for="ddd{{info.id}}">
+                        {{info.name}}
+                    </label>
+                </div>               
+                {% endfor %}
+
+            </div>
+            <div class="modal-footer">
+                <button id="experience_in_fresher_done" data-bs-dismiss="modal" aria-label="Close" class="btn btn-default m-0">Done </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Subject i can teach -->
+<div class="modal fade" id="subject-teach" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog " role="document">
+        <div class="modal-content apply-job-form">
+            <div class="modal-header">
+                <h5 class="modal-title" id="subject-teach">Subject I can teach </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="subject-teach-modal-body">
+
+                {% for info in subject_teach_fresher_data %}
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="subject_i_teach" value="{{info.info}}" id="{{info.id}}">
+                    <label class="form-check-label" for="{{info.id}}">
+                        {{info.info}}
+                    </label>
+                </div>
+                {% endfor %}
+
+            </div>
+            <div class="modal-footer">
+                <button id="subject_i_teach_done" data-bs-dismiss="modal" aria-label="Close" class="btn btn-default m-0">Done </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Experienced in -->
+<div class="modal fade" id="experienced-in" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog " role="document">
+        <div class="modal-content apply-job-form">
+            <div class="modal-header">
+                <h5 class="modal-title" id="subject-teach">Experienced in  (Max 2 selections)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {% for info in experience_in_data %}
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="{{info.name}}" name="experience_in" id="{{info.id}}">
+                    <label class="form-check-label" for="{{info.id}}">
+                        {{info.name}}
+                    </label>
+                </div>
+                {% endfor %}
+
+            </div>
+            <div class="modal-footer">
+                <button id="experience_in_done" data-bs-dismiss="modal" aria-label="Close" class="btn btn-default m-0">Done</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Subject of Experience (Max 3 Selection)-->
+<div class="modal fade" id="subject-experienced" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog " role="document">
+        <div class="modal-content apply-job-form">
+            <div class="modal-header">
+                <h5 class="modal-title" id="subject-teach">Subject of Experience (Max 3 Selection)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="subject-experienced-modal-body">
+                {% for info in experience_subject_data %}
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="experience_subject_data" value="{{info.info}}" id="s{{info.id}}">
+                    <label class="form-check-label" for="s{{info.id}}">
+                        {{info.info}}
+                    </label>
+                </div>
+                {% endfor %}
+
+            </div>
+            <div class="modal-footer">
+                <button id="experience_subject_data_done" data-bs-dismiss="modal" aria-label="Close" class="btn btn-default m-0">Done </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Location -->
+<div class="modal fade" id="add-location-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content apply-job-form">
+            <div class="modal-header">
+                <div class="text-center">
+                    <h4 class="mt-10 mb-5 text-brand-1 text-capitalize">Add/Edit Preferred Job Location</h4>
+                </div>
+                <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <div class="modal-body pl-30 pr-30 ">       
+
+                <div class="form-group col-md-12">
+                    <label class="form-label" for="input-1">Select State</label>
+                    <select class="form-control" id="state_select"  required >
+                        <option value="">Select</option>
+                        {% for info in state_data %}
+                            <option value="{{info.name}}">{{info.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group hide" id="district_div">
+                    <label class="form-label" for="input-1">Select District</label>
+                </div>
+                <div class="">
+                    <ul class="distric" id="district_list" style="max-height: 300px; overflow-y: auto;">
+                                            
+                    </ul>
+                </div>
+            
+            </div>
+            <div class="modal-footer">
+                <button id="add_location_done" data-bs-dismiss="modal" aria-label="Close" class="btn btn-default m-0"  href="javascript:void(0);">Done</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Location -->
+<div class="modal fade" id="delete-location-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+    <div class="modal-content apply-job-form">
+        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-body pl-30 pr-30 ">
+        <div class="text-center">
+            <h2 class="mt-10 mb-5 text-brand-1 text-capitalize">Delete location</h2>
+        </div>
+        <form autocomplete="nope" class=" text-start mt-20 pb-30" action="/add-location" method="post">
+            {% csrf_token %}
+            <div class="">
+                <ul class="distric">
+                    <li>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="Bhopal">
+                            <label class="form-check-label" for="Bhopal">
+                                Bhopal
+                            </label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="Bhopal">
+                            <label class="form-check-label" for="Bhopal">
+                                Bhopal
+                            </label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="Bhopal">
+                            <label class="form-check-label" for="Bhopal">
+                                Bhopal
+                            </label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="Bhopal">
+                            <label class="form-check-label" for="Bhopal">
+                                Bhopal
+                            </label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="Bhopal">
+                            <label class="form-check-label" for="Bhopal">
+                                Bhopal
+                            </label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="Bhopal">
+                            <label class="form-check-label" for="Bhopal">
+                                Bhopal
+                            </label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="Bhopal">
+                            <label class="form-check-label" for="Bhopal">
+                                Bhopal
+                            </label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="Bhopal">
+                            <label class="form-check-label" for="Bhopal">
+                                Bhopal
+                            </label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="Bhopal">
+                            <label class="form-check-label" for="Bhopal">
+                                Bhopal
+                            </label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="Bhopal">
+                            <label class="form-check-label" for="Bhopal">
+                                Bhopal
+                            </label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="Bhopal">
+                            <label class="form-check-label" for="Bhopal">
+                                Bhopal
+                            </label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="Bhopal">
+                            <label class="form-check-label" for="Bhopal">
+                                Bhopal
+                            </label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="Bhopal">
+                            <label class="form-check-label" for="Bhopal">
+                                Bhopal
+                            </label>
+                        </div>
+                    </li><li>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="" id="Bhopal">
+                            <label class="form-check-label" for="Bhopal">
+                                Bhopal
+                            </label>
+                        </div>
+                    </li>
+                    
+                </ul>
+            </div>
+           
+        </form>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-default m-0">Delete Selected </button>
+        </div>
+    </div>
+    </div>
+</div>
+
+<script>
+    // Function to handle location deletion
+    function deleteLocation(state) {
+        if (confirm("Are you sure you want to remove " + state + " from your preferred locations?")) {
+            // Set a flag in sessionStorage before submitting
+            sessionStorage.setItem('scrollAfterRefresh', 'preferred_locations_section');
+            
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/delete-location/';
+            
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrfmiddlewaretoken';
+            csrfInput.value = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            form.appendChild(csrfInput);
+            
+            const stateInput = document.createElement('input');
+            stateInput.type = 'hidden';
+            stateInput.name = 'state';
+            stateInput.value = state;
+            form.appendChild(stateInput);
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+
+    // Function to handle district deletion
+    function deleteDistrict(state, district) {
+        if (confirm("Are you sure you want to remove " + district + " from " + state + "?")) {
+            // Set a flag in sessionStorage before submitting
+            sessionStorage.setItem('scrollAfterRefresh', 'preferred_locations_section');
+            
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/delete-district/';
+            
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrfmiddlewaretoken';
+            csrfInput.value = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            form.appendChild(csrfInput);
+            
+            const stateInput = document.createElement('input');
+            stateInput.type = 'hidden';
+            stateInput.name = 'state';
+            stateInput.value = state;
+            form.appendChild(stateInput);
+            
+            const districtInput = document.createElement('input');
+            districtInput.type = 'hidden';
+            districtInput.name = 'district';
+            districtInput.value = district;
+            form.appendChild(districtInput);
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+
+    // After page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if we need to scroll after refresh
+        if (sessionStorage.getItem('scrollAfterRefresh') === 'preferred_locations_section') {
+            // Remove the flag so it doesn't scroll on future page loads
+            sessionStorage.removeItem('scrollAfterRefresh');
+            
+            // Scroll to the preferred locations section
+            const locationSection = document.getElementById('preferred_locations_section');
+            if (locationSection) {
+                // Small timeout to ensure page is fully rendered
+                setTimeout(function() {
+                    locationSection.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            }
+        }
+
+        // Set up delete district buttons
+        const deleteDistrictButtons = document.querySelectorAll('.delete_district');
+        deleteDistrictButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const state = this.getAttribute('data-state');
+                const district = this.getAttribute('data-district');
+                deleteDistrict(state, district);
+            });
+        });
+    });
+
+    // For the "Add Location" modal
+    $(document).ready(function() {
+        $("#add_location_done").on("click", function(e) {
+            e.preventDefault();
+            sessionStorage.setItem('scrollAfterRefresh', 'preferred_locations_section');
+            // Get all selected districts
+            const selectedDistricts = [];
+            $('#district_list input[type="checkbox"]:checked').each(function() {
+                selectedDistricts.push($(this).val());
+            });
+            
+            if (selectedDistricts.length === 0) {
+                alert('Please select at least one district');
+                return;
+            }
+            
+            // Get selected state
+            const state = $('#state_select').val();
+            if (!state) {
+                alert('Please select a state');
+                return;
+            }
+            
+            // Set flag before submitting
+            sessionStorage.setItem('scrollAfterRefresh', 'preferred_locations_section');
+            
+            // Create and submit form
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/add-location/';
+            
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrfmiddlewaretoken';
+            csrfInput.value = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            form.appendChild(csrfInput);
+            
+            const stateInput = document.createElement('input');
+            stateInput.type = 'hidden';
+            stateInput.name = 'state';
+            stateInput.value = state;
+            form.appendChild(stateInput);
+            
+            selectedDistricts.forEach(district => {
+                const districtInput = document.createElement('input');
+                districtInput.type = 'hidden';
+                districtInput.name = 'districts';
+                districtInput.value = district;
+                form.appendChild(districtInput);
+            });
+            
+            document.body.appendChild(form);
+            form.submit();
+        });
+    });
+
+    // After page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if we need to scroll after refresh
+        if (sessionStorage.getItem('scrollAfterRefresh') === 'preferred_locations_section') {
+            // Remove the flag so it doesn't scroll on future page loads
+            sessionStorage.removeItem('scrollAfterRefresh');
+            
+            // Scroll to the preferred locations section
+            const locationSection = document.getElementById('preferred_locations_section');
+            if (locationSection) {
+                // Small timeout to ensure page is fully rendered
+                setTimeout(function() {
+                    locationSection.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            }
+        }
+    });
+
+    
+</script>
+
+{% endblock %}

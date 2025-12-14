@@ -1,0 +1,143 @@
+{%extends "base.html"%}
+{% load static %}
+{%block title_block%}{{page_title}}{%endblock%}
+{%block body_block%}
+<style>
+    .cog-account .cog-tabs.nav-link {
+    width: 28rem;}
+    .header {
+      box-shadow: 0 8px 20px 0 rgba(0, 0, 0, 0.05);
+  }
+    /* Container for the tooltip */
+    .tooltip-container {
+      transform: translateY(-20%);
+      background: #4154af;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      position: absolute;
+      color: #ffffff;
+      font-size: 12px;
+      text-align: center;
+      right: 15px;
+      top: 24%;
+      line-height: 30px;
+      display: inline-block;
+      cursor: pointer;
+    }
+    
+    .tooltip-text {
+    visibility: hidden;
+    width: 200px;
+    line-height: 17px;
+    background-color: #333;
+    color: #fff;
+    text-align: left;
+    border-radius: 4px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    right: 0;
+    opacity: 0;
+    transition: opacity 0.3s;
+    }
+    
+    /* The hover effect */
+    .tooltip-container:hover .tooltip-text {
+      visibility: visible;
+      opacity: 1;
+    }
+    
+    /* Button styling with correct positioning */
+    .aboutus-icon {
+      position: relative;
+      padding-right: 40px !important;
+    }
+  </style>
+  
+  <main class="main">
+    <section class="cog-section cog-account ">
+        {% include 'partials/_alerts.html' %}
+        <div class="container">
+            <div class="row ">
+                <div class="col-md-5 mx-auto p-0">
+                    <div class="left-side">
+                        <div class="head">
+                            <h4>Welcome !  {{request.user.name}}</h4>
+                        </div>
+                        <div class="body">
+                            <div class="box-nav-tabs nav-tavs-profile mb-5">
+                                <ul class="nav" role="tablist">                                   
+                                  <li>
+                                    <a class="btn btn-border aboutus-icon mb-10" href="/post-job" style="border:2px solid #ff000047; font-size:17px; font-style:bold; color:#ba2020">
+                                      Post a job
+                                      <i class="account-count tooltip-container"> ?
+                                        <span class="tooltip-text">Post a job and find candidates.</span>
+                                      </i>
+                                    </a>
+                                  </li>
+                                  
+                                  <li>
+                                    <a class="btn btn-border aboutus-icon mb-10" href="/walkin-job" style="border:2px solid #ff000047; font-size:17px; font-style:bold; color:#ba2020">
+                                      Walk-In job
+                                      <i class="account-count tooltip-container"> ?
+                                        <span class="tooltip-text">View pricing for walk-in job postings.</span>
+                                      </i>
+                                    </a>
+                                  </li>
+                                  
+                                  <li>
+                                   <a class="btn btn-border aboutus-icon mb-10" href="/find-teachers" style="border:2px solid #ff000047; font-size:17px; font-style:bold; color:#ba2020">
+                                      Find teachers
+                                      <i class="account-count tooltip-container" style="mt-10"> ?
+                                        <span class="tooltip-text">Search and connect with teachers.</span>
+                                      </i>
+                                    </a>
+                                  </li>
+                                    <li><a class="btn btn-border aboutus-icon mb-10" href="/job-posted-all">
+                                        All Jobs   <i class="account-count">{{jobs_count}}</i></a></li>
+                                    <li><a class="btn btn-border aboutus-icon mb-10" href="/job-posted?status=Approved">
+                                        Approved Jobs ({{applied_jobs_count}}) & Application received    <i class="account-count">{{app_res}}</i></a></li>
+                                    <li><a class="btn btn-border aboutus-icon mb-10" href="/invited-for-interview">List of candidates invited for
+                                        interview <i class="account-count">{{inteview_jobs_count}}</i></a></li>
+                                    <li><a class="btn btn-border aboutus-icon mb-10" href="/job-posted?status=New">Jobs pending for approval <i class="account-count">{{review_jobs_count}}</i>    </a></li>
+                                    <li><a class="btn btn-border aboutus-icon mb-10" href="/school-shortlisted">Shortlisted Teachers <i class="account-count">{{shortlisted_count}}</i>    </a></li>
+                                    <li><a class="btn btn-border aboutus-icon mb-10" href="/job-posted?status=Expired">List of expired jobs &
+                                        reapproval request <i class="account-count">{{rejected_jobs_count}}</i>    </a></li>
+                                    <li><a class="btn btn-border aboutus-icon mb-10" href="/school-profile">School profile    </a></li>
+                                    <li><a class="btn btn-border aboutus-icon mb-10" href="/institute-pricing">Select a plan    </a></li>
+                                    <li><a class="btn btn-border aboutus-icon mb-10" href="/institute-pricing-plan">Plan detail & usage   </a></li>
+                                    <li><a class="btn btn-border aboutus-icon mb-10" href="/help-support">Help & Support   </a></li>
+                                </ul>
+                            </div>
+                            <!-- Tab panes -->
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const walkinJobBtn = document.getElementById('walkinJobBtn');
+            
+            if (walkinJobBtn) {
+                walkinJobBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    if (typeof bootstrap !== 'undefined') {
+                        const walkinModal = new bootstrap.Modal(document.getElementById('walkinPlanModal'));
+                        walkinModal.show();
+                    } else {
+                        // Fallback: redirect to the pricing page
+                        window.location.href = '/walkin-pricing?next=walkin-job';
+                    }
+                });
+            }
+        });
+    </script>
+</main>
+{% endblock %}

@@ -1,0 +1,91 @@
+{%extends "base.html"%}
+{% load static %}
+{%block title_block%}{{page_title}}{%endblock%}
+{%block body_block%}
+<main class="main">
+    <section class="section-box">
+        <div class="breacrumb-cover">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-6 col-xs-6">
+                  <a onclick="backButton()" class="pointer"><i class=" fa fa-arrow-left mr-10"></i>Back</a>
+                </div>
+                <div class="col-lg-6  col-xs-6 text-end">
+                  <ul class="breadcrumbs">
+                    <li><a  href="/school-account">My Account</a></li>
+                    <li>Complete Your Profile</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+        </div>
+      </section>
+    <section class="section-box mt-30">
+        <div class="container">
+
+            <div class="row">
+                <div class="col-md-12">
+                    {% include 'partials/_alerts.html' %}
+                    <form action="/add-school-profile" method="post" class="p-3">
+                        {% csrf_token %}
+                        <h4 class="mb-20 text-center">Complete Your Profile</h4>
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label class="form-label" for="">Mobile No. <small>(To edit contact admin)</small></label>
+                                <input type="text" class="form-control" style="background-color: white;" readonly value="{{request.user.mobile_no}}"  name="primary_mobile">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="form-label" for="">School / Institute website</label>
+                                <input type="text" class="form-control" name="website" value="{% if school_info.website != None%}{{school_info.website}}{%endif%}">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="form-label" for="">Email of School</label>
+                                <input type="email" class="form-control" name="school_email" style="background-color: white;" {% if school_info.school_email %}value="{{school_info.school_email}}"{% endif %}>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="form-label" for="input-1">Type of Institution</label>
+                                <select class="form-control" required name="institute_type" >
+                                    <option {% if school_info.institute_type %}value="{{school_info.institute_type}}"{% else %}value=""{% endif %} hidden selected>{% if school_info.institute_type %}{{school_info.institute_type}}{% else %}Select{% endif %}</option>
+                                    <option value="School">School</option>
+                                    <option value="Institute">Institute</option>
+                                    <option value="Academy">Academy</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="form-label" for="">Contact Person Name</label>
+                                <input type="text" class="form-control" required name="contact_person_name" {% if school_info.contact_person_name %}value="{{school_info.contact_person_name}}"{% endif %}>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="form-label" for="">Contact Person Designation</label>
+                                <input type="text" class="form-control" name="contact_person_designation" required {% if school_info.contact_person_designation %}value="{{school_info.contact_person_designation}}"{% endif %}>
+                            </div>
+
+                            <div class="form-group col-md-6">
+                                <label for="">Pincode</label>
+                                <input type="text"  pattern="[0-9]*"  id="pincode_sample" maxlength="6" minlength="6" name="pincode" required {% if school_info.pincode %}value="{{school_info.pincode}}"{% endif %} class="form-control pincode_sample">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="form-label" for="input-1">State</label>
+                                <input class="form-control" readonly  name="state" {% if school_info.state %}value="{{school_info.state}}"{% else %}value=""{% endif %}  id="state_sample" />
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="form-label" for="input-1">District</label>
+                                <input class="form-control" readonly id="city_sample" {% if school_info.district %}value="{{school_info.district}}"{% else %}value=""{% endif %}   name="district" >
+                                
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="form-label" for="">Address</label>
+                                <textarea name="address" required class="form-control"  cols="30"
+                                    rows="10">{% if school_info.address %}{{school_info.address}}{% endif %}</textarea>
+                            </div>
+                        </div>
+                        <div class="col-12 text-center mt-3">
+                            <button type="submit" style="z-index: 999999; position: relative;" class="btn btn-default w-100">Save Details</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}

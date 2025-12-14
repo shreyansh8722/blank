@@ -1,0 +1,376 @@
+{%extends "base.html"%}
+{% load static %}
+{%block title_block%}{{page_title}}{%endblock%}
+{%block body_block%}
+<style>
+  .header {
+    box-shadow: 0 8px 20px 0 rgba(0, 0, 0, 0.05);
+}
+</style>
+<main class="main">
+  <!-- Banner  -->
+  <section class="section-box">
+    <div class="banner-hero hero-1 banner-homepage5">
+      <div class="container banner-inner">
+        <div class="col-xl-10 mx-auto col-lg-12 text-center">
+          <div class="swiper-group-1 swiper">
+            <div class="swiper-wrapper">
+              <div class="swiper-slide">
+                <h1 class="heading-banner wow animate__animated animate__fadeInUp pt-50 pb-20"><span
+                  class="">Connecting Educators</span></h1>
+              </div>
+              <div class="swiper-slide">
+                <h1 class="heading-banner wow animate__animated animate__fadeInUp pt-50 pb-20"><span
+                  class="">Hire Teachers</span></h1>
+              </div>
+              <div class="swiper-slide">
+                <h1 class="heading-banner wow animate__animated animate__fadeInUp pt-50 pb-20"><span
+                  class="">Find Jobs</span></h1>
+              </div>
+            </div>
+          </div>
+          
+
+          <div class="row align-items-center" style="margin-top:-25px;">
+            <div class="col-xl-6 col-lg-12 text-center">
+              <div class="card-category hover-up h-100 rounded">
+                <a href="/registration?type=Teacher">
+                     <img src="/static/cog-img/teacher-btn.png" class="rounded" alt="">                
+                </a>
+              </div>
+            </div>
+            <div class="col-xl-6 col-lg-12 text-center">
+              <div class="card-category hover-up h-100">
+                <a href="/registration?type=School">
+                  <img src="/static/cog-img/school-btn.png"class="rounded" alt="">
+                </a>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- explore  -->
+  <section class="section-box mt-50">
+    <div class="container">
+      <div class="col-xl-10 mx-auto col-lg-12 text-center">
+         <div class="row">
+          <div class="col-lg-6 col-md-12 mb-15 mb-lg-0">
+            <div onclick="window.location.href='/find-teachers'" class="box-radius-8 pointer hover-up">
+              <div class="text-info">
+                <h3>Find Teachers</h3>
+                <p class="color-text-paragraph-2 mt-20">View teachers profile & call for interview.
+                </p>
+                <div class="mt-15"><a class="btn btn-arrow-right" href="/find-teachers">Click to view</a></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-12">
+            <div class="box-radius-8 pointer hover-up" onclick="window.location.href='/current-vacancies'">
+              <div class="text-info">
+                <h3>Current Vacancies</h3>
+                <p class=" color-text-paragraph-2 mt-20">Search & apply for all available vacancies.
+                </p>
+                <div class="mt-15"><a class="btn btn-arrow-right" href="/current-vacancies">Click to view</a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+  </section>
+
+  <!-- Clients  -->
+  <section class="section-box overflow-visible mt-50 mb-50">
+    <div class="container">
+      <div class="col-xl-12 col-lg-12 text-center">
+        <h4 class="mb-40">Vacancies From</h4>
+
+        <div class="">
+          <div class="box-swiper">
+            <div class=" swiper-group-6 swiper">
+              <div class="swiper-wrapper">
+                {% for info in trusted_by %}
+                <div class="swiper-slide">
+                  <a href="javascript:void()"> <img src="{{info.image.url}}" alt=""></a>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works 
+  <section class="section-box pt-70 pb-40  bg-border-3">
+    <div class="container">
+      <div class="text-start text-center">
+        <h2 class="section-title mb-10 wow animate__animated animate__fadeInUp">How It Works</h2>
+      </div>
+      <div class="mt-70">
+        <div class="row">
+          <div class="col-lg-4">
+            <div class="box-step step-1">
+              <h1 class="number-element">1</h1>
+              <h4 class="mb-20">Register an account <br> to start</h4>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="box-step step-2">
+              <h1 class="number-element">2</h1>
+              <h4 class="mb-20">Explore over thousands <br> of profiles</h4>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="box-step">
+              <h1 class="number-element">3</h1>
+              <h4 class="mb-20">Find the most suitable candidate and call for interview</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-50 text-center"><a class="btn btn-default" href="/registration?type=School">Get Started</a></div>
+    </div>
+  </section>-->
+
+  <!-- How It Works (Teacher) -->
+  <section class="section-box pt-70 pb-40 bg-border-3 mb-5">
+    <div class="container">
+        <div class="text-start text-center">
+            <h2 class="section-title mb-10 wow animate__animated animate__fadeInUp">How It Works for Teacher</h2>
+        </div>
+        <div class="mt-70">
+            <div class="row">
+                {% for step in how_it_work_teacher %}
+                <div class="col-lg-4">
+                    <div class="box-step step-{{ forloop.counter }}">
+                      <h1 class="number-element">{{ step.step_no }}</h1>
+                      <h4 class="mb-20">{{ step.value|linebreaksbr }}</h4>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="mt-50 text-center">
+            <a class="btn btn-default" href="/registration?type=Teacher">Get Started</a>
+        </div>
+    </div>
+  </section>
+
+  <!-- How It Works (School) -->
+  <section class="section-box pt-70 pb-40 bg-border-3">
+    <div class="container">
+        <div class="text-start text-center">
+            <h2 class="section-title mb-10 wow animate__animated animate__fadeInUp">How It Works for School</h2>
+        </div>
+        <div class="mt-70">
+            <div class="row">
+                {% for step in how_it_work_school %}
+                <div class="col-lg-4">
+                  <div class="box-step step-{{ forloop.counter }}">
+                    <h1 class="number-element">{{ step.step_no }}</h1>
+                    <h4 class="mb-20">{{ step.value|linebreaksbr }}</h4>
+                  </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="mt-50 text-center">
+            <a class="btn btn-default" href="/registration?type=School">Get Started</a>
+        </div>
+    </div>
+  </section>
+
+  <!-- Testimonial -->
+  <section class="section-box mt-50">
+    <div class="section-box wow animate__animated animate__fadeIn">
+      <div class="container">
+        <div class="text-center">
+          <h2 class="section-title mb-10 wow animate__animated animate__fadeInUp">Testimonials</h2>
+        </div>
+        <div class="box-swiper mt-50">
+          <div class="swiper-container swiper-group-4-border swiper">
+            <div class="swiper-wrapper pb-70 pt-5">
+              {% for info in testimonials %}
+              <div class="swiper-slide hover-up">
+                <div class="card-review-1">
+                  <div class="image-review">
+                    <img src="{{ info.image.url }}" alt="">
+                  </div>
+                  <div class="review-info">
+                    <div class="review-name">
+                      <h5>{{ info.name }}</h5>
+                      <span class="font-xs">{{ info.designation }}</span>
+                    </div>
+                    <div class="review-rating">
+                      {% if info.rating|stringformat:'s' >= "1" %}
+                      <img src="static/imgs/template/icons/star.svg" alt="">
+                      {% endif %}
+                      {% if info.rating|stringformat:'s' >= "2" %}
+                      <img src="static/imgs/template/icons/star.svg" alt="">
+                      {% endif %}
+                      {% if info.rating|stringformat:'s' >= "3" %}
+                      <img src="static/imgs/template/icons/star.svg" alt="">
+                      {% endif %}
+                      {% if info.rating|stringformat:'s' >= "4" %}
+                      <img src="static/imgs/template/icons/star.svg" alt="">
+                      {% endif %}
+                      {% if info.rating|stringformat:'s' >= "5" %}
+                      <img src="static/imgs/template/icons/star.svg" alt="">
+                      {% endif %}
+                    </div>
+                    <div class="review-comment">{{ info.testimonial|safe }}</div>
+                    <!-- Display Sequence Number -->
+                   
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+            <div class="swiper-pagination swiper-pagination-style-border"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+
+  <!-- Counter  -->
+  <section class="section-box overflow-visible mt-50 mb-50">
+    <div class="container">
+      <div class="row">
+        {% for info in statistics %}
+        <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
+          <div class="text-center">
+            <h1 class="color-brand-2"><span >{{info.value}}</span></h1>
+            <h5 class="mb-4">{{info.name}}</h5>
+          </div>
+        </div>
+        {% endfor %}
+     
+      </div>
+    </div>
+  </section>
+
+  <section class="section-box mb-20">
+    <div class="container">
+      <div class="box-newsletter box-newsletter-3">
+        <div class="row align-items-center">
+          
+          
+          <div class="col-xl-7 mx-auto text-center">
+            <div class="d-inline-block">
+              <h2 class="color-white  mb-30">Get free  job alerts  on whatsapp</h2>
+            </div>
+          </div>
+          <div class="col-xl-4 mx-auto text-center">
+            <a href="/job-alert" class="btn btn-outline-light mb-30"> Get Job Alert</a>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Blogs  -->
+  {% comment %} <section class="section-box mt-50 ">
+    <div class="container">
+      <div class="text-start">
+        <h2 class="section-title mb-10 wow animate__animated animate__fadeInUp">News and Blog</h2>
+        <p class="font-lg color-text-paragraph-2 wow animate__animated animate__fadeInUp">Get the latest news, updates
+          and tips</p>
+      </div>
+    </div>
+    <div class="container">
+      <div class="mt-50">
+        <div class="box-swiper style-nav-top">
+          <div class="swiper-container swiper-group-3 swiper">
+            <div class="swiper-wrapper pb-70 pt-5">
+              <div class="swiper-slide">
+                <div class="card-grid-3 hover-up wow animate__animated animate__fadeIn">
+                  <div class="text-center card-grid-3-image"><a href="#">
+                      <figure><img alt="" src="/static/imgs/page/homepage1/img-news1.png"></figure>
+                    </a></div>
+                  <div class="card-block-info">
+                    <h5><a href="blog-details.html">21 Job Interview Tips: How To Make a Great Impression</a></h5>
+                    <div class="card-2-bottom mt-20">
+                      <div class="row">
+                        <div class="col-lg-6 col-6">
+                          <div class="d-flex">
+                            <div class="info-right-img"><span class="font-sm font-bold color-brand-1 op-70">Sarah
+                                Harding</span></div>
+                          </div>
+                        </div>
+                        <div class="col-lg-6 text-end col-60"><span class="color-text-paragraph-2 font-xs">06
+                            September</span></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="swiper-slide">
+                <div class="card-grid-3 hover-up wow animate__animated animate__fadeIn">
+                  <div class="text-center card-grid-3-image"><a href="#">
+                      <figure><img alt="" src="/static/imgs/page/homepage1/img-news2.png"></figure>
+                    </a></div>
+                  <div class="card-block-info">
+                    <h5><a href="blog-details.html">39 Strengths and Weaknesses To Discuss in a Job Interview</a></h5>
+                    <div class="card-2-bottom mt-20">
+                      <div class="row">
+                        <div class="col-lg-6 col-6">
+                          <div class="d-flex">
+                            <div class="info-right-img"><span class="font-sm font-bold color-brand-1 op-70">Steven
+                                Jobs</span><br></div>
+                          </div>
+                        </div>
+                        <div class="col-lg-6 text-end col-60">
+                          <span class="color-text-paragraph-2 font-xs">06 September</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="swiper-slide">
+                <div class="card-grid-3 hover-up wow animate__animated animate__fadeIn">
+                  <div class="text-center card-grid-3-image"><a href="#">
+                      <figure><img alt="" src="/static/imgs/page/homepage1/img-news3.png"></figure>
+                    </a></div>
+                  <div class="card-block-info">
+                    <h5><a href="blog-details.html">Interview Question: Why Dont You Have a Degree?</a></h5>
+                    <div class="card-2-bottom mt-20">
+                      <div class="row">
+                        <div class="col-lg-6 col-6">
+                          <div class="d-flex">
+                            <div class="info-right-img"><span class="font-sm font-bold color-brand-1 op-70">Wiliam
+                                Kend</span></div>
+                          </div>
+                        </div>
+                        <div class="col-lg-6 text-end col-60">
+                          <span class="color-text-paragraph-2 font-xs">06 September</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="swiper-button-next"></div>
+          <div class="swiper-button-prev"></div>
+        </div>
+      </div>
+    </div>
+  </section> {% endcomment %}
+
+</main>
+
+{% endblock %}

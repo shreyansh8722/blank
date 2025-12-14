@@ -1,0 +1,341 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title_block %}{{page_title}}{% endblock %}
+{% block body_block %}
+
+<main class="main">
+    <section class="section-box">
+        <div class="breacrumb-cover">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-6 col-xs-6">
+                  <a onclick="backButton()" class="pointer"><i class=" fa fa-arrow-left mr-10"></i>Back</a>
+                </div>
+                <div class="col-lg-6  col-xs-6 text-end">
+                  <ul class="breadcrumbs">
+                    <li><a>Home</a></li>
+                    <li>Find Teachers</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+        </div>
+    </section>
+    <section id="teachers-section" class="section-box-2 mt-30">
+        <div class="container"> 
+            <div class="banner-hero banner-single banner-single-bg">
+                <div class="block-banner text-center">
+                    <!-- Button for finding teachers -->
+                    <button id="show-search-btn" class="btn btn-default wow animate__animated animate__fadeInUp" style="font-size: 18px;">
+                        <i class="fa fa-search mr-10"></i> Find Teachers
+                    </button>
+                    <!-- Teachers count that will be hidden when form is shown -->
+                    <p id="teachers-count" style="margin-top: 10px;">({{teachers_data_count}} Teachers)</p>
+
+                    <!-- Search Form (hidden by default) -->
+                    <div id="search-form-container" class="form-find text-start mt-40 wow animate__animated animate__fadeInUp" style="display: none;" data-wow-delay=".2s">
+                        <form method="GET" id="find_teacher_form">
+                            <input type="hidden" name="page" value="1">
+                            <select class="form-control select-active " id="grade_change"  name="experience_in">
+                                <option disabled selected hidden>Grade to Teach</option>
+                                {% for info in experience_in_data %}
+                                    <option value="{{info.name}}" {% if experience_in_s == info.name %} selected {% endif %}>{{info.name}}</option>
+                                {% endfor %}
+                            </select>
+                            <select class="form-control select-active" id="grade_subject" name="subject">
+                                {% if subject_s %}
+                                {% for sd in subject_data %}  
+                                <option {% if subject_s == sd.name %} selected {% endif %}>{{sd.name}}</option>    
+                                {% endfor %}                       
+                                {% else %}
+                                <option disabled selected hidden>Subject</option>                               
+                                {% endif %}
+                            </select>
+                            <select class="form-control select-active" id="state_to" name="state">
+                                <option disabled selected hidden>State</option>
+                                {% for info in state_data %}
+                                <option {% if state_s == info.name %} selected {% endif %}>{{info.name}}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
+                        </form>
+                        <a id="reset-search-btn" class="float-right btn" href="/find-teachers"><u><i class="fa-solid fa-arrows-rotate mr-10"></i>Reset Search</u></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-box mt-30">
+        <div class="container">
+            <div class="row flex-row-reverse">
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12 float-right">
+                    <div class="content-page cog-account">
+                    
+                        <div class="table-responsive orders">
+                            <table class="table coganimate-scale-in-center table-bordered">
+                                <thead>
+                                    <tr>
+                                        <td>S.No.</td>
+                                        <td>Name</td>
+                                        <th>Experience in Grade</th>
+                                        <td>Subject of Experience</td>
+                                        <td>Year of Experience</td>
+                                        <td>Qualification</td>
+                                        <td>Current Salary</td>
+                                        <td>Expected Salary</td>
+                                        <td>Preferred Location</td>                                        
+                                        <td>Call for interview</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if teachers_data %}
+                                    {% for info in teachers_data %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{info.user.name}}</td>
+                                        <td>
+                                            {% if info.want_to_teach_for %}
+                                                {{info.want_to_teach_for}}  
+                                            {%endif%}
+                                            {% if info.experience_in %}
+                                                {{info.experience_in}}  
+                                            {%endif%}
+                                        </td>
+                                        <td>                                                 
+                                            {% if info.subject_of_experience %}
+                                                {{info.subject_of_experience}}  
+                                            {%endif%}
+                                            {% if info.subject_i_teach %}
+                                                {{info.subject_i_teach}}  
+                                            {%endif%}
+                                        </td>
+                                        <td>{{info.experience_type}}<br>{{info.years_of_experience}}</td>
+                                        <td>{{info.qualification}}</td>
+                                        <td>{{info.current_salary}}</td>
+                                        <td>{{info.expected_salary}}</td>
+                                        <td><a data-bs-toggle="modal" href="#pl-modal" data-loc="{{info.preferred_location_district}}" class="view_pl">View</a></td>
+                                        {% if request.user.is_authenticated and request.user.user_type == 'School' %}
+                                        <td>
+                                            {% if info.is_short %}
+                                                <a href="javascript:void(0)" class="btn btn-success">Done</a>
+                                            {% else %}
+                                                {% if jobs_count > 0 %}
+                                                    <a data-id="{{info.id}}" 
+                                                       id="t-{{info.id}}" 
+                                                       data-bs-toggle="modal" 
+                                                       href="javascript:void(0)" 
+                                                       class="btn btn-default call_me">
+                                                        Call for Interview 
+                                                    </a>
+                                                {% else %}
+                                                    <a data-bs-toggle="modal" 
+                                                       href="#post-job-modal" 
+                                                       class="btn btn-default">
+                                                        Call for Interview 
+                                                    </a>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                    {% else %}
+                                        <td>
+                                            <a data-bs-toggle="modal" 
+                                               href="#login-first-modal" 
+                                               class="btn btn-default">
+                                                Call for Interview 
+                                            </a>
+                                        </td>
+                                    {% endif %}
+                                    </tr>
+                                    {% endfor %}
+                                    {%else%}
+                                    <tr><td colspan="10">No results found</td></tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                            
+                            <!-- Pagination Controls -->
+                            {% if not filter_applied and teachers_data.paginator.num_pages > 1 %}
+                            <div class="pagination-area mt-15 mb-30">
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination justify-content-center">
+                                        <!-- First Page -->
+                                        <li class="page-item {% if teachers_data.number == 1 %}disabled{% endif %}">
+                                            <a class="page-link" href="{{ pagination_base_url }}page=1">First</a>
+                                        </li>
+                                        
+                                        <!-- Previous Page -->
+                                        <li class="page-item {% if teachers_data.number == 1 %}disabled{% endif %}">
+                                            <a class="page-link" href="{{ pagination_base_url }}page={% if teachers_data.number > 1 %}{{ teachers_data.number|add:-1 }}{% else %}1{% endif %}">
+                                                Previous
+                                            </a>
+                                        </li>
+                                        
+                                        <!-- Page Numbers Logic -->
+                                        {% if teachers_data.paginator.num_pages <= 10 %}
+                                            {% for p in teachers_data.paginator.page_range %}
+                                                <li class="page-item {% if p == teachers_data.number %}active{% endif %}">
+                                                    <a class="page-link" href="{{ pagination_base_url }}page={{ p }}">{{ p }}</a>
+                                                </li>
+                                            {% endfor %}
+                                        {% else %}
+                                            <!-- Show limited page numbers with current page in middle when possible -->
+                                            {% if teachers_data.number <= 5 %}
+                                                {% for p in "123456789"|make_list %}
+                                                    <li class="page-item {% if teachers_data.number == p|add:"0" %}active{% endif %}">
+                                                        <a class="page-link" href="{{ pagination_base_url }}page={{ p }}">{{ p }}</a>
+                                                    </li>
+                                                {% endfor %}
+                                                <li class="page-item disabled"><a class="page-link">...</a></li>
+                                                <li class="page-item">
+                                                    <a class="page-link" href="{{ pagination_base_url }}page={{ teachers_data.paginator.num_pages }}">
+                                                        {{ teachers_data.paginator.num_pages }}
+                                                    </a>
+                                                </li>
+                                            {% elif teachers_data.number > teachers_data.paginator.num_pages|add:"-5" %}
+                                                <li class="page-item">
+                                                    <a class="page-link" href="{{ pagination_base_url }}page=1">1</a>
+                                                </li>
+                                                <li class="page-item disabled"><a class="page-link">...</a></li>
+                                                {% with last_pages_start=teachers_data.paginator.num_pages|add:"-8" %}
+                                                    {% for i in "012345678"|make_list %}
+                                                        {% with page_num=last_pages_start|add:i|add:"0" %}
+                                                            <li class="page-item {% if teachers_data.number == page_num %}active{% endif %}">
+                                                                <a class="page-link" href="{{ pagination_base_url }}page={{ page_num }}">
+                                                                    {{ page_num }}
+                                                                </a>
+                                                            </li>
+                                                        {% endwith %}
+                                                    {% endfor %}
+                                                {% endwith %}
+                                            {% else %}
+                                                <li class="page-item">
+                                                    <a class="page-link" href="{{ pagination_base_url }}page=1">1</a>
+                                                </li>
+                                                <li class="page-item disabled"><a class="page-link">...</a></li>
+                                                {% with start=teachers_data.number|add:"-4" %}
+                                                    {% for i in "012345678"|make_list %}
+                                                        {% with page_num=start|add:i|add:"0" %}
+                                                            <li class="page-item {% if teachers_data.number == page_num %}active{% endif %}">
+                                                                <a class="page-link" href="{{ pagination_base_url }}page={{ page_num }}">
+                                                                    {{ page_num }}
+                                                                </a>
+                                                            </li>
+                                                        {% endwith %}
+                                                    {% endfor %}
+                                                {% endwith %}
+                                                <li class="page-item disabled"><a class="page-link">...</a></li>
+                                                <li class="page-item">
+                                                    <a class="page-link" href="{{ pagination_base_url }}page={{ teachers_data.paginator.num_pages }}">
+                                                        {{ teachers_data.paginator.num_pages }}
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+                                        {% endif %}
+                                        
+                                        <!-- Next Page -->
+                                        <li class="page-item {% if teachers_data.number == teachers_data.paginator.num_pages %}disabled{% endif %}">
+                                            <a class="page-link" href="{{ pagination_base_url }}page={% if teachers_data.number < teachers_data.paginator.num_pages %}{{ teachers_data.number|add:1 }}{% else %}{{ teachers_data.paginator.num_pages }}{% endif %}">
+                                                Next
+                                            </a>
+                                        </li>
+                                        
+                                        <!-- Last Page -->
+                                        <li class="page-item {% if teachers_data.number == teachers_data.paginator.num_pages %}disabled{% endif %}">
+                                            <a class="page-link" href="{{ pagination_base_url }}page={{ teachers_data.paginator.num_pages }}">
+                                                Last
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                            {% endif %}
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchFormContainer = document.getElementById('search-form-container');
+            const showSearchBtn = document.getElementById('show-search-btn');
+            const teachersCount = document.getElementById('teachers-count');
+            
+            // Set up event listener for the button
+            if (showSearchBtn) {
+                showSearchBtn.addEventListener('click', function() {
+                    searchFormContainer.style.display = 'block';
+                    showSearchBtn.style.display = 'none';
+                    teachersCount.style.display = 'none'; // Hide the teachers count
+                });
+            }
+            
+            // Show form directly and hide count if filters are applied
+            {% if experience_in_s or subject_s or state_s %}
+                searchFormContainer.style.display = 'block';
+                if (showSearchBtn) {
+                    showSearchBtn.style.display = 'none';
+                }
+                if (teachersCount) {
+                    teachersCount.style.display = 'none';
+                }
+            {% endif %}
+        });
+    </script>
+
+</main>
+
+<!-- Add Location -->
+<div class="modal fade" id="pl-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+    <div class="modal-content apply-job-form">
+        <div class="modal-header">
+            <div class="text-center">
+                <h4 class="mt-10 mb-5 text-brand-1 text-capitalize">Preferred Job Locations</h4>
+            </div>
+            <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>        
+        <div class="modal-body pl-30 pr-30 ">       
+            <p id="pl_p" ></p>           
+        </div>
+    </div>
+    </div>
+</div>
+<!-- Add Location -->
+<div class="modal fade" id="login-first-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+    <div class="modal-content apply-job-form">
+        <div class="modal-header">
+            <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        
+        <div class="modal-body pl-30 pr-30 text-center">       
+            <h5>To send Interview call,</h5> <br>  
+            <a href="/login" class="btn btn-default m-0">Login</a><br>
+            <p class="mt-10">New user? Please <a href="/registration?type=School" class="text-danger">Register</a></p>  
+        </div>
+    </div>
+    </div>
+</div>
+<!-- Post Job Modal -->
+<div class="modal fade" id="post-job-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+    <div class="modal-content apply-job-form">
+        <div class="modal-header">
+            <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        
+        <div class="modal-body pl-30 pr-30 text-center">       
+            <h5>Please post a job first</h5> <br>  
+            <a href="/post-job" class="btn btn-default m-0">Post a Job</a><br>
+            <p class="mt-10">You need to post at least one job to call teachers for interview.</p>  
+        </div>
+    </div>
+    </div>
+</div>
+
+
+{% endblock %}

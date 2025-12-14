@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+{% block title_block %}{{ page_title }}{% endblock %}
+{% block body_block %}
+<main class="main">
+    <!-- Breadcrumb Section -->
+    <section class="section-box">
+        <div class="breacrumb-cover">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6 col-xs-6">
+                        <a onclick="backButton()" class="pointer"><i class="fa fa-arrow-left mr-10"></i>Back</a>
+                    </div>
+                    <div class="col-lg-6 col-xs-6 text-end">
+                        <ul class="breadcrumbs">
+                            <li><a class="" href="/">Home</a></li>
+                            <li>Pricing & Plan Info</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content Section -->
+    <section class="section-box mt-30">
+        <div class="container">
+            <h3 class="wow animate__animated animate__fadeInUp text-center mb-30">
+                Pricing & Plan Info</h3>
+            <div class="row cog-account">
+                <div class="col-md-12 orders">
+                    {% if school_plans %}
+                        {% for plan in school_plans %}
+                        <div class="row profile">
+                            <!-- Current Plan Display -->
+                            <div class="col-md-12 max-width-price">
+                                <div class="block-pricing mt-30">
+                                    <div class="col-xl-6 col-lg-6 col-md-6 mx-auto wow animate__animated animate__fadeInUp" data-wow-delay=".1s">
+                                        <div class="box-pricing-item">
+                                            <h3>{{ plan.plan_name }}{% if plan.is_walkin %} (Walk-in){% endif %}</h3>
+                                            <div class="box-info-price">
+                                                <del class="text-price color-brand-2">₹ {% if plan.is_walkin%} {{ plan.price|intcomma }} {% else %} {{ plan.display_price|intcomma }} {% endif %}</del>
+                                                <span class="text-month">/Year <br>(+18% GST)</span>
+                                            </div>
+                                            <div class="border-bottom mb-30">
+                                                <p class="text-desc-package font-sm color-text-paragraph mb-30">
+                                                    Now <span>{{ plan.discounted_price|intcomma }}</span> only
+                                                </p>
+                                            </div>
+                                            
+                                            <!-- Plan Features -->
+                                            <ul class="list-package-feature" style=" color: #000; font-weight: 650;">
+                                                {% if plan.amenities %}
+                                                    {% for inside_info in plan.amenities %}
+                                                    <li>{{ inside_info.info }}</li>
+                                                    {% endfor %}
+                                                {% else %}
+                                                    <li>Basic plan features</li>
+                                                {% endif %}
+                                            </ul>
+                                            
+                                            <div class="text-center">
+                                                <button class="btn btn-border" type="button">Current Plan</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Plan Details -->
+                            <div class="col-md-6 pl-30 mt-30">
+                                <h4 class="mb-15">Plan Details</h4>
+                                <ul>
+                                    <li>
+                                        <span class="name">Plan:</span>
+                                        <span class="value">{{ plan.plan_name }}{% if plan.is_walkin %} (Walk-in){% endif %}</span>
+                                    </li>
+                                    <li>
+                                        <span class="name">Plan Started On:</span>
+                                        <span class="value">
+                                            {% if plan.is_walkin and walkinsubscription_detail %}
+                                                {{ walkinsubscription_detail.start_date }}
+                                            {% else %}
+                                                {{ subscription_detail.date }}
+                                            {% endif %}
+                                        </span>
+                                    </li>
+                                    {% comment %} {% if plan.is_walkin and walkinsubscription_detail.end_date %}
+                                    <li>
+                                        <span class="name">Duration:</span>
+                                        <span class="value">{{walkinsubscription_detail.end_date }}</span>
+                                    </li>
+                                    {% endif %}{% endcomment %}
+                                    <li> 
+                                        <span class="name">Plan Validity:</span>
+                                        <span class="value">
+                                            {% if plan.is_walkin and walkinsubscription_detail.end_date %}
+                                                {{ walkinsubscription_detail.end_date }}
+                                            {% else %}
+                                                1 Year
+                                            {% endif %}
+                                        </span>
+                                    </li> 
+                                    {% if plan.is_walkin and walkinsubscription_detail.remaining_days %}
+                                    <li>
+                                        <span class="name">Remaining Days:</span>
+                                        <span class="value">{{ walkinsubscription_detail.remaining_days }}</span>
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                            
+                            <!-- Usage Information -->
+                            <div class="col-md-6 pl-30 mt-30">
+                                <h4 class="mb-15">Usage Information</h4>
+                                <ul>
+                                        {%if not plan.is_walkin %}
+                                        <li>
+                                            <span class="name">Job posts:</span>
+                                            <span class="value"> {{ subscription_detail.remaining_job_post }} remaining</span>
+                                        </li>
+                                        <li>
+                                            <span class='name'>Approved Job Posts:</span>
+                                            <span class="value"> {{ approved_job_count }}</span>
+                                        </li>
+                                        <li>
+                                            <span class='name'>New Job Posts:</span>
+                                            <span class="value"> {{ new_job_count }}</span>
+                                        </li>
+
+                                        {% else %}
+                                        <li>
+                                            <span class="name">Walk-in Job posts:</span>
+                                            <span class="value"> {{ wj }}</span>
+                                        </li>
+                                        <li>
+                                            <span class='name'>Approved Walk-in Job Posts:</span>
+                                            <span class="value"> {{ wj_approved_job_count }}</span>
+                                        </li>
+                                        <li>
+                                            <span class='name'>New Walk-in Job Posts:</span>
+                                            <span class="value"> {{ wj_new_job_count }}</span>
+                                        </li>
+                                        {% endif %}
+                                        
+                                </ul>
+                            </div>
+                            
+                            <!-- Action Button -->
+                            <div class="col-md-12 text-center mt-40">
+                                <a class="btn btn-default btn-shadow hover-up" href="{% if plan.is_walkin %}/walkin-pricing{% else %}/institute-pricing{% endif %}">
+                                    Upgrade Plan
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <!-- No Plan Message -->
+                        <div class="text-center py-5">
+                            <p class="mb-4"><b>Currently you do not have any active plan</b></p>
+                            <a class="btn btn-default btn-shadow hover-up" href="{% if request.user.user_type == 'Teacher' %}/teacher-pricing{% else %}/institute-pricing{% endif %}">
+                                Select a plan
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}

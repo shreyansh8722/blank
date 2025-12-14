@@ -1,0 +1,261 @@
+{%extends "admin-dashboard/admin_base.html"%}
+{% load static %}
+{%block title_block%}{{page_title}}{%endblock%}
+{%block body_block%}
+<style>
+    #active-jobs_previous, #active-jobs_current, #active-jobs_info, 
+    #active-jobs_next {
+        display: none;
+    }
+</style>
+<div class="box-content">
+    <div class="box-heading">
+        <div class="box-title">
+            <h3 class="mb-35">Shortlisted by School</h3>
+        </div>
+        <div class="box-breadcrumb">
+            <div class="breadcrumbs">
+                <ul>
+                    <li> <a class="icon-home" href="/admin-dashboard">Home</a></li>
+                    <li><span>Shortlisted by School</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xxl-12 col-xl-12 col-lg-12">
+            <div class="section-box">
+                <div class="container">
+                    <div class="panel-white mb-30">
+                        <div class="box-padding">
+                                <div class="pagination-info">
+                                    {% if shortlisted %}
+                                    Showing {{ shortlisted.start_index }} to {{ shortlisted.end_index }} 
+                                    of {{ shortlisted.paginator.count }} entries
+                                    {% endif %}
+                                </div>
+                            <div class="mb-30 float-right w-100 d-flex justify-content-end">
+                                
+                                <button class="btn btn-danger mr-10 btn-sm py-2" data-type="shortlist-review"  id="shortlist_review_all">Review</button>
+                                <button class="btn btn-success mr-10 btn-sm py-2" data-type="short"  data-for="teacher" id="shortlist_all">Shortlist</button>
+
+                            </div>
+                            <div class="table-responsive">
+                                <table id="active-jobs" class="row-border hover " style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox" id="multiple_shortlist_selection_all" class="form-check-input "></th>
+                                            <th>WhatsApp</th>                                        
+                                            <th>Teacher</th>
+                                            <th>T. Whatsapp</th>
+                                            <th>T. Edu</th>
+                                            <th>T. SoS</th>
+                                            <th>T. Exp Type</th>
+                                            <th>T. Grade</th>
+                                            <th>T. Subject Teach </th>
+                                            <th>T. Year of Exp</th>
+                                            <th>School</th>
+                                            <th>S. Last Login</th>
+                                            <th>S. Payment</th>
+                                          
+                                            <th>Mobile No.</th>
+                                           
+                                            <th>Website</th>
+                                            <th>Institute Type</th>
+                                            <th>Location</th>
+                                            <th>Timestamp</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for sl in shortlisted %}
+                                        <tr>
+                                            <td>
+                                                <input type="checkbox" data-id="{{sl.id}}" value="{{sl.id}}" data-mobile="{{sl.teacher.user.mobile_no}}" data-school="{{sl.school.user.id}}" name="multiple_shortlist_selection" class="form-check-input multiple_shortlist_selection">
+                                            </td>
+                                            <td>
+                                                <a class="send_whatsapp btn btn-warning py-2" data-type="short" data-for="teacher" data-mobile="{{sl.teacher.user.mobile_no}}" data-school="{{sl.school.user.id}}" >Sent</a>
+                                            </td>
+                                            <td>{{sl.teacher.user.name}}</td>
+                                            <td>{{sl.teacher.user.mobile_no}}</td>
+                                         
+                                            <td>{{sl.teacher.qualification}}</td>
+                                            <td>{{sl.teacher.subject_of_specialization}}</td>
+                                            <td>{{sl.teacher.experience_type}}</td>
+                                            <td>{{sl.teacher.experience_in}} {{sl.teacher.want_to_teach_for}}</td>
+                                            <td>{{sl.teacher.subject_of_experience}} {{sl.teacher.subject_i_teach}}</td>
+                                            <td>{{sl.teacher.years_of_experience}}</td>
+                                            <td>{{sl.school.user.name}}</td>
+                                            <td>{{sl.school.user.last_login}}</td>
+                                            <td class="text-center"> <a href="#plan-detail" data-bs-toggle="modal" class="btn btn-default py-1"> {{sl.school.plan}} </a>
+                                            <td>{{sl.school.user.mobile_no}}</td>
+                                            <td><a href="{{sl.school.website}}" target="_blank" >{{sl.school.website}}</a></td>
+                                            <td>{{sl.school.institute_type}}</td>
+                                            <td>{{sl.school.district}}, {{sl.school.state}}</td>
+                                            <td>{{sl.timestamp|date:"d M Y"}}</td>
+                                        </tr>
+                                        
+                                        {% endfor %}                                        
+                                </table>
+                            </div>
+                            
+                            <!-- Pagination -->
+                            <div class="mt-4 d-flex justify-content-center">
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination">
+                                        {% if shortlisted.has_previous %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page=1" aria-label="First">
+                                                    <span aria-hidden="true"> First</span>
+                                                </a>
+                                            </li>
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ shortlisted.previous_page_number }}" aria-label="Previous">
+                                                    <span aria-hidden="true">Prev</span>
+                                                </a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item disabled">
+                                                <span class="page-link">First</span>
+                                            </li>
+                                            <li class="page-item disabled">
+                                                <span class="page-link"> Prev</span>
+                                            </li>
+                                        {% endif %}
+                                        
+                                        <li class="page-item active">
+                                            <span class="page-link">
+                                                Page {{ shortlisted.number }} of {{ shortlisted.paginator.num_pages }}
+                                            </span>
+                                        </li>
+                                        
+                                        {% if shortlisted.has_next %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ shortlisted.next_page_number }}" aria-label="Next">
+                                                    <span aria-hidden="true">Next</span>
+                                                </a>
+                                            </li>
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ shortlisted.paginator.num_pages }}" aria-label="Last">
+                                                    <span aria-hidden="true">Last </span>
+                                                </a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item disabled">
+                                                <span class="page-link">Next &raquo;</span>
+                                            </li>
+                                            <li class="page-item disabled">
+                                                <span class="page-link">Last</span>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                            </div>
+                            <!-- End Pagination -->
+                            
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--Candidates -->
+<div class="modal fade" id="Candidates" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content apply-job-form">
+            <div class="modal-header">
+                <h5 class="modal-title" id="Application-Detail">Candidates</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-30">
+                    <h6>Job position : Mathematics</h6>
+                    <h6>Posted On : 23 Mar 2023</h6>
+                </div>
+                <div class="table-responsive">
+                    <table id="candidates-table" class="row-border hover " style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Mobile</th>
+                                <th>Qualification</th>
+                                <th>Subject</th>
+                                <th>Preferred Location</th>
+                                <th>Last Login</th>
+                                <th>Resume</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Aeba</td>
+                                <td>admin@facultyme.com</td>
+                                <td>8050168161</td>
+                                <td> B.Com</td>
+                                <td>Art & craft,</td>
+                                <td>Bangalore</td>
+                                <td>23 Mar 2023</td>
+                                <td><a href="" class="btn btn-default py-1">Download</a></td>
+                                <td><a href="" class="btn btn-danger py-1">Disapprove</a></td>
+                            </tr>
+                            <tr>
+                                <td>Aeba</td>
+                                <td>admin@facultyme.com</td>
+                                <td>8050168161</td>
+                                <td> B.Com</td>
+                                <td>Art & craft,</td>
+                                <td>Bangalore</td>
+                                <td>23 Mar 2023</td>
+                                <td><a href="" class="btn btn-default py-1">Download</a></td>
+                                <td><a href="" class="btn btn-success py-1">Approve</a></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Education</th>
+                                <th>Qualification</th>
+                                <th>Subject</th>
+                                <th>Preferred Location</th>
+                                <th>Last Login</th>
+                                <th>Resume</th>
+                                <th>Action</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Employer -->
+<div class="modal fade" id="Employer" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog " role="document">
+        <div class="modal-content apply-job-form">
+            <div class="modal-header">
+                <h5 class="modal-title" id="Activity-Detail">Employer Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                
+                <ul class="modal-list">
+                    <li> <b>School / Institution Name :</b>  ARB School</li>
+                    <li><b>Email :</b> 	admin@facultyme.com	</li>
+                    <li><b>Mobile No. : 7389445331</b></li>
+                    <li><b>Alternate Mobile No. : 7389445331</b></li>
+                    <li><b>Website :</b> facultyme.com</li>
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

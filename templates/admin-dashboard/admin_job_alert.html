@@ -1,0 +1,362 @@
+{%extends "admin-dashboard/admin_base.html"%}
+{% load static %}
+{%block title_block%}{{page_title}}{%endblock%}
+{%block body_block%}
+
+<style>
+.multiselect-dropdown {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.multiselect-display {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background-color: white;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.multiselect-display:hover {
+    border-color: #86b7fe;
+}
+
+.multiselect-dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 100%;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1000;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.multiselect-dropdown-content.show {
+    display: block;
+}
+
+.multiselect-option {
+    padding: 8px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.multiselect-option:hover {
+    background-color: #f8f9fa;
+}
+
+.multiselect-option input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.dropdown-arrow {
+    border: solid #6c757d;
+    border-width: 0 2px 2px 0;
+    display: inline-block;
+    padding: 3px;
+    transform: rotate(45deg);
+    transition: transform 0.2s;
+}
+
+.dropdown-arrow.up {
+    transform: rotate(-135deg);
+}
+
+.selected-count {
+    color: #6c757d;
+    font-size: 14px;
+}
+</style>
+
+<div class="box-content">
+    <div class="box-heading">
+        <div class="box-title">
+            <h3 class="mb-35">Job Alert</h3>
+        </div>
+        <div class="box-breadcrumb">
+            <div class="breadcrumbs">
+                <ul>
+                    <li> <a class="icon-home" href="/">Home</a></li>
+                    <li><span>Job Alert</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xxl-12 col-xl-12 col-lg-12">
+            <div class="section-box">
+                <div class="container">
+                    <div class="panel-white mb-30">
+                        <div class="box-padding">
+                            <div class="mb-30 float-right w-100 d-flex justify-content-end">
+                                <button class="btn btn-danger mr-10 btn-sm py-2" id="selected_job_alert_delete">Delete Selected</button>
+                                <button class="btn btn-warning btn-sm py-2">Reset</button>
+                                <button class="btn btn-default mr-10 btn-sm py-2" data-type="job_app" id="send_call_for_interview_btn"  href="#call_for_interview" data-bs-toggle="modal">Job Alert WhatsApp</button>
+                            </div>
+                            <div class="table-responsive">
+                                <table id="job-alert" class="row-border hover " style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                <input type="checkbox" id="multiple_teacher_selection_all" class="form-check-input" name="checkbox">
+                                               
+                                            </th>
+                                            <th>Name</th>
+                                            <th>Mobile No</th>
+                                            <th>Alternate Mobile No</th>
+                                            <th>Subject</th>
+                                            <th>Category</th>
+                                            <th>Job Location</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for job in jobs %}
+                                        <tr>
+                                            <td>
+                                                <input type="checkbox" data-id="{{job.id}}" value="{{job.id}}" name="multiple_teacher_selection" class="form-check-input multiple_teacher_selection">
+                                               
+                                            </td>
+                                            <td>{{job.name}}</td>
+                                            <td>{{job.mobile_no}}</td>
+                                            <td>{{job.alternative_mobile_no}}</td>
+                                            <td>{{job.subject}}</td>
+                                            <td>{{job.job_category}}</td>
+                                            <td>{{job.prefered_location}}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    <tbody>                                        
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Plan-Details -->
+<div class="modal fade" id="call_for_interview" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content apply-job-form">
+            <div class="modal-header">
+                <h5 class="modal-title" id="Application-Detail">Job Alert Whatsapp</h5>
+                <a class="btn-close" id="close_me_whatasapp" data-bs-dismiss="modal" aria-label="Close"></a>
+            </div>
+            <div class="modal-body">
+                <!-- Filter Form -->
+                <form method="GET" id="filter-form" class="mb-20">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="multiselect-dropdown">
+                                <div class="multiselect-display" id="grade_display">
+                                    <span class="selected-text">Grade to Teach</span>
+                                    <span class="dropdown-arrow"></span>
+                                </div>
+                                <div class="multiselect-dropdown-content" id="grade_dropdown">
+                                    {% for gc in grade_categories %}
+                                    <div class="multiselect-option">
+                                        <input type="checkbox" id="grade_{{forloop.counter}}" value="{{gc.name}}" {% if gc.name in grades %}checked{% endif %}>
+                                        <label for="grade_{{forloop.counter}}">{{gc.name}}</label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="multiselect-dropdown">
+                                <div class="multiselect-display" id="subject_display">
+                                    <span class="selected-text">Subject</span>
+                                    <span class="dropdown-arrow"></span>
+                                </div>
+                                <div class="multiselect-dropdown-content" id="subject_dropdown">
+                                    {% for sub in subjects %}
+                                    <div class="multiselect-option">
+                                        <input type="checkbox" id="subject_{{forloop.counter}}" value="{{sub}}" {% if sub in subject_s %}checked{% endif %}>
+                                        <label for="subject_{{forloop.counter}}">{{sub}}</label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-control select-active" name="state" id="state_filter">
+                                <option value="">State</option>
+                                {% for info in state_data %}
+                                <option value="{{info.name}}" {% if state_s == info.name %}selected{% endif %}>{{info.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mt-10">
+                        <div class="col-md-6">
+                            
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <button type="button" class="btn btn-secondary btn-sm" id="reset_filters">Reset Filters</button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Job Selection Form -->
+                <form id="custom_whatsapp_form_job_alert">
+                    {% csrf_token %}
+                    <div class="form-group mb-10">
+                        <select required name="job_id" class="form-control" id="job_select">
+                            <option value="">Select Job</option>
+                            {% for job in jobs1 %}
+                            <option value="{{job.id}}">
+                                {{job.job_code}} - {{job.teacher_grade}} - {{job.subject}} - {{job.district}} - {{job.state}} - {{job.user__name}}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group mt-10">                        
+                        <button type="submit" class="btn btn-brand-1 hover-up w-100">Send</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if modal should be reopened after page refresh
+    {% if modal_open %}
+    var modal = new bootstrap.Modal(document.getElementById('call_for_interview'));
+    modal.show();
+    {% endif %}
+    
+    // Multi-select dropdown functionality
+    function initializeMultiSelect(displayId, dropdownId) {
+        const display = document.getElementById(displayId);
+        const dropdown = document.getElementById(dropdownId);
+        const checkboxes = dropdown.querySelectorAll('input[type="checkbox"]');
+        const arrow = display.querySelector('.dropdown-arrow');
+        const selectedText = display.querySelector('.selected-text');
+        
+        // Set initial display text
+        function updateDisplayText() {
+            const selectedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+            if (selectedCount === 0) {
+                selectedText.textContent = displayId.includes('grade') ? 'Grade to Teach' : 'Subject';
+            } else {
+                selectedText.textContent = `${selectedCount} selected`;
+            }
+        }
+        
+        // Initialize display text
+        updateDisplayText();
+        
+        // Toggle dropdown
+        display.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdown.classList.toggle('show');
+            arrow.classList.toggle('up');
+        });
+        
+        // Add change listeners to checkboxes
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                updateDisplayText();
+                updateJobDropdown();
+            });
+        });
+        
+        // Prevent dropdown from closing when clicking inside
+        dropdown.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+        
+        return {
+            getSelectedValues: function() {
+                return Array.from(checkboxes).filter(cb => cb.checked).map(cb => cb.value);
+            },
+            reset: function() {
+                checkboxes.forEach(cb => cb.checked = false);
+                updateDisplayText();
+            }
+        };
+    }
+    
+    // Initialize multi-select dropdowns
+    const gradeMultiSelect = initializeMultiSelect('grade_display', 'grade_dropdown');
+    const subjectMultiSelect = initializeMultiSelect('subject_display', 'subject_dropdown');
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function() {
+        document.querySelectorAll('.multiselect-dropdown-content').forEach(dropdown => {
+            dropdown.classList.remove('show');
+        });
+        document.querySelectorAll('.dropdown-arrow').forEach(arrow => {
+            arrow.classList.remove('up');
+        });
+    });
+    
+    // Function to update job dropdown based on filters
+    function updateJobDropdown() {
+        const stateFilter = document.getElementById('state_filter');
+        const jobSelect = document.getElementById('job_select');
+        
+        // Get selected values
+        const selectedGrades = gradeMultiSelect.getSelectedValues();
+        const selectedSubjects = subjectMultiSelect.getSelectedValues();
+        const selectedState = stateFilter.value;
+        
+        // Create query parameters
+        const params = new URLSearchParams();
+        selectedGrades.forEach(grade => params.append('grade', grade));
+        selectedSubjects.forEach(subject => params.append('subject', subject));
+        if (selectedState) params.append('state', selectedState);
+        
+        // Make AJAX request
+        fetch(window.location.pathname + '?' + params.toString(), {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Clear existing options except the first one
+            jobSelect.innerHTML = '<option value="">Select Job</option>';
+            
+            // Add filtered jobs to dropdown
+            data.jobs1.forEach(job => {
+                const option = document.createElement('option');
+                option.value = job.id;
+                option.textContent = `${job.job_code} - ${job.teacher_grade} - ${job.subject} - ${job.district} - ${job.state} - ${job.user__name}`;
+                jobSelect.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error filtering jobs:', error);
+        });
+    }
+    
+    // Add event listener to state filter
+    document.getElementById('state_filter').addEventListener('change', updateJobDropdown);
+    
+    // Reset filters functionality
+    document.getElementById('reset_filters').addEventListener('click', function() {
+        gradeMultiSelect.reset();
+        subjectMultiSelect.reset();
+        document.getElementById('state_filter').value = '';
+        updateJobDropdown(); // Update dropdown after reset
+    });
+});
+</script>
+
+{% endblock %}

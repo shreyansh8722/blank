@@ -1,0 +1,123 @@
+{%extends "base.html"%}
+{% load static %}
+{%block title_block%}{{page_title}}{%endblock%}
+{%block body_block%}
+<main class="main">
+    <section class="section-box">
+        <div class="breacrumb-cover">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-6 col-xs-6">
+                  <a onclick="backButton()" class="pointer"><i class=" fa fa-arrow-left mr-10"></i>Back</a>
+                </div>
+                <div class="col-lg-6  col-xs-6 text-end">
+                  <ul class="breadcrumbs">
+                    <li><a class="" href="/teacher-account">My Account</a></li>
+                    <li>
+                      {% if status == 'New' %}
+                      In Review
+                      {% else %}
+                      {{status}} 
+                      {% endif %}                      
+                      
+                      Jobs</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+        </div>
+      </section>
+    <section class="section-box mt-30">
+        <div class="container">
+            <h3 class="wow animate__animated animate__fadeInUp text-center mb-30">
+              {% if status == 'New' %}
+              In Review
+              {% else %}
+              {{status}} 
+              {% endif %}Jobs</h3>
+            <div class="row cog-account ">
+                    <div class="col-md-12 orders">
+                    <div class="table-responsive">
+                        <table class="table coganimate-scale-in-center">
+                        <thead>
+                            <tr>
+                                <td>Job Id </td>
+                                <td>School </td>
+                                <td>Category</td>
+                                <td>Subject</td>
+                                <td>Qualification</td>
+                                <td>Experience</td>
+                                <td>Salary</td>
+                                <td>Location </td>
+                                <td>Applied Date</td>
+                                {% if status == 'All' %}
+                                <td>Status</td>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for info in jobs %}
+
+                            <tr>
+                              {% if 'J' in info.job.job_code %}
+                                <th>{{info.job.job_code}}</th>
+                                <td><a class="btn btn-info text-white py-1 employer" data-id="{{info.job.user.id}}" href="#Employer"  data-bs-toggle="modal">{{info.job.user.name}}</a></td>
+                                <td>{{info.job.teacher_grade}}</td>
+                                <td>{{info.job.subject}}</td>
+                                <td>{{info.job.highest_qualification}}</td>
+                                <td>{{info.job.experienced_required}}</td>
+                                <td>{{info.job.salary_offered}}</td>
+                                <td>{{info.job.district}}, {{info.job.state}} </td>
+                              {% else %}
+                                <th>{{info.walkin_job.job_code}}</th>
+                                <td><a class="btn btn-info text-white py-1 employer" data-id="{{info.walkin_job.user.id}}" href="#Employer"  data-bs-toggle="modal">{{info.walkin_job.user.name}}</a></td>
+                                <td>{{info.walkin_job.teacher_grade}}</td>
+                                <td>{{info.walkin_job.subject}}</td>
+                                <td>{{info.walkin_job.highest_qualification}}</td>
+                                <td>{{info.walkin_job.experienced_required}}</td>
+                                <td>{{info.walkin_job.salary_range}}</td>
+                                <td>{{info.walkin_job.district}} {{info.walkin_job.state}} </td>
+                              {% endif %}
+                                <td>{{info.timestamp | date:"d M Y"}}</td>
+                                {% if status == 'All' %}
+                                  <td>
+                                    {% if info.status == 'New' %}
+                                    <p class="text-warning">Under Review</p>
+                                    {% else %}
+
+                                    {{info.status}}
+
+                                    {%endif%}
+                                  </td>
+                                {% endif %}
+                            </tr>
+                            
+                            {% endfor %}
+                            
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--Employer -->
+        <div class="modal fade" id="Employer" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog " role="document">
+              <div class="modal-content apply-job-form">
+                  <div class="modal-header">
+                      <h5 class="modal-title" id="Activity-Detail">Employer Details</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+
+                      
+                      <ul class="modal-list" id="employer_body">
+                      </ul>
+
+                  </div>
+              </div>
+          </div>
+        </div>
+    </section>
+</main>
+{% endblock %}

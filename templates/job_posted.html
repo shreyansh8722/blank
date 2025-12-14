@@ -1,0 +1,134 @@
+{%extends "base.html"%}
+{% load static %}
+{%block title_block%}{{page_title}}{%endblock%}
+{%block body_block%}
+<main class="main">
+    <section class="section-box">
+        <div class="breacrumb-cover">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-6 col-xs-6">
+                  <a onclick="backButton()" class="pointer"><i class=" fa fa-arrow-left mr-10"></i>Back</a>
+                </div>
+                <div class="col-lg-6  col-xs-6 text-end">
+                  <ul class="breadcrumbs">
+                    <li><a class="" href="/school-account">My Account</a></li>
+                    {% if status == 'Approved' %}
+                    <li>Job Posted & Application Received</li>
+                    {% elif status == 'New'%}
+                    <li>Job pending for approval</li>
+                    {% elif status == 'Expired'%}
+                    <li>Expired jobs &
+                        Reapproval request</li>                    
+                    {% endif%}
+                  </ul>
+                </div>
+              </div>
+            </div>
+        </div>
+      </section>
+    <section class="section-box mt-30 mb-30">
+        <div class="container">
+            <h3 class="wow animate__animated animate__fadeInUp text-center mb-30">
+                {% if status == 'Approved' %}
+                Job Posted & Application Received
+                {% elif status == 'New'%}
+                Job pending for approval
+                {% elif status == 'Expired'%}
+                Expired jobs &
+                    Reapproval request                  
+                {% endif%}
+            </h3>
+            <div class="row cog-account ">
+                <div class="col-md-12 orders">
+
+                    <div class="table-responsive">
+                        <table class="table coganimate-scale-in-center table-bordered">
+                            <thead>
+                                <tr>
+                                    <td>Category</td>
+                                    <td>Subject</td>
+                                    <td>Qualification Required</td>
+                                    <td>Experience Required</td>
+                                    <td>Salary Offered</td>
+                                    <td>Candidate Should Join </td>
+                                    <!-- <td>Date of Joining </td> -->
+                                    <td>Status</td>
+                                    {% if status == 'Expired' %}
+                                        <td>Reapproval Request</td>
+                                    {% endif %}
+                                    {% if status == 'New' %}
+                                    <td>Edit Job</td>
+                                    {% endif %}
+                                    {% if status == 'Approved' %}
+                                    <td>Application Received</td>
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for info in posted_jobs %}
+                                <tr>
+                                    <td>{{info.teacher_grade}}</td>
+                                    <td>{{info.subject}}</td>
+                                    <td>{{info.highest_qualification|default:"Walkin Job"}}</td>
+                                    <td>{{info.experienced_required|default:"Walkin Job"}}</td>
+                                    <td>
+                                        {% if info.salary_offered %}
+                                            {{ info.salary_offered }}
+                                        {% else %}
+                                            {{ info.salary_range }}
+                                        {% endif %}
+                                    <td>
+                                        {% if info.joining %}
+                                            {{ info.joining }}
+                                        {% else %}
+                                            {{ info.description }}
+                                        {% endif %}
+                                    
+                                    <td>
+                                        {% if info.status == 'New' %}
+                                            <p class="text-warning">Under Review</p>
+                                        {% elif info.status == 'Approved' %}
+                                        <p class="text-success">Approved</p>
+                                        {% elif info.status == 'Expired' %}
+                                        <p class="text-danger">Expired</p>                                        
+                                        {% else %}
+
+                                        {{info.status}}
+
+                                        {% endif%}
+                                    </td>
+
+
+                                    {% if info.status == 'Expired' %}
+                                    <td>
+                                        <a class="btn btn-default" href="/request-reapproval?job={{info.id}}">Request</a>
+                                    </td>
+                                    {% elif info.status == 'ReApproval' %}
+                                    <td>Re Approval Requested</td>
+                                    {% endif %}
+
+                                    {% if status == 'New' %}
+                                    <td>
+                                        <a href="/edit-job?job={{info.id}}" class="btn btn-default">
+                                            Edit </a>
+                                    </td>
+                                    {% endif %}
+                                    {% if status == 'Approved' %}
+                                    <td>
+                                        <a href="/application-received?job={{info.id}}" class="track-btn position-relative">
+                                            Application Received <span class="">{{info.job_applicant}}</span></a>
+                                    </td>
+                                    {% endif %}
+
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}

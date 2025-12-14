@@ -1,0 +1,147 @@
+{%extends "base.html"%}
+{%block body_block%}
+<main class="main">
+    <section class="pt-20 pb-20 login-register">
+        <div class="container">
+            <div class="login-register-cover">
+                <div class="col-lg-7 col-md-6 col-sm-12 mx-auto">
+                    <div class="form-login-cover">
+                    <div class="text-center">
+                        <h2 class=" mb-20 text-brand-1"> Register as School/Institute</h2>
+
+                    </div>
+                    <form class="login-register text-start mt-20 row" id="institute-register-form" action="" method="post">
+                        {% csrf_token %}
+                        <div class="form-group col-md-6">
+                            <label class="form-label" for="input-1">School/Institute/Academy Name</label>
+                            <input class="form-control" type="text" name="name" {% if customer_info.name %}value="{{customer_info.name}}"{% endif %} required>
+                            <input hidden name="user_type" value="School" required>
+                        </div>
+
+                        <!-- <div class="form-group col-md-6">
+                            <label class="form-label" for="input-1">Email</label>
+                            <input class="form-control" type="email" name="email" {% if customer_info.email %}value="{{customer_info.email}}"{% endif %} id="check-email"  required >
+                        </div> -->
+                        <div class="form-group col-md-6">
+                            <label class="form-label" for="input-1">Whatsapp Number</label>
+                            <input class="form-control" name="mobile_no" {% if customer_info.mobile_no %}value="{{customer_info.mobile_no}}"{% endif %} id="check-mobile" minlength="10" maxlength="10" pattern="[0-9]*" type="tel" required 
+                                >
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="form-label" for="input-1">Alternate Phone Number (Optional)</label>
+                            <input class="form-control" type="tel" name="alt_mobile_no" {% if customer_info.alt_mobile_no %}value="{{customer_info.alt_mobile_no}}"{% endif %} minlength="10" maxlength="10" pattern="[0-9]*"  
+                                >
+                        </div>
+                        <!-- <div class="form-group col-md-6">
+                            <label class="form-label" for="input-1">Website Url</label>
+                            <input class="form-control" id="input-1" type="text" required="" name="fullname"
+                                placeholder="Website Url">
+                        </div> -->
+                        <div class="form-group col-md-6">
+                            <label class="form-label" for="input-4">Create 4 Digit PIN</label>
+                            <input class="form-control password-check" id="input-4" type="password" {% if not request.GET.mobile_no %} minlength="4" maxlength="4" pattern="[0-9]*"{% endif %} required name="password1" {% if customer_info.password %}value="{{customer_info.password}}"{% endif %}>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="form-label" for="input-4">Confirm PIN</label>
+                            <input class="form-control confirm-password" id="input-4" type="text" {% if not request.GET.mobile_no %} minlength="4" maxlength="4" pattern="[0-9]*"{% endif %} required name="password2" {% if customer_info.password %}value="{{customer_info.password}}"{% endif %}>
+                        </div>
+                        {% if otp_history or request.GET.mobile_no %}
+                        <div class="modal fade" id="enter-otp-modal" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-lg">
+                                <div class="modal-content apply-job-form">
+                                    <!-- <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button> -->
+                                    <div class="modal-body pl-30 pr-30 pt-50" style="background:#4154af5c">
+                                    <div class="text-center">
+                                        <h2 class="mt-10 mb-5 text-brand-1 text-capitalize">Enter OTP</h2>
+                                    </div>
+                                        <div class="form-group col-md-12 mt-4">
+                                            {% include 'partials/_alerts.html' %}
+                                        </div>
+                                        <div class="form-group col-md-12 mt-10">
+                                            <!-- <label class="form-label" for="input-4" style="color: red;">Enter OTP *</label> -->
+                                            <input class="form-control" id="otp-input-school" type="tel" minlength="4" maxlength="4" pattern="[0-9]*" required name="otp" autocomplete="one-time-code" inputmode="numeric">
+                                        </div>
+                                        {% if otp_history.otp_session != 2  %}
+                                        <div class="text-center">
+                                            <a href="/resend-otp?otp_mobile_no={{request.GET.mobile_no}}" id="resend-otp-button" class="" style="color: #05264e;">Resend OTP</a>
+                                        </div>
+                                        {% endif %}
+                                        <div class="form-group">
+                                            <button class="btn btn-brand-1 hover-up w-100 mt-20" type="submit" >{% if request.GET.mobile_no %}Verify{% else %}Get OTP{% endif %}</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Web OTP API for automatic SMS OTP reading -->
+                        {% if request.GET.mobile_no %}
+                        <script>
+                        (function() {
+                            // Check if Web OTP API is supported
+                            if ('OTPCredential' in window) {
+                                const otpInput = document.querySelector('input[name="otp"]');
+                                
+                                if (otpInput) {
+                                    // Request OTP from SMS
+                                    const abortController = new AbortController();
+                                    
+                                    navigator.credentials.get({
+                                        otp: { transport: ['sms'] },
+                                        signal: abortController.signal
+                                    }).then(otp => {
+                                        // Auto-fill the OTP input
+                                        if (otp && otp.code) {
+                                            otpInput.value = otp.code;
+                                            console.log('OTP auto-filled from SMS:', otp.code);
+                                            
+                                            // Optional: Auto-submit the form after filling
+                                            // Uncomment the next line if you want auto-submit
+                                            // otpInput.form.submit();
+                                        }
+                                    }).catch(err => {
+                                        // User cancelled or error occurred
+                                        console.log('OTP autofill error or cancelled:', err);
+                                    });
+                                    
+                                    // Cancel the OTP request if user manually enters OTP
+                                    otpInput.addEventListener('input', () => {
+                                        if (otpInput.value.length >= 4) {
+                                            abortController.abort();
+                                        }
+                                    }, { once: true });
+                                }
+                            } else {
+                                console.log('Web OTP API not supported on this browser');
+                            }
+                        })();
+                        </script>
+                        {% endif %}
+                        
+                        <div class="login_footer form-group d-flex justify-content-between">
+                            <label class="">
+                              <span class="text-small">On clicking register button I am agree to your 
+                                <a href="/terms-condition"><u> Terms & Condition </u></a> and 
+                                <a href="/privacy-policy"><u> Privacy Policies</u></a></span>
+                          </div>
+                        {% if not request.GET.mobile_no %}
+                        <div class="form-group">
+                            <button class="btn btn-brand-1 hover-up w-100 mt-20" type="submit" >Register</button>
+                        </div>
+                        {% endif %}
+                        <div class="text-muted text-center">Already have an Account? <a class="text-danger" href="/login"><b>Login</b> </a></div>
+                    </form>
+                    <!-- <div class="text-center">
+                        <div class="divider-text-center mt-20"><span>Or continue with</span></div>
+                        <button class="btn social-login hover-up mt-20">
+                            <img src="/static/facultyme_img/facebook.png" width="25px" alt="">
+                            <strong>Sign Up with Facebook</strong></button>
+                    </div> -->
+                </div>
+            </div>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}

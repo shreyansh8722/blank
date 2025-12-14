@@ -1,0 +1,112 @@
+{%extends "admin-dashboard/admin_base.html"%}
+{% load static %}
+{%block title_block%}{{page_title}}{%endblock%}
+{%block body_block%}
+
+<div class="box-content">
+    <div class="box-heading">
+        <div class="box-title">
+            <h3 class="mb-35">New Applications</h3>
+        </div>
+        <div class="box-breadcrumb">
+            <div class="breadcrumbs">
+                <ul>
+                    <li> <a class="icon-home" href="/admin-dashboard">Home</a></li>
+                    <li><span>New Applications</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xxl-12 col-xl-12 col-lg-12">
+            <div class="section-box">
+                <div class="container">
+                    <div class="panel-white mb-30">
+                        <div class="box-padding">
+                            <div class="mb-30 float-right w-100 d-flex justify-content-end">
+                                <button class="btn btn-success mr-10 btn-sm py-2" data-type="job_app"  id="approve_all">Approve</button>
+                                <button class="btn btn-danger mr-10 btn-sm py-2" data-type="job_app"  id="disable_all">Reject</button>
+                            </div>
+                            <div class="table-responsive">
+                            <table id="current-application" class="row-border hover " style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th><input type="checkbox" id="multiple_teacher_selection_all" class="form-check-input "></th>
+                                        <th>Applied On</th>
+                                        <th>Joined On</th>
+                                        <th>Last Login</th>
+                                        <th>Job Code</th>
+                                        <th>School Name</th>
+                                        <th>Teacher Name</th>
+                                        <th>Gender</th>
+                                        <th>Mobile No</th>
+                                        <th>Alt Mobile No</th>
+                                        <th>Quaification</th>
+                                        <th>Work Exp.</th>
+                                        <th>Exp. In</th>
+                                        <th>Subjects</th>
+                                        <th>Current Salary</th>
+                                        <th>Expected Salary</th>
+                                        <th>Preferred Location</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for job_application in job_applications%}
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" data-id="{{job_application.id}}" value="{{job_application.id}}" name="multiple_teacher_selection" class="form-check-input multiple_teacher_selection">
+                                        </td>
+                                        <td>{{job_application.timestamp | date:"d M Y"}}</td>
+                                        <td>{{job_application.teacher.user.joining_date| date:"d M Y"}}</td>
+                                        <td>{{job_application.teacher.user.last_login| date:"d M Y"}}</td>
+                                        {% if job_application.job %}
+                                        <td><a class="btn btn-info text-white py-1 jobcode" data-id="{{job_application.job.id}}" href="#Job-Detail"  data-bs-toggle="modal">{{job_application.job.job_code}}</a></td>
+                                        {% else %}
+                                        <td><a class="btn btn-info text-white py-1 jobcode" data-id="{{job_application.walkin_job.id }}" href="#Job-Detail"  data-bs-toggle="modal">{{job_application.walkin_job.job_code}}</a></td>
+                                        {% endif %}
+
+                                        <td>{{job_application.job.user.name}}</td>                                    
+                                        <td>{{job_application.teacher.user.name}}</td>
+                                        <td>{{job_application.teacher.gender}}</td>
+                                        <td>{{job_application.teacher.user.mobile_no}}</td>
+                                        <td>{{job_application.teacher.user.alt_mobile_no}}</td>
+                                        <td>{{job_application.teacher.qualification}}</td>
+                                        <td>{{job_application.teacher.years_of_experience}}</td>
+                                        <td>{{job_application.teacher.experience_in}}</td>
+                                        <td>{{job_application.teacher.subject_of_experience}},</td>
+                                        <td>{{job_application.teacher.current_salary}}</td>
+                                        <td>{{job_application.teacher.expected_salary}}</td>
+                                        <td>{{job_application.teacher.preferred_location_district}}</td>
+                                    </tr>   
+                                    {% endfor %}                                
+                                </tbody>
+                                        
+                            </table>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!--Employer -->
+<div class="modal fade" id="Job-Detail" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog " role="document">
+        <div class="modal-content apply-job-form">
+            <div class="modal-header">
+                <h5 class="modal-title" id="Activity-Detail">Job Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                
+                <ul class="modal-list" id="job_body">
+                </ul>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

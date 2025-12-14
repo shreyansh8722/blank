@@ -1,0 +1,67 @@
+{%extends "admin-dashboard/admin_base.html"%}
+{% load static %}
+{%block title_block%}{{page_title}}{%endblock%}
+{%block body_block%}
+
+<div class="box-content">
+    <div class="box-heading">
+        <div class="box-title">
+            <h3 class="mb-35">Expired Teachers Approval</h3>
+        </div>
+        <div class="box-breadcrumb">
+            <div class="breadcrumbs">
+                <ul>
+                    <li> <a class="icon-home" href="/admin-dashboard">Home</a></li>
+                    <li><span>Expired Teachers Approval</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xxl-12 col-xl-12 col-lg-12">
+            <div class="section-box">
+                <div class="container">
+                    <div class="panel-white mb-30">
+                        <div class="box-padding">
+                            <div class="table-responsive">
+                                <table id="unverified-teachers" class="row-border hover " style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Created At</th>
+                                            <th>Name</th>
+                                            <th>Mobile No</th>
+                                            <th>Alternate Mobile No</th>
+                                            <th>Set Verified</th>
+                                            <th>Send Pin</th>
+                                            <th>Delete</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        {% for teacher in teachers %}
+                                        <tr>
+                                            <td>{{teacher.timestamp}}</td>
+                                            <td>{{teacher.user.name}}</td>
+                                            <td>{{teacher.user.mobile_no}}</td>
+                                            <td>{{teacher.user.alt_mobile_no}}</td>
+                                            <td><a href="javascript:void()" class="btn btn-default py-1">Set as verified
+                                                    without OTP </a></td>
+                                            <td><a href="javascript:void()" class="btn btn-default py-1">Send 4 digit
+                                                    pin</a>
+                                            </td>
+                                            <td><a href="javascript:void()" class="btn btn-danger py-1">Delete</a></td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

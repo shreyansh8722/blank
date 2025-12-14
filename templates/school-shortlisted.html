@@ -1,0 +1,73 @@
+{%extends "base.html"%}
+{% load static %}
+{%block title_block%}{{page_title}}{%endblock%}
+{%block body_block%}
+<main class="main">
+    <section class="section-box">
+        <div class="breacrumb-cover">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-6 col-xs-6">
+                  <a onclick="backButton()" class="pointer"><i class=" fa fa-arrow-left mr-10"></i>Back</a>
+                </div>
+                <div class="col-lg-6  col-xs-6 text-end">
+                  <ul class="breadcrumbs">
+                    <li><a class="" href="/teacher-account">My Account</a></li>
+                    <li>Shortlisted Teachers</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+        </div>
+      </section>
+    <section class="section-box mt-30">
+        <div class="container">
+            <h3 class="wow animate__animated animate__fadeInUp text-center mb-30">
+                Shortlisted By</h3>
+            <div class="row cog-account ">
+                    <div class="col-md-12 orders">
+                    <div class="table-responsive">
+                        <table class="table coganimate-scale-in-center">
+                        <thead>
+                            <tr>
+                                <td>Date</td>
+                                <td>Teacher</td>
+                                <td>Gender</td>
+                                <td>Qualification</td>
+                                <td>Subject of specialization</td>
+                                <td>Experience In</td>
+                                <td>Experience</td>
+                                <td>Subject</td>
+                                <td>Current Salary</td>
+                                <td>Expected Salary</td>
+                                <td>Preferred Locations</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for info in shortlisted %}
+                            <tr>
+                                <td>{{info.timestamp | date:"d M Y"}}</td>
+                                <td>
+                                    {{info.teacher_data.user.name}}</td>
+                                    <td>{{info.teacher_data.gender}}</td>
+                                    <td>{{info.teacher_data.qualification}}</td>
+                                    <td>{{info.teacher_data.subject_of_specialization}}</td>
+                                    <td>{{info.teacher_data.experience_in}} {{info.teacher_data.want_to_teach_for}}</td>
+                                    <td>{{info.teacher_data.experience_type}} <br>{{info.teacher_data.years_of_experience}}</td>
+                                    <td>{{info.teacher_data.subject_of_experience}} {{info.teacher_data.subject_i_teach}}</td>
+                                    <td>{{info.teacher_data.current_salary}}</td>
+                                    <td>{{info.teacher_data.expected_salary}}</td>
+                                    <td>{{info.teacher_data.preferred_location_district}}</td>
+                                </td>
+                            </tr>                            
+                            {% endfor %}
+                            
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}

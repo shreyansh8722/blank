@@ -1,0 +1,822 @@
+{%extends "admin-dashboard/admin_base.html"%}
+{% load static %}
+{%block title_block%}{{page_title}}{%endblock%}
+{%block body_block%}
+<style>
+     
+    #verified-teachers_paginate,
+    #verified-teachers_next,
+    #verified-teachers_previous,
+    #verified-teachers_info {
+        display: none !important;
+    }
+
+.multiselect-dropdown {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.multiselect-display {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background-color: white;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.multiselect-display:hover {
+    border-color: #86b7fe;
+}
+
+.multiselect-dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 100%;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1000;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.multiselect-dropdown-content.show {
+    display: block;
+}
+
+.multiselect-option {
+    padding: 8px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.multiselect-option:hover {
+    background-color: #f8f9fa;
+}
+
+.multiselect-option input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.dropdown-arrow {
+    border: solid #6c757d;
+    border-width: 0 2px 2px 0;
+    display: inline-block;
+    padding: 3px;
+    transform: rotate(45deg);
+    transition: transform 0.2s;
+}
+
+.dropdown-arrow.up {
+    transform: rotate(-135deg);
+}
+
+.selected-count {
+    color: #6c757d;
+    font-size: 14px;
+}
+</style>
+
+<div class="box-content">
+    <div class="box-heading">
+        <div class="box-title">
+            <h3 class="mb-3">Approved Teachers - {{teachers_count}}</h3>
+        </div>
+        <div class="box-breadcrumb">
+            <div class="breadcrumbs">
+                <ul>
+                <li> <a class="icon-home" href="/admin-dashboard">Home</a></li>
+                <li><span>Approved Teachers</span></li>
+            </ul>
+        </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="section-box">
+                <div class="container">
+                    <div class="panel-white mb-3">
+                        <div class="box-padding">
+                            <div class="mb-30 float-right w-100 d-flex justify-content-end"> 
+                                <button class="btn btn-default mr-10 btn-sm py-2" data-type="job_app" id="send_call_for_interview_btn"  href="#call_for_interview" data-bs-toggle="modal">Job Alert WhatsApp</button>
+                                <button class="btn btn-default mr-10 btn-sm py-2" data-type="teacher"  id="send_pin">Send 4 digit pin</button>
+                                <button class="btn btn-danger mr-10 btn-sm py-2" data-type="teacher"  id="disable_all">Disable</button>
+                                <button class="btn btn-warning mr-10 btn-sm py-2" href="#teacher-filter" data-bs-toggle="modal" >Filter</button>
+                            </div>
+                            <div class="table-responsive">
+                                <table id="verified-teachers" class="table table-hover" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th><input type="checkbox" id="multiple_teacher_selection_all" class="form-check-input"></th>
+                                            <th>WhatsApp</th>
+                                            <th>Joined On</th>
+                                            <th>R. Activity</th>
+                                            <th>Name</th>
+                                            <th>Sex</th>
+                                            <th>WhatsApp</th>
+                                            <th>Alt. Mobile No</th>
+                                            <th>Edu</th>
+                                            <th>SoS</th>
+                                            <th>Exp Type</th>
+                                            <th>Grade</th>
+                                            <th>Subject Teach</th>
+                                            <th>Year of Exp</th>
+                                            <th>C. Salary</th>
+                                            <th>E. Salary</th>
+                                            <th>P. Address</th>
+                                            <th>P. Location</th>
+                                            <th>App. & Status</th>
+                                            <th>Plan</th>
+                                            <th>Label</th>
+                                            <th>Edit</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for teacher in teachers %}
+                                        <tr>
+                                            <td>
+                                                <input type="checkbox" class="form-check-input multiple_teacher_selection" name="multiple_teacher_selection" data-id="{{ teacher.id }}" value="{{ teacher.id }}">
+                                            </td>
+                                            <td>
+                                                <a class="btn btn-warning btn-sm py-2 send_whatsapp" data-type="pin" data-for="teacher" data-mobile="{{ teacher.user.mobile_no }}">
+                                                    Sent
+                                                </a>
+                                            </td>
+                                            <td>{{ teacher.timestamp | date:"d M Y" }}</td>
+                                            <td>
+                                                <a href="#Activity-Detail" class="user_log" data-bs-toggle="modal" data-id="{{ teacher.id }}">
+                                                    <u>{{ teacher.user.last_login | date:"d M Y" }}</u>
+                                                </a>
+                                            </td>
+                                            <td>{{ teacher.user.name }}</td>
+                                            <td>{{ teacher.gender }}</td>
+                                            <td>{{ teacher.user.mobile_no }}</td>
+                                            <td>{{ teacher.user.alt_mobile_no }}</td>
+                                            <td>{{ teacher.qualification }}</td>
+                                            <td>{{ teacher.subject_of_specialization }}</td>
+                                            <td>{{ teacher.experience_type }}</td>
+                                            <td>{{ teacher.experience_in }} {{ teacher.want_to_teach_for }}</td>
+                                            <td>{{ teacher.subject_of_experience }} {{ teacher.subject_i_teach }}</td>
+                                            <td>{{ teacher.years_of_experience }}</td>
+                                            <td>{{ teacher.current_salary }}</td>
+                                            <td>{{ teacher.expected_salary }}</td>
+                                            <td>{{ teacher.address_district }}, {{ teacher.address_state }}</td>
+                                            <td>{{ teacher.preferred_location_district }}</td>
+                                            <td class="text-center">
+                                                <a href="#application-detail" class="btn btn-default btn-sm py-1 app_details" data-bs-toggle="modal" data-id="{{ teacher.id }}" data-type="teacher">
+                                                    View
+                                                </a>
+                                            </td>
+                                            <td class="text-center">
+                                                <a href="#plan-detail" class="btn btn-default btn-sm py-1" data-bs-toggle="modal">Basic</a>
+                                            </td>
+                                            <td class="text-center">
+                                                <select class="form-control change_label" data-type="teacher" data-id="{{ teacher.id }}" style="width:100px">
+                                                    <option>Select</option>
+                                                    {% for label in labels %}
+                                                        <option {% if teacher.label == label.name %} selected {% endif %}>{{ label.name }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </td>
+                                            <td class="text-center">
+                                                <a href="/admin/cog_static_app/teacher/{{ teacher.id }}/change/" target="_blank" class="btn btn-warning btn-sm py-1">
+                                                    Edit
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Pagination Controls -->
+                            {% if not filters_applied %}
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <div>
+                                    Showing {{ teachers.start_index }} - {{ teachers.end_index }} of {{ teachers.paginator.count }} entries
+                                </div>
+                                
+                                <nav>
+                                    <ul class="pagination">
+                                        {% if teachers.has_previous %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page=1">First</a>
+                                            </li>
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ teachers.previous_page_number }}">Previous</a>
+                                            </li>
+                                        {% endif %}
+
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ teachers.number }}</span>
+                                        </li>
+
+                                        {% if teachers.has_next %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ teachers.next_page_number }}">Next</a>
+                                            </li>
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ teachers.paginator.num_pages }}">Last</a>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                                
+                            </div>
+                            {% endif %}
+                            <!-- End Pagination Controls -->
+
+                        </div>
+                    </div>
+                </div> 
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--Activity-Detail -->
+<div class="modal fade" id="Activity-Detail" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog " role="document">
+        <div class="modal-content apply-job-form">
+            <div class="modal-header">
+                <h5 class="modal-title" id="Activity-Detail">Recent Activities</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Date</th>
+                            <th>Activity</th>
+                        </tr>
+                    </thead>
+                    <tbody id="log_body">
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Plan-Details -->
+<div class="modal fade" id="plan-detail" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content apply-job-form">
+            <div class="modal-header">
+                <h5 class="modal-title" id="Application-Detail">Plan Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table  class="row-border hover ">
+                        <tbody>
+                            <tr><td><b>Plan Name:</b> Basic</td></tr>
+                            <tr><td><b>Purchase Date:</b> 22 May 2023</td></tr>
+                            <tr><td><b>Valid Till:</b> 21 May 2024</td></tr>
+                            <tr> <td><b>Amount Paid:</b> ₹ 100</td></tr>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="application-detail" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content apply-job-form">
+            <div class="modal-header">
+                <h5 class="modal-title" id="Application-Detail">Application Detail</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table id="application-details" data-page-length='100' class="row-border hover " style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Job Id</th>
+                                <th>School Name</th>
+                                <th>Job Posted On</th>
+                                <th>Category</th>
+                                <th>Subject</th>
+                                <th>Qualification</th>
+                                <th>Experience</th>
+                                <th>Salary</th>
+                                <th>Candidate Should Join</th>
+                                <th>Benefits & Compensation</th>
+                                <th>Location</th>
+                                <th>Admin Approval</th>
+                                <th>Interview Call Detail</th>
+                                <th>Reject</th>
+                            </tr>
+                        </thead>
+                        <tbody id="application_detail_body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Teacher Filter -->
+<div class="modal fade" id="teacher-filter" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+    <form action="/verified-teachers" id="filter_form" method="post">
+        {% csrf_token %}
+        <div class="modal-content apply-job-form">
+            <div class="modal-header">
+                <h5 class="modal-title">Teachers List Filters</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="row-border hover " style="width:100%">
+                        <thead>
+                            <tr>
+                                <td><input class="form-control {% if name_email_mobile %} text-danger {% endif %}"  name="name_email_mobile" value="{{name_email_mobile}}" placeholder="Name/email/mobile no" ></td>
+                                <td>
+                                    <div class="form-group">
+                                        <label class="form-label" for="input-1">Experienced in (Max 2 selection)</label>
+                                      <input type="text" readonly  name="experience_in" id="experienced_in" value="{% if teacher_info.experience_in != None %}{{teacher_info.experience_in}}{% endif %}" data-bs-toggle="modal" placeholder="Please select grade to teach" data-bs-target="#experienced-in" >
+                                      
+                                    </div>
+                                    <!-- <select class="form-control {% if experience_in %} text-danger {% endif %}"  name="experience_in" >
+                                        <option value="">Category</option>
+                                        {% for info in experience_in_data %}
+                                        <option {% if experience_in == info.name %} selected {% endif %} >{{info.name}}</option>
+                                        {% endfor %}
+                                    </select> -->
+                                </td>
+                                <td class="text-center">
+                                    <select class="form-control {% if payment %} text-danger {% endif %}"  name="payment" >
+                                        <option value="">Payment</option>
+                                        <option {% if payment == 'Paid' %} selected {% endif %}>Paid</option>
+                                        <option {% if payment == 'Unpaid' %} selected {% endif %}>Unpaid</option>
+                                    </select>
+                                </td>
+                                <td class="text-right">
+                                    <select class="form-control  {% if profile %} text-danger {% endif %}"  name="profile" >
+                                        <option  value="">Profile</option>
+                                        <option {% if profile == 'Complete' %} selected {% endif %}>Complete</option>
+                                        <option {% if profile == 'Incomplete' %} selected {% endif %}>Incomplete</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    {% comment %} <input type="date" class="form-control" name="recent_activities" value="" placeholder="Recent Activity" > {% endcomment %}
+                                </td>
+                                <td>
+                                    <select class="form-control  {% if subject_of_experience %} text-danger {% endif %}" name="subject_of_experience" >
+                                        <option value="">Subject of experience</option>
+                                        {% for info in subject_teach_fresher_data %}
+                                        <option {% if subject_of_experience == info %} selected {% endif %} >{{info}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td class="text-center">
+                                    <select class="form-control  {% if applied %} text-danger {% endif %}" name="applied" >
+                                        <option value="">Applied Details</option>
+                                        <option {% if applied == 'Applied' %} selected {% endif %}>Applied</option>
+                                        <option {% if applied == 'Not Applied' %} selected {% endif %}>Not Applied</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="form-control  {% if status %} text-danger {% endif %}" name="status" >
+                                        <option  value="">Status</option>
+                                        <option {% if status == 'Enable' %} selected {% endif %} >Enable</option>
+                                        <option {% if status == 'Disable' %} selected {% endif %} >Disable</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <select class="form-control  {% if qualification %} text-danger {% endif %}"  name="education" >
+                                        <option value="">Education Qualification</option>
+                                        {% for info in qualification_data %}
+                                        <option {% if qualification == info.info %} selected {% endif %} value="{{info.info}}">{{info.info}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="form-control {% if years_of_experience %} text-danger {% endif %}"  name="years_of_experience" >
+                                        <option value="">Year of experience</option>
+                                        {% for info in experience_year_data %}
+                                        <option {% if years_of_experience == info.info %} selected {% endif %}  value="{{info.info}}">{{info.info}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td class="text-center">
+                                    <select class="form-control {% if experience_type %} text-danger {% endif %}" name="experience_type" >
+                                        <option value="">Experience type</option>
+                                        <option {% if experience_type == 'Fresher' %} selected {% endif %}>Fresher</option>
+                                        <option {% if experience_type == 'Experienced' %} selected {% endif %}>Experienced</option>
+                                    </select>
+                                </td>
+                                <td class="text-right">
+                                   
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <select class="form-control {% if subject_specialization %} text-danger {% endif %}" name="subject_specialization" >
+                                        <option value="">Subject of specialization</option>
+                                        {% for info in specialization_data %}
+                                        <option {% if subject_of_specialization == info.info %} selected {% endif %} value="{{info.info}}">{{info.info}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="form-control {% if current_salary %} text-danger {% endif %}"  id="current_salary" name="current_salary" >
+                                        <option value="">Current Salary</option>
+                                        {% for info in current_salary_data %}
+                                        <option {% if current_salary == info.info %} selected {% endif %} value="{{info.info}}">{{info.info}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                   
+                                </td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <select class="form-control {% if expected_salary %} text-danger {% endif %}"  name="expected_salary" >
+                                        <option value="">Expected salary</option>
+                                        {% for info in expected_salary_data %}
+                                        <option {% if expected_salary == info.info %} selected {% endif %}  value="{{info.info}}">{{info.info}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="form-control {% if state %} text-danger {% endif %}" name="state" >
+                                        <option value="">State</option>
+                                        {% for info in state_data %}
+                                        <option {% if state == info.name %} selected {% endif %} >{{info.name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="form-control {% if district %} text-danger {% endif %}" name="district" >
+                                        <option value="">District</option>
+                                        {% for info in district_data %}
+                                        <option {% if district == info.name %} selected {% endif %} >{{info.name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td><input class="form-control" placeholder="Pincode" name="pincode" ></td>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a onclick="resetform()" >Reset</a>
+                <button class="btn btn-default" type="submit">Filter</button>
+            </div>
+        </div>
+    </form>
+    </div>
+</div>
+
+<!--Enhanced Job Alert WhatsApp Modal -->
+<div class="modal fade" id="call_for_interview" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content apply-job-form">
+            <div class="modal-header">
+                <h5 class="modal-title" id="Application-Detail">Job Alert Whatsapp</h5>
+                <a class="btn-close" id="close_me_whatasapp" data-bs-dismiss="modal" aria-label="Close"></a>
+            </div>
+            <div class="modal-body">
+                <!-- Filter Form -->
+                <form method="GET" id="filter-form" class="mb-20">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="multiselect-dropdown" id="grade_multiselect">
+                                <div class="multiselect-display" onclick="toggleDropdown('grade_multiselect')">
+                                    <span id="grade_display">Grade to Teach</span>
+                                    <span class="dropdown-arrow"></span>
+                                </div>
+                                <div class="multiselect-dropdown-content">
+                                    {% for gc in grade_categories %}
+                                    <div class="multiselect-option">
+                                        <input type="checkbox" id="grade_{{forloop.counter}}" value="{{gc.name}}" 
+                                            onchange="updateSelection('grade')" 
+                                            {% if gc.name in grades %}checked{% endif %}>
+                                        <label for="grade_{{forloop.counter}}">{{gc.name}}</label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="multiselect-dropdown" id="subject_multiselect">
+                                <div class="multiselect-display" onclick="toggleDropdown('subject_multiselect')">
+                                    <span id="subject_display">Subject</span>
+                                    <span class="dropdown-arrow"></span>
+                                </div>
+                                <div class="multiselect-dropdown-content">
+                                    {% for sub in subjects %}
+                                    <div class="multiselect-option">
+                                        <input type="checkbox" id="subject_{{forloop.counter}}" value="{{sub}}" 
+                                            onchange="updateSelection('subject')" 
+                                            {% if sub in subject_s %}checked{% endif %}>
+                                        <label for="subject_{{forloop.counter}}">{{sub}}</label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-control select-active" name="state" id="state_filter">
+                                <option value="">State</option>
+                                {% for info in state_data %}
+                                <option value="{{info.name}}" {% if state_s == info.name %}selected{% endif %}>{{info.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mt-10">
+                        <div class="col-md-6">
+                            
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <button type="button" class="btn btn-secondary btn-sm" id="reset_filters">Reset Filters</button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Job Selection Form -->
+                <form id="custom_whatsapp_form">
+                    {% csrf_token %}
+                    <div class="form-group mb-10">
+                        <select required name="job_id" class="form-control" id="job_select">
+                            <option value="">Select Job</option>
+                            {% for job in jobs1 %}
+                            <option value="{{job.id}}">
+                                {{job.job_code}} - {{job.teacher_grade}} - {{job.subject}} - {{job.district}} - {{job.state}} - {{job.user__name}}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group mt-10">                        
+                        <button type="submit" class="btn btn-brand-1 hover-up w-100">Send</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if modal should be reopened after page refresh
+    {% if modal_open %}
+    var modal = new bootstrap.Modal(document.getElementById('call_for_interview'));
+    modal.show();
+    {% endif %}
+    
+    // Function to update job dropdown based on filters
+    function updateJobDropdown() {
+        const stateFilter = document.getElementById('state_filter');
+        const jobSelect = document.getElementById('job_select');
+        
+        if (!stateFilter || !jobSelect) {
+            console.error('Required elements not found');
+            return;
+        }
+        
+        // Get selected grades
+        const selectedGrades = Array.from(document.querySelectorAll('#grade_multiselect input[type="checkbox"]:checked'))
+            .map(cb => cb.value);
+        
+        // Get selected subjects
+        const selectedSubjects = Array.from(document.querySelectorAll('#subject_multiselect input[type="checkbox"]:checked'))
+            .map(cb => cb.value);
+        
+        const selectedState = stateFilter.value;
+        
+        console.log('Filter values:', { selectedGrades, selectedSubjects, selectedState });
+        
+        // Create query parameters
+        const params = new URLSearchParams();
+        selectedGrades.forEach(grade => params.append('grade', grade));
+        selectedSubjects.forEach(subject => params.append('subject', subject));
+        if (selectedState) params.append('state', selectedState);
+        
+        // Make AJAX request
+        fetch(window.location.pathname + '?' + params.toString(), {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Received data:', data);
+            
+            // Clear existing options except the first one
+            jobSelect.innerHTML = '<option value="">Select Job</option>';
+            
+            // Add filtered jobs to dropdown
+            if (data.jobs1 && Array.isArray(data.jobs1)) {
+                data.jobs1.forEach(job => {
+                    const option = document.createElement('option');
+                    option.value = job.id;
+                    option.textContent = `${job.job_code} - ${job.teacher_grade} - ${job.subject} - ${job.district} - ${job.state} - ${job.user__name}`;
+                    jobSelect.appendChild(option);
+                });
+                console.log(`Added ${data.jobs1.length} jobs to dropdown`);
+            } else {
+                console.log('No jobs found or invalid data structure');
+            }
+        })
+        .catch(error => {
+            console.error('Error filtering jobs:', error);
+        });
+    }
+    
+    // Add event listener to state filter dropdown
+    const stateFilterElement = document.getElementById('state_filter');
+    if (stateFilterElement) {
+        stateFilterElement.addEventListener('change', function() {
+            console.log('State filter changed:', this.value);
+            updateJobDropdown();
+        });
+    }
+    
+    // Reset filters functionality
+    const resetButton = document.getElementById('reset_filters');
+    if (resetButton) {
+        resetButton.addEventListener('click', function() {
+            console.log('Resetting filters');
+            
+            // Reset multiselect checkboxes
+            document.querySelectorAll('#grade_multiselect input[type="checkbox"]').forEach(cb => cb.checked = false);
+            document.querySelectorAll('#subject_multiselect input[type="checkbox"]').forEach(cb => cb.checked = false);
+            
+            // Reset displays
+            const gradeDisplay = document.getElementById('grade_display');
+            const subjectDisplay = document.getElementById('subject_display');
+            if (gradeDisplay) gradeDisplay.textContent = 'Grade to Teach';
+            if (subjectDisplay) subjectDisplay.textContent = 'Subject';
+            
+            // Reset state dropdown
+            const stateFilter = document.getElementById('state_filter');
+            if (stateFilter) stateFilter.value = '';
+            
+            updateJobDropdown(); // Update dropdown after reset
+        });
+    }
+    
+    // Initialize displays on page load
+    setTimeout(() => {
+        updateSelection('grade');
+        updateSelection('subject');
+    }, 100);
+    
+    // Make updateJobDropdown globally accessible
+    window.updateJobDropdown = updateJobDropdown;
+});
+
+// Toggle dropdown function
+function toggleDropdown(dropdownId) {
+    const dropdown = document.getElementById(dropdownId);
+    if (!dropdown) {
+        console.error('Dropdown not found:', dropdownId);
+        return;
+    }
+    
+    const content = dropdown.querySelector('.multiselect-dropdown-content');
+    const arrow = dropdown.querySelector('.dropdown-arrow');
+    
+    if (content && arrow) {
+        content.classList.toggle('show');
+        arrow.classList.toggle('up');
+        
+        // Close other dropdowns
+        const allDropdowns = document.querySelectorAll('.multiselect-dropdown-content');
+        const allArrows = document.querySelectorAll('.dropdown-arrow');
+        
+        allDropdowns.forEach((dd, index) => {
+            if (dd !== content) {
+                dd.classList.remove('show');
+                if (allArrows[index]) allArrows[index].classList.remove('up');
+            }
+        });
+    }
+}
+
+// Update selection function
+function updateSelection(type) {
+    const checkboxes = document.querySelectorAll(`#${type}_multiselect input[type="checkbox"]:checked`);
+    const display = document.getElementById(`${type}_display`);
+    
+    if (!display) {
+        console.error('Display element not found for type:', type);
+        return;
+    }
+    
+    const count = checkboxes.length;
+    
+    if (count === 0) {
+        display.textContent = type === 'grade' ? 'Grade to Teach' : 'Subject';
+    } else {
+        display.innerHTML = `<span class="selected-count">${count} selected</span>`;
+    }
+    
+    console.log(`Updated ${type} selection: ${count} items selected`);
+    
+    // Update the job dropdown if the function is available
+    if (typeof window.updateJobDropdown === 'function') {
+        window.updateJobDropdown();
+    }
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('.multiselect-dropdown')) {
+        document.querySelectorAll('.multiselect-dropdown-content').forEach(content => {
+            content.classList.remove('show');
+        });
+        document.querySelectorAll('.dropdown-arrow').forEach(arrow => {
+            arrow.classList.remove('up');
+        });
+    }
+});
+
+// Additional event listeners for better functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle modal events
+    const modal = document.getElementById('call_for_interview');
+    if (modal) {
+        modal.addEventListener('shown.bs.modal', function () {
+            console.log('Modal opened');
+            // Initialize or refresh job dropdown when modal opens
+            if (typeof window.updateJobDropdown === 'function') {
+                setTimeout(() => {
+                    window.updateJobDropdown();
+                }, 200);
+            }
+        });
+        
+        modal.addEventListener('hidden.bs.modal', function () {
+            console.log('Modal closed');
+        });
+    }
+    
+    // Handle form submission
+    const whatsappForm = document.getElementById('custom_whatsapp_form');
+    if (whatsappForm) {
+        whatsappForm.addEventListener('submit', function(e) {
+            const jobSelect = document.getElementById('job_select');
+            if (!jobSelect || !jobSelect.value) {
+                e.preventDefault();
+                alert('Please select a job before sending WhatsApp alert.');
+                return false;
+            }
+            console.log('Form submitted with job ID:', jobSelect.value);
+        });
+    }
+});
+
+// Debug function to check current state
+function debugFilters() {
+    const grades = Array.from(document.querySelectorAll('#grade_multiselect input[type="checkbox"]:checked')).map(cb => cb.value);
+    const subjects = Array.from(document.querySelectorAll('#subject_multiselect input[type="checkbox"]:checked')).map(cb => cb.value);
+    const state = document.getElementById('state_filter')?.value || '';
+    
+    console.log('Current filter state:', {
+        grades: grades,
+        subjects: subjects,
+        state: state
+    });
+    
+    return { grades, subjects, state };
+}
+
+// Make debug function globally available
+window.debugFilters = debugFilters;
+</script>
+
+{% endblock %}
